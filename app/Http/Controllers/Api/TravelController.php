@@ -23,8 +23,13 @@ class TravelController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|max:255',
-            'content' => 'required',
+            'place' => 'required|max:255',
+            'date' => 'required',
+            'mode_of_transport' => 'required',
+            'good_impression' => 'required',
+            'bad_impression' => 'required',
+            'general_impression' => 'required',
+            'user_id' => 'required',
         ]);
 
         $travel = Travel::create($request->all());

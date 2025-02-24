@@ -13,8 +13,14 @@ return new class extends Migration
     {
         Schema::create('travels', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('content');
+            $table->string('place');
+            $table->string('date');
+            $table->string('mode_of_transport');
+            $table->text('good_impression');
+            $table->text('bad_impression');
+            $table->text('general_impression');
+            $table->unsignedBigInteger('user_id'); // Внешний ключ
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps(); // created_at и updated_at
         });
     }

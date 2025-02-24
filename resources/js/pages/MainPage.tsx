@@ -1,9 +1,10 @@
 import api from '../app/api/api';
 import { useEffect, useState } from 'react';
+import { travelData } from "../app/types/types";
 
 const MainPage = () => {
-    const [travels, setTravels] = useState([])
-    const [inputs, setInputs] = useState<{ title: string, content: string }>({title: 'test', content: 'test'})
+    const [travels, setTravels] = useState<travelData[]>([])
+    const [inputs, setInputs] = useState<travelData>()
 
     useEffect(() => {
         getTravels()
@@ -24,9 +25,11 @@ const MainPage = () => {
     }
 
     // @ts-ignore
-    const createPost = async (title: string, content: string) => {
+    const createPost = async (data: travelData) => {
+        console.log({data})
+
         try {
-            const response = await api.post('/travels', { title, content })
+            const response = await api.post('/travels', data)
             console.log('Post created:', response.data)
             getTravels()
         } catch (error) {
@@ -38,26 +41,60 @@ const MainPage = () => {
         <div className='border-blue-600 border-2 border-solid rounded-md'>
             {
                 travels.map(itm => <div key={itm.id} className='flex gap-5 p-2'>
-                    <div>{itm.title}</div>
-                    <div>{itm.content}</div>
+                    <div>{itm.place}</div>
+                    <div>{itm.date}</div>
+                    <div>{itm.mode_of_transport}</div>
+                    <div>{itm.good_impression}</div>
+                    <div>{itm.bad_impression}</div>
+                    <div>{itm.good_impression}</div>
                 </div>)
             }
         </div>
-        <div className='flex gap-5 py-6'>
-            <input className='p-2 border-gray-200 border-2 border-solid rounded-md' placeholder='title' onBlur={(event) => {
+        <div className='flex flex-col gap-5 py-6'>
+            <input className='p-2 border-gray-200 border-2 border-solid rounded-md' placeholder='place' onBlur={(event) => {
                 const val = event.currentTarget.value
                 setInputs(prev => {
-                    return {...prev, title: val}
+                    return {...prev, place: val}
                 })
             }}/>
-            <input className='p-2 border-gray-200 border-2 border-solid rounded-md' placeholder='content' onBlur={(event) => {
+            <input className='p-2 border-gray-200 border-2 border-solid rounded-md' placeholder='date' onBlur={(event) => {
                 const val = event.currentTarget.value
                 setInputs(prev => {
-                    return {...prev, content: val}
+                    return {...prev, date: val}
+                })
+            }}/>
+            <input className='p-2 border-gray-200 border-2 border-solid rounded-md' placeholder='mode_of_transport' onBlur={(event) => {
+                const val = event.currentTarget.value
+                setInputs(prev => {
+                    return {...prev, mode_of_transport: val}
+                })
+            }}/>
+            <input className='p-2 border-gray-200 border-2 border-solid rounded-md' placeholder='good_impression' onBlur={(event) => {
+                const val = event.currentTarget.value
+                setInputs(prev => {
+                    return {...prev, good_impression: val}
+                })
+            }}/>
+            <input className='p-2 border-gray-200 border-2 border-solid rounded-md' placeholder='bad_impression' onBlur={(event) => {
+                const val = event.currentTarget.value
+                setInputs(prev => {
+                    return {...prev, bad_impression: val}
+                })
+            }}/>
+            <input className='p-2 border-gray-200 border-2 border-solid rounded-md' placeholder='general_impression' onBlur={(event) => {
+                const val = event.currentTarget.value
+                setInputs(prev => {
+                    return {...prev, general_impression: val}
+                })
+            }}/>
+            <input className='p-2 border-gray-200 border-2 border-solid rounded-md' placeholder='user_id' onBlur={(event) => {
+                const val = event.currentTarget.value
+                setInputs(prev => {
+                    return {...prev, user_id: 1}
                 })
             }}/>
         </div>
-        <button className='bg-blue-600 text-white rounded-md py-2 px-4' onClick={() => createPost(inputs.title, inputs.content)}>add</button>
+        <button className='bg-blue-600 text-white rounded-md py-2 px-4' onClick={() => createPost(inputs)}>add</button>
     </div>
 }
 

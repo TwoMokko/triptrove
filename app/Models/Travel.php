@@ -12,4 +12,19 @@ class Travel extends Model
     protected $table = 'travels';
 //    protected $guarded = [];
     protected $guarded = false;
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+
+    public function photos()
+    {
+        return $this->hasMany(Photo::class);
+    }
 }
