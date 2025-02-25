@@ -13,8 +13,8 @@ class TravelController extends Controller
      */
     public function index()
     {
-        $travel = Travel::all();
-        return response()->json($travel);
+        $travels = Travel::all();
+        return response()->json($travels);
     }
 
     /**
@@ -36,10 +36,11 @@ class TravelController extends Controller
         return response()->json($travel, 201);
     }
 
+
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Travel $travel)
     {
         //
     }
@@ -47,7 +48,7 @@ class TravelController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Travel $travel)
     {
         //
     }
@@ -55,7 +56,7 @@ class TravelController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Travel $travel)
     {
         //
     }

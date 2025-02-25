@@ -1,7 +1,14 @@
 <?php
 
 use App\Http\Controllers\Api\TravelController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/users', [UserController::class, 'index']); // Получить всех пользователей
+Route::post('/users', [UserController::class, 'store']); // Создать нового пользователя
+Route::get('/users/{id}', [TravelController::class, 'show']); // Получить пользователя по ID
+Route::put('/users/{id}', [TravelController::class, 'update']); // Обновить пользователя
+Route::delete('/users/{id}', [TravelController::class, 'destroy']); // Удалить пользователя
 
 Route::get('/travels', [TravelController::class, 'index']); // Получить все путешествия по User ID для юсера (и созданные им и другими)
 Route::get('/travelsFromUser', [TravelController::class, 'fromUser']); // Получить все путешествия по User ID, созданные им
