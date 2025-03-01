@@ -7,33 +7,28 @@ const MainPage = () => {
     const [inputs, setInputs] = useState<travelData>()
 
     useEffect(() => {
-        getTravels()
+        getTravels().then(() => console.log({travels}))
     }, [])
 
-    const getTravels = () => {
-        // @ts-ignore
-        const fetchPosts = async () => {
-            try {
-                const response = await api.get('/travels')
-                setTravels(response.data)
-            } catch (error) {
-                console.error('Error fetching posts:', error)
-            }
-        };
-
-        fetchPosts().then(() => console.log({travels}))
+    const getTravels = async () => {
+        try {
+            const response = await api.get('/travels')
+            setTravels(response.data)
+        } catch (error) {
+            console.error('Error fetching travels:', error)
+        }
     }
 
     // @ts-ignore
-    const createPost = async (data: travelData) => {
+    const createTravel = async (data: travelData) => {
         console.log({data})
 
         try {
             const response = await api.post('/travels', data)
-            console.log('Post created:', response.data)
-            getTravels()
+            console.log('Travel created:', response.data)
+            getTravels().then(() => console.log({response}))
         } catch (error) {
-            console.error('Error creating post:', error)
+            console.error('Error creating travel:', error)
         }
     }
 
@@ -94,7 +89,7 @@ const MainPage = () => {
                 })
             }}/>
         </div>
-        <button className='bg-blue-600 text-white rounded-md py-2 px-4' onClick={() => createPost(inputs)}>add</button>
+        <button className='bg-blue-600 text-white rounded-md py-2 px-4' onClick={() => createTravel(inputs)}>add</button>
     </div>
 }
 
