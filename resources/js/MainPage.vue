@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import {ref, onMounted, computed} from 'vue'
+import { ref, onMounted } from 'vue'
 import api from "./app/api/api.js"
-import { travelData } from "./app/types/types";
+import { travelData } from "./app/types/types"
+import Icon from "./shared/Icon.vue";
+import { mdiPencil, mdiDelete, mdiContentSave, mdiClose } from '@mdi/js'
 
 const travels = ref<travelData[]>([])
 const userId: number = 1
 const newTravel = ref<travelData>({ user_id: userId })
 const changeTravel = ref<travelData>({ user_id: userId })
 const changeId = ref<number | null>(null)
-
-
-const isChangeTravelOnId = computed(() => {
-    return changeId.value == null
-})
 
 const getTravels = async () => {
     try {
@@ -24,9 +21,6 @@ const getTravels = async () => {
 }
 
 const createTravel = async (data: travelData) => {
-    console.log({data})
-    console.log({currentTravel: newTravel})
-
     try {
         const response = await api.post('/travels', data)
         console.log('Travel created:', response.data)
@@ -37,15 +31,18 @@ const createTravel = async (data: travelData) => {
     }
 }
 
-const updateTravel = (item: travelData) => {
+const updateTravel = (item: travelData): void => {
     changeId.value = item.id
     changeTravel.value = item
-
-    console.log(isChangeTravelOnId.value)
 }
 
-const saveTravel = () => {
+const saveTravel = (): void => {
     doUpdateTravel()
+    changeId.value = null
+}
+
+const cancelUpdate = (): void => {
+    // как-то сохранить предыдущие данные
     changeId.value = null
 }
 
@@ -74,6 +71,15 @@ const deleteTravel = async (id: number) => {
     }
 }
 
+const resizeTextarea = (event: Event<HTMLTextAreaElement>): void => {
+    const textarea: HTMLTextAreaElement = event.target
+
+    textarea.style.height = 'auto'
+    if (!textarea.textContent) textarea.style.height = `${textarea.scrollHeight}px`
+
+    // return textarea.scrollHeight
+}
+
 onMounted(() => {
     getTravels()
 })
@@ -84,25 +90,34 @@ onMounted(() => {
         <h1 class="text-2xl mb-4 text-primary">Путешествия пользователя с ID: {{ newTravel.user_id }}</h1>
         <div class="mb-4">
             <div v-if="travels.length">
-                <div v-for="item in travels" :key="item.id">
-                    <div v-if="isChangeTravelOnId" class="grid gap-2 grid-cols-8">
+                <div v-for="item in travels" :key="item.id" class="px-2.5 py-5 border-b border-secondary">
+                    <div v-if="changeId !== item.id" class="grid gap-2 grid-cols-7">
                         <div>{{ item.place }}</div>
                         <div>{{ item.date }}</div>
                         <div>{{ item.mode_of_transport }}</div>
                         <div>{{ item.good_impression }}</div>
                         <div>{{ item.bad_impression }}</div>
                         <div>{{ item.general_impression }}</div>
-                        <div @click="updateTravel(item)" class="cursor-pointer text-primary">change</div>
-                        <div @click="deleteTravel(item.id)" class="cursor-pointer text-red-900">del</div>
+                        <div class="flex gap-2 justify-end">
+                            <div @click="updateTravel(item)" class="cursor-pointer">
+                                <Icon :iconPath="mdiPencil" class="w-6 h-6 text-secondary hover:text-primary" />
+                            </div>
+                            <div @click="deleteTravel(item.id)" class="cursor-pointer">
+                                <Icon :iconPath="mdiDelete" class="w-6 h-6 text-secondary hover:text-red-800" />
+                            </div>
+                        </div>
                     </div>
-                    <div v-else>
-                        <input class="p-2 border-[1px] rounded-md focus:border-[1px] focus-visible:outline-none focus:border-primary focus-visible:border-[1px] focus-visible:border-primary" v-model="changeTravel.place" placeholder="место">
-                        <input class="p-2 border-[1px] rounded-md focus:border-[1px] focus-visible:outline-none focus:border-primary focus-visible:border-[1px] focus-visible:border-primary" v-model="changeTravel.date" placeholder="время когда">
-                        <input class="p-2 border-[1px] rounded-md focus:border-[1px] focus-visible:outline-none focus:border-primary focus-visible:border-[1px] focus-visible:border-primary" v-model="changeTravel.mode_of_transport" placeholder="на чем добирались">
-                        <textarea class="p-2 border-[1px] rounded-md focus:border-[1px] focus-visible:outline-none focus:border-primary focus-visible:border-[1px] focus-visible:border-primary resize-none" v-model="changeTravel.good_impression" placeholder="хорошее" />
-                        <textarea class="p-2 border-[1px] rounded-md focus:border-[1px] focus-visible:outline-none focus:border-primary focus-visible:border-[1px] focus-visible:border-primary resize-none" v-model="changeTravel.bad_impression" placeholder="плохое" />
-                        <textarea class="p-2 border-[1px] rounded-md focus:border-[1px] focus-visible:outline-none focus:border-primary focus-visible:border-[1px] focus-visible:border-primary resize-none" v-model="changeTravel.general_impression" placeholder="общие впечатления" />
-                        <button @click="saveTravel(item.id)">save</button>
+                    <div v-else class="grid gap-2 grid-cols-7">
+                        <input class="p-2 border border-secondary rounded-md focus:border focus-visible:outline-none focus:border-primary focus-visible:border focus-visible:border-primary" v-model="changeTravel.place" placeholder="место">
+                        <input class="p-2 border border-secondary rounded-md focus:border focus-visible:outline-none focus:border-primary focus-visible:border focus-visible:border-primary" v-model="changeTravel.date" placeholder="время когда">
+                        <input class="p-2 border border-secondary rounded-md focus:border focus-visible:outline-none focus:border-primary focus-visible:border focus-visible:border-primary" v-model="changeTravel.mode_of_transport" placeholder="на чем добирались">
+                        <textarea @input="resizeTextarea" class="p-2 border border-secondary rounded-md min-h-20 overflow-hidden focus:border focus-visible:outline-none focus:border-primary focus-visible:border focus-visible:border-primary resize-none" v-model="changeTravel.good_impression" placeholder="хорошее" />
+                        <textarea @input="resizeTextarea" class="p-2 border border-secondary rounded-md min-h-20 overflow-hidden focus:border focus-visible:outline-none focus:border-primary focus-visible:border focus-visible:border-primary resize-none" v-model="changeTravel.bad_impression" placeholder="плохое" />
+                        <textarea @input="resizeTextarea" class="p-2 border border-secondary rounded-md min-h-20 overflow-hidden focus:border focus-visible:outline-none focus:border-primary focus-visible:border focus-visible:border-primary resize-none" v-model="changeTravel.general_impression" placeholder="общие впечатления" />
+                        <div class="flex gap-2 justify-end">
+                            <Icon @click="saveTravel(item.id)" :iconPath="mdiContentSave" class="w-6 h-6 text-secondary hover:text-primary" />
+                            <Icon @click="cancelUpdate" :iconPath="mdiClose" class="w-6 h-6 text-secondary hover:text-red-800" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -110,12 +125,12 @@ onMounted(() => {
         </div>
 
         <div class="flex flex-col gap-2 mb-4">
-            <input class="p-2 border-[1px] rounded-md focus:border-[1px] focus-visible:outline-none focus:border-primary focus-visible:border-[1px] focus-visible:border-primary" v-model="newTravel.place" placeholder="место">
-            <input class="p-2 border-[1px] rounded-md focus:border-[1px] focus-visible:outline-none focus:border-primary focus-visible:border-[1px] focus-visible:border-primary" v-model="newTravel.date" placeholder="время когда">
-            <input class="p-2 border-[1px] rounded-md focus:border-[1px] focus-visible:outline-none focus:border-primary focus-visible:border-[1px] focus-visible:border-primary" v-model="newTravel.mode_of_transport" placeholder="на чем добирались">
-            <textarea class="p-2 border-[1px] rounded-md focus:border-[1px] focus-visible:outline-none focus:border-primary focus-visible:border-[1px] focus-visible:border-primary resize-none" v-model="newTravel.good_impression" placeholder="хорошее" />
-            <textarea class="p-2 border-[1px] rounded-md focus:border-[1px] focus-visible:outline-none focus:border-primary focus-visible:border-[1px] focus-visible:border-primary resize-none" v-model="newTravel.bad_impression" placeholder="плохое" />
-            <textarea class="p-2 border-[1px] rounded-md focus:border-[1px] focus-visible:outline-none focus:border-primary focus-visible:border-[1px] focus-visible:border-primary resize-none" v-model="newTravel.general_impression" placeholder="общие впечатления" />
+            <input class="p-2 border border-secondary rounded-md focus:border focus-visible:outline-none focus:border-primary focus-visible:border focus-visible:border-primary" v-model="newTravel.place" placeholder="место">
+            <input class="p-2 border border-secondary rounded-md focus:border focus-visible:outline-none focus:border-primary focus-visible:border focus-visible:border-primary" v-model="newTravel.date" placeholder="время когда">
+            <input class="p-2 border border-secondary rounded-md focus:border focus-visible:outline-none focus:border-primary focus-visible:border focus-visible:border-primary" v-model="newTravel.mode_of_transport" placeholder="на чем добирались">
+            <textarea @input="resizeTextarea" class="p-2 border border-secondary rounded-md min-h-20 overflow-hidden focus:border focus-visible:outline-none focus:border-primary focus-visible:border focus-visible:border-primary resize-none" v-model="newTravel.good_impression" placeholder="хорошее" />
+            <textarea @input="resizeTextarea" class="p-2 border border-secondary rounded-md min-h-20 overflow-hidden focus:border focus-visible:outline-none focus:border-primary focus-visible:border focus-visible:border-primary resize-none" v-model="newTravel.bad_impression" placeholder="плохое" />
+            <textarea @input="resizeTextarea" class="p-2 border border-secondary rounded-md min-h-20 overflow-hidden focus:border focus-visible:outline-none focus:border-primary focus-visible:border focus-visible:border-primary resize-none" v-model="newTravel.general_impression" placeholder="общие впечатления" />
         </div>
 
         <div>
