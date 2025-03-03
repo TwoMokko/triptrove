@@ -86,7 +86,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="px-[10%] py-10 bg-main">
+    <div class="px-[10%] py-10">
         <h1 class="text-2xl mb-4 text-primary">Путешествия пользователя с ID: {{ newTravel.user_id }}</h1>
         <div class="mb-4">
             <div v-if="travels.length">

@@ -16,7 +16,7 @@
 {{--        @viteReactRefresh--}}
 {{--        @vite('resources/js-react/app.tsx')--}}
     </head>
-    <body>
+    <body class="bg-main">
         <div id="root"></div>
     </body>
 </html>
