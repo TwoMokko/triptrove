@@ -2,10 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+.logo {
+    font-family: "Caesar Dressing", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
 :root {
     --bg-main-color             : #f3efec;
     /*--primary-color             : #f473a1;*/
     --primary-color             : #7ea46d;
     --secondary-color           : #ccbfbd;
     --secondary-light-color     : #e3d8d5;
+
+    --font-logo                 : "Caesar Dressing", serif;
 }

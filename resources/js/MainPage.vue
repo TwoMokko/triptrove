@@ -4,6 +4,7 @@ import api from "./app/api/api.js"
 import { travelData } from "./app/types/types"
 import Icon from "./shared/Icon.vue";
 import { mdiPencil, mdiDelete, mdiContentSave, mdiClose } from '@mdi/js'
+import Logo from "@/shared/Logo.vue";
 
 const travels = ref<travelData[]>([])
 const userId: number = 1
@@ -11,7 +12,7 @@ const newTravel = ref<travelData>({ user_id: userId })
 const changeTravel = ref<travelData>({ user_id: userId })
 const changeId = ref<number | null>(null)
 
-const getTravels = async () => {
+const getTravels = async (): Promise<void> => {
     try {
         const response = await api.get('/travels')
         travels.value = response.data
@@ -20,7 +21,7 @@ const getTravels = async () => {
     }
 }
 
-const createTravel = async (data: travelData) => {
+const createTravel = async (data: travelData): Promise<void> => {
     try {
         const response = await api.post('/travels', data)
         console.log('Travel created:', response.data)
@@ -46,7 +47,7 @@ const cancelUpdate = (): void => {
     changeId.value = null
 }
 
-const doUpdateTravel = async () => {
+const doUpdateTravel = async (): Promise<void> => {
     try {
         const response = await api.put(`/travels/${changeId.value}`, changeTravel.value)
         console.log('Travel updated:', response.data)
@@ -61,7 +62,7 @@ const doUpdateTravel = async () => {
     }
 }
 
-const deleteTravel = async (id: number) => {
+const deleteTravel = async (id: number): Promise<void> => {
     try {
         const response = await api.delete(`/travels/${id}`)
         console.log('Travel deleted:', response.data)
@@ -71,8 +72,8 @@ const deleteTravel = async (id: number) => {
     }
 }
 
-const resizeTextarea = (event: Event<HTMLTextAreaElement>): void => {
-    const textarea: HTMLTextAreaElement = event.target
+const resizeTextarea = (event: Event): void => {
+    const textarea: HTMLTextAreaElement = event.target as HTMLTextAreaElement
 
     textarea.style.height = 'auto'
     if (!textarea.textContent) textarea.style.height = `${textarea.scrollHeight}px`
@@ -87,6 +88,7 @@ onMounted(() => {
 
 <template>
     <div class="px-[10%] py-10">
+        <Logo />
         <h1 class="text-2xl mb-4 text-primary">Путешествия пользователя с ID: {{ newTravel.user_id }}</h1>
         <div class="mb-4">
             <div v-if="travels.length">
@@ -115,7 +117,7 @@ onMounted(() => {
                         <textarea @input="resizeTextarea" class="p-2 border border-secondary rounded-md min-h-20 overflow-hidden focus:border focus-visible:outline-none focus:border-primary focus-visible:border focus-visible:border-primary resize-none" v-model="changeTravel.bad_impression" placeholder="плохое" />
                         <textarea @input="resizeTextarea" class="p-2 border border-secondary rounded-md min-h-20 overflow-hidden focus:border focus-visible:outline-none focus:border-primary focus-visible:border focus-visible:border-primary resize-none" v-model="changeTravel.general_impression" placeholder="общие впечатления" />
                         <div class="flex gap-2 justify-end">
-                            <Icon @click="saveTravel(item.id)" :iconPath="mdiContentSave" class="w-6 h-6 text-secondary hover:text-primary" />
+                            <Icon @click="saveTravel" :iconPath="mdiContentSave" class="w-6 h-6 text-secondary hover:text-primary" />
                             <Icon @click="cancelUpdate" :iconPath="mdiClose" class="w-6 h-6 text-secondary hover:text-red-800" />
                         </div>
                     </div>
