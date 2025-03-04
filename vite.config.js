@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-// import react from '@vitejs/plugin-react'
+// import react from '@vitejs/plugin-react';
 import vuePlugin from "@vitejs/plugin-vue";
+import path from 'path';
 
 export default defineConfig({
     plugins: [
@@ -12,4 +13,9 @@ export default defineConfig({
         // react(),
         vuePlugin(),
     ],
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './resources/js'),
+        },
+    },
 });

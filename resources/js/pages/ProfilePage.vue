@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import api from "./app/api/api.js"
-import { travelData } from "./app/types/types"
-import Icon from "./shared/Icon.vue";
+import {ref, onMounted, computed, ComputedRef} from 'vue'
+import api from "../app/api/api.js"
+import { travelData } from "@/app/types/types"
+import Icon from "../shared/Icon.vue"
 import { mdiPencil, mdiDelete, mdiContentSave, mdiClose } from '@mdi/js'
-import Logo from "@/shared/Logo.vue";
+import Loader from "@/shared/Loader.vue";
 
 const travels = ref<travelData[]>([])
 const userId: number = 1
 const newTravel = ref<travelData>({ user_id: userId })
 const changeTravel = ref<travelData>({ user_id: userId })
 const changeId = ref<number | null>(null)
+
+const isLoading: ComputedRef<boolean> = computed(() => {
+    return travels.value.length <= 0
+})
 
 const getTravels = async (): Promise<void> => {
     try {
@@ -87,8 +91,10 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="px-[10%] py-10">
-        <Logo />
+    <div v-if="isLoading" class="px-[10%] py-10">
+        <Loader />
+    </div>
+    <div v-else class="px-[10%] py-10">
         <h1 class="text-2xl mb-4 text-primary">Путешествия пользователя с ID: {{ newTravel.user_id }}</h1>
         <div class="mb-4">
             <div v-if="travels.length">
@@ -140,3 +146,4 @@ onMounted(() => {
         </div>
     </div>
 </template>
+

@@ -1,5 +1,5 @@
 <template>
-    <div class="logo text-primary text-6xl flex gap-2 items-center">
+    <div class="logo text-primary text-6xl flex gap-4 items-center">
         <div class="w-10 h-10">
 <!--            <svg xmlns="http://www.w3.org/2000/svg" version="1.1"-->
 <!--                 width="100%" height="100%"-->
