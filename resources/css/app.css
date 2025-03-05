@@ -8,11 +8,40 @@
     font-style: normal;
 }
 
+body {
+    /*background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);*/
+    background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
+    /*background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);*/
+}
+
+.btn {
+    background: linear-gradient(135deg, #ffa75f 0%, #ffabd9 100%);
+    /*background: linear-gradient(135deg, #ffa75f 0%, #ffb289 40%, #ffabd9 100%);*/
+    color: white;
+    padding: 10px 40px;
+    border: none;
+    border-radius: 60px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    min-width: 300px;
+    /*width: 100%;*/
+}
+
+.card {
+    padding: 20px 20px;
+    border-radius: 20px;
+    background-color: #ffffff3d;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.06);
+}
+
 :root {
+    --dark-color                : #4e5359;
     --bg-main-color             : #f3efec;
     /*--primary-color             : #f473a1;*/
     --primary-color             : #7ea46d;
-    --secondary-color           : #ccbfbd;
+    --secondary-color           : #b6b8d2;
     --secondary-light-color     : #e3d8d5;
 
     --font-logo                 : "Caesar Dressing", serif;
