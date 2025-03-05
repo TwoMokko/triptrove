@@ -8,15 +8,37 @@
     font-style: normal;
 }
 
+* {
+    box-sizing: border-box;
+    &::selection {
+        background: #b6b8d2;
+        color: #4e5359;
+    }
+}
+
+html {
+    height: 100%;
+}
+
 body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    position: relative;
     /*background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);*/
-    background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
     /*background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);*/
 }
 
+.background {
+    background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+}
+
 .btn {
-    background: linear-gradient(135deg, #ffa75f 0%, #ffabd9 100%);
-    /*background: linear-gradient(135deg, #ffa75f 0%, #ffb289 40%, #ffabd9 100%);*/
+    background: linear-gradient(135deg, #a1f4ff 0%, #abc8ff 100%);
+    /*background: linear-gradient(135deg, #ffa75f 0%, #ffabd9 100%);*/
     color: white;
     padding: 10px 40px;
     border: none;
@@ -30,10 +52,14 @@ body {
 }
 
 .card {
-    padding: 20px 20px;
+    padding: 40px 60px;
     border-radius: 20px;
-    background-color: #ffffff3d;
+    background-color: #ffffff15;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.06);
+
+    &:not(:last-child) {
+        margin-bottom: 10px;
+    }
 }
 
 :root {

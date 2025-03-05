@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import Logo from "@/shared/Logo.vue";
+import Logo from "@/shared/ui/Logo.vue"
+import NavigateHeader from "@/widgets/nav/ui/Nav.vue"
 </script>
 
 <template>
@@ -7,10 +8,7 @@ import Logo from "@/shared/Logo.vue";
         <RouterLink to="/">
             <Logo />
         </RouterLink>
-        <nav class="flex gap-4 items-center">
-            <RouterLink to="/">home</RouterLink>
-            <RouterLink to="/profile">profile</RouterLink>
-        </nav>
+        <NavigateHeader />
     </header>
     <main>
         <RouterView />

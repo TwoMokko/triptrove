@@ -21,6 +21,7 @@
 {{--        @vite('resources/js-react/app.tsx')--}}
     </head>
     <body class="text-dark">
+        <div class="background"></div>
         <div id="root"></div>
     </body>
 </html>
