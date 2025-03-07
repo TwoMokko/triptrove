@@ -14,3 +14,11 @@
         trip trove
     </div>
 </template>
+
+<style>
+.logo {
+    font-family: "Caesar Dressing", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+</style>

@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.logo {
-    font-family: "Caesar Dressing", serif;
-    font-weight: 400;
-    font-style: normal;
-}
-
 * {
     box-sizing: border-box;
     &::selection {
@@ -25,8 +19,6 @@ body {
     margin: 0;
     height: 100%;
     position: relative;
-    /*background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);*/
-    /*background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);*/
 }
 
 .background {
@@ -34,21 +26,6 @@ body {
     position: fixed;
     inset: 0;
     z-index: -1;
-}
-
-.btn {
-    background: linear-gradient(135deg, #a1f4ff 0%, #abc8ff 100%);
-    /*background: linear-gradient(135deg, #ffa75f 0%, #ffabd9 100%);*/
-    color: white;
-    padding: 10px 40px;
-    border: none;
-    border-radius: 60px;
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    min-width: 300px;
-    /*width: 100%;*/
 }
 
 .card {

@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import {ref, onMounted, computed, ComputedRef} from 'vue'
+import { ref, onMounted, computed, ComputedRef } from 'vue'
 import api from "../../app/api/api.js"
+import { mdiPencil, mdiDelete } from '@mdi/js'
 import { travelData } from "@/app/types/types"
 import Icon from "../../shared/ui/Icon.vue"
-import { mdiPencil, mdiDelete, mdiContentSave, mdiClose } from '@mdi/js'
-import Loader from "@/shared/ui/Loader.vue";
-import InputCustom from "@/shared/ui/InputCustom.vue";
-import TextareaCustom from "@/shared/ui/TextareaCustom.vue";
-import ButtonCustom from "@/shared/ui/ButtonCustom.vue";
+import Loader from "@/shared/ui/Loader.vue"
+import ButtonCustom from "@/shared/ui/ButtonCustom.vue"
+import Modal from '@/shared/ui/Modal.vue'
+import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
 
 const travels = ref<travelData[]>([])
 const userId: number = 1
 const newTravel = ref<travelData>({ user_id: userId })
 const changeTravel = ref<travelData>({ user_id: userId })
 const changeId = ref<number | null>(null)
+const isModalOpenForCreateTravel = ref(false)
 
 const isLoading: ComputedRef<boolean> = computed(() => {
     return travels.value.length <= 0
@@ -34,6 +35,9 @@ const createTravel = async (): Promise<void> => {
         console.log('Travel created:', response.data)
         getTravels().then(() => console.log({response}))
         newTravel.value = { user_id: userId }
+
+        // показать загрузку на кнопке, потом закрыть окно
+        isModalOpenForCreateTravel.value = false
     } catch (error) {
         console.error('Error creating travel:', error)
     }
@@ -44,21 +48,14 @@ const updateTravel = (item: travelData): void => {
     changeTravel.value = item
 }
 
-const saveTravel = (): void => {
-    doUpdateTravel()
-    changeId.value = null
-}
-
-const cancelUpdate = (): void => {
-    // как-то сохранить предыдущие данные
-    changeId.value = null
-}
-
-const doUpdateTravel = async (): Promise<void> => {
+const saveTravel = async (): Promise<void> => {
     try {
         const response = await api.put(`/travels/${changeId.value}`, changeTravel.value)
         console.log('Travel updated:', response.data)
         getTravels().then(() => console.log({response}))
+
+        // показать загрузку на кнопке, потом закрыть окно
+        changeId.value = null
     } catch (error) {
         console.error('Error updating travel:', error)
         if (error.response) {
@@ -74,18 +71,11 @@ const deleteTravel = async (id: number): Promise<void> => {
         const response = await api.delete(`/travels/${id}`)
         console.log('Travel deleted:', response.data)
         getTravels().then(() => console.log({response}))
+
+        // спросить, удалять ли, потом показать, что идет удаление и после окно, что удалено
     } catch (error) {
         console.error('Error deleting travel:', error)
     }
-}
-
-const resizeTextarea = (event: Event): void => {
-    const textarea: HTMLTextAreaElement = event.target as HTMLTextAreaElement
-
-    textarea.style.height = 'auto'
-    if (!textarea.textContent) textarea.style.height = `${textarea.scrollHeight}px`
-
-    // return textarea.scrollHeight
 }
 
 onMounted(() => {
@@ -111,43 +101,26 @@ onMounted(() => {
                         <div>{{ item.general_impression }}</div>
                         <div class="flex gap-2 justify-end">
                             <div @click="updateTravel(item)" class="cursor-pointer">
-                                <Icon :iconPath="mdiPencil" class="w-6 h-6 text-secondary hover:text-dark" />
+                                <Icon :iconPath="mdiPencil" class="w-6 h-6 text-secondary hover:text-dark cursor-pointer" />
                             </div>
                             <div @click="deleteTravel(item.id)" class="cursor-pointer">
-                                <Icon :iconPath="mdiDelete" class="w-6 h-6 text-secondary hover:text-dark" />
+                                <Icon :iconPath="mdiDelete" class="w-6 h-6 text-secondary hover:text-dark cursor-pointer" />
                             </div>
                         </div>
                     </div>
-                    <div v-else class="grid gap-2 grid-cols-7">
-                        <input class="focus-visible:outline-none py-4 px-8 rounded-3xl border border-secondary bg-transparent" v-model="changeTravel.place" placeholder="место">
-                        <input class="focus-visible:outline-none py-4 px-8 rounded-3xl border border-secondary bg-transparent" v-model="changeTravel.date" placeholder="время когда">
-                        <input class="focus-visible:outline-none py-4 px-8 rounded-3xl border border-secondary bg-transparent" v-model="changeTravel.mode_of_transport" placeholder="на чем добирались">
-                        <textarea @input="resizeTextarea" class="focus-visible:outline-none resize-none py-4 px-8 rounded-3xl border border-secondary bg-transparent" v-model="changeTravel.good_impression" placeholder="хорошее" />
-                        <textarea @input="resizeTextarea" class="focus-visible:outline-none resize-none py-4 px-8 rounded-3xl border border-secondary bg-transparent" v-model="changeTravel.bad_impression" placeholder="плохое" />
-                        <textarea @input="resizeTextarea" class="focus-visible:outline-none resize-none py-4 px-8 rounded-3xl border border-secondary bg-transparent" v-model="changeTravel.general_impression" placeholder="общие впечатления" />
-                        <div class="flex gap-2 justify-end">
-                            <Icon @click="saveTravel" :iconPath="mdiContentSave" class="w-6 h-6 text-secondary hover:text-dark" />
-                            <Icon @click="cancelUpdate" :iconPath="mdiClose" class="w-6 h-6 text-secondary hover:text-dark" />
-                        </div>
-                    </div>
+                    <Modal :isOpen="changeId === item.id" @close="() => changeId = null">
+                        <TravelForm v-model="changeTravel" @handler="saveTravel" :btn-text="'сохранить'" />
+                    </Modal>
                 </div>
             </div>
             <p v-else>Loading...</p>
         </div>
-
-       <div class="card">
-           <div class="flex flex-col gap-3 mb-4">
-               <InputCustom v-model:value="newTravel.place" :placeholder="'место'" :type="'text'" />
-               <InputCustom v-model:value="newTravel.date" :placeholder="'время когда'" :type="'text'" />
-               <InputCustom v-model:value="newTravel.mode_of_transport" :placeholder="'на чем добирались'" :type="'text'" />
-               <TextareaCustom v-model:text="newTravel.good_impression" :placeholder="'хорошее'" />
-               <TextareaCustom v-model:text="newTravel.bad_impression" :placeholder="'плохое'" />
-               <TextareaCustom v-model:text="newTravel.general_impression" :placeholder="'общие впечатления'" />
-           </div>
-           <div class="text-end mt-4">
-               <ButtonCustom text="добавть путешествие" :class-name="'test'" @handler="createTravel" />
-           </div>
-       </div>
+        <div class="text-end">
+            <ButtonCustom text="Новое путешествие" @handler="() => isModalOpenForCreateTravel = true" />
+        </div>
+        <Modal :isOpen="isModalOpenForCreateTravel" @close="() => isModalOpenForCreateTravel = false">
+            <TravelForm v-model="newTravel" @handler="createTravel" :btn-text="'добавть путешествие'" />
+        </Modal>
     </div>
 </template>
 

@@ -12,5 +12,6 @@ defineProps<{
         v-model="value"
         :placeholder="placeholder"
         :type="type"
+        @input="$emit('input')"
     >
 </template>
