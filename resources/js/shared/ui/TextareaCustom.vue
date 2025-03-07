@@ -1,7 +1,7 @@
 <script setup lang="ts">
-const model = defineModel<string>('model')
+const text = defineModel<string>('text', { required: true })
+
 defineProps<{
-    value?: string,
     placeholder?: string
 }>()
 
@@ -18,8 +18,7 @@ const resizeTextarea = (event: Event): void => {
 <template>
     <textarea
         class="focus-visible:outline-none resize-none py-4 px-8 rounded-3xl border border-secondary bg-transparent"
-        v-model="model"
+        v-model="text"
         :placeholder="placeholder"
-        @input="resizeTextarea"
-    />
+        @input="resizeTextarea"/>
 </template>

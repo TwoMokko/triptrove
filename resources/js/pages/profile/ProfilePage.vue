@@ -6,7 +6,8 @@ import Icon from "../../shared/ui/Icon.vue"
 import { mdiPencil, mdiDelete, mdiContentSave, mdiClose } from '@mdi/js'
 import Loader from "@/shared/ui/Loader.vue";
 import InputCustom from "@/shared/ui/InputCustom.vue";
-import Textarea from "@/shared/ui/Textarea.vue";
+import TextareaCustom from "@/shared/ui/TextareaCustom.vue";
+import ButtonCustom from "@/shared/ui/ButtonCustom.vue";
 
 const travels = ref<travelData[]>([])
 const userId: number = 1
@@ -136,21 +137,15 @@ onMounted(() => {
 
        <div class="card">
            <div class="flex flex-col gap-3 mb-4">
-               <InputCustom v-model="newTravel.place" :placeholder="'место'" :type="'text'" :value="newTravel.place" />
-               <InputCustom v-model="newTravel.date" :placeholder="'время когда'" :type="'text'" :value="newTravel.date" />
-               <InputCustom v-model="newTravel.mode_of_transport" :placeholder="'на чем добирались'" :type="'text'" :value="newTravel.mode_of_transport" />
-
-               <Textarea v-model="newTravel.good_impression" :placeholder="'хорошее'" :value="newTravel.good_impression" />
-
-<!--               <textarea @input="resizeTextarea" class="focus-visible:outline-none resize-none py-4 px-8 rounded-3xl border border-secondary bg-transparent" v-model="newTravel.good_impression" placeholder="хорошее" />-->
-               <textarea @input="resizeTextarea" class="focus-visible:outline-none resize-none py-4 px-8 rounded-3xl border border-secondary bg-transparent" v-model="newTravel.bad_impression" placeholder="плохое" />
-               <textarea @input="resizeTextarea" class="focus-visible:outline-none resize-none py-4 px-8 rounded-3xl border border-secondary bg-transparent" v-model="newTravel.general_impression" placeholder="общие впечатления" />
-
-
+               <InputCustom v-model:value="newTravel.place" :placeholder="'место'" :type="'text'" />
+               <InputCustom v-model:value="newTravel.date" :placeholder="'время когда'" :type="'text'" />
+               <InputCustom v-model:value="newTravel.mode_of_transport" :placeholder="'на чем добирались'" :type="'text'" />
+               <TextareaCustom v-model:text="newTravel.good_impression" :placeholder="'хорошее'" />
+               <TextareaCustom v-model:text="newTravel.bad_impression" :placeholder="'плохое'" />
+               <TextareaCustom v-model:text="newTravel.general_impression" :placeholder="'общие впечатления'" />
            </div>
            <div class="text-end mt-4">
-               <!--            <button @click="createTravel(newTravel)" class="py-3 px-10 text-white rounded-[60px] cursor-pointer text-center bg-linear-135 from-cyan-500 to-blue-500">create travel</button>-->
-               <a @click="createTravel" class="btn">create travel</a>
+               <ButtonCustom text="добавть путешествие" :class-name="'test'" @handler="createTravel" />
            </div>
        </div>
     </div>
