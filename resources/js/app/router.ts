@@ -7,11 +7,37 @@ import RegisterPage from "../pages/login/ui/RegisterPage.vue";
 import LogoutPage from "../pages/login/ui/LogoutPage.vue";
 
 const routes = [
-    { path: '/', component: HomePage },
-    { path: '/profile', component: ProfilePage },
-    { path: '/login', component: LoginPage },
-    { path: '/register', component: RegisterPage },
-    { path: '/logout', component: LogoutPage },
+    {
+        name: 'home',
+        path: '/',
+        component: HomePage
+    },
+    {
+        name: 'profile',
+        path: '/profile',
+        component: ProfilePage,
+        meta: { requiresAuth: true/*, role: 'admin'*/ }
+    },
+    {
+        name: 'login',
+        path: '/login',
+        component: LoginPage
+    },
+    {
+        name: 'register',
+        path: '/register',
+        component: RegisterPage
+    },
+    {
+        name: 'logout',
+        path: '/logout',
+        component: LogoutPage
+    },
+    // {
+    //     name: 'forbidden',
+    //     path: '/forbidden',
+    //     component: Компонент "Доступ запрещен"
+    // },
 ]
 
 export const router = createRouter({
@@ -20,8 +46,13 @@ export const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    if (to.meta.requiresAuth && !localStorage.getItem('auth_token')) {
+    const isAuthenticated = !!localStorage.getItem('auth_token')
+    const userRole = localStorage.getItem('user_role') // Получаем роль пользователя
+
+    if (to.meta.requiresAuth && !isAuthenticated) {
         next('/login')
+    // } else if (to.meta.role && to.meta.role !== userRole) {
+    //     next('/forbidden') // Перенаправляем на страницу "Доступ запрещён"
     } else {
         next()
     }

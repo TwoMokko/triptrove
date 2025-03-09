@@ -48,6 +48,6 @@ watch(
         <TextareaCustom v-model:text="localTravel.general_impression" :placeholder="'общие впечатления'" @change="updateModel" />
     </div>
     <div class="text-end mt-4">
-        <ButtonCustom :text="btnText" @click="$emit('handler')" />
+        <ButtonCustom :text="btnText" @click="$emit('handler')" class="w-full" />
     </div>
 </template>

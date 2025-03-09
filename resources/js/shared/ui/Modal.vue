@@ -1,6 +1,6 @@
 <template>
-    <div v-if="isOpen" class="modal-overlay">
-        <div class="modal-content">
+    <div v-if="isOpen" class="modal-overlay" @click="closeModal">
+        <div class="modal-content" @click.stop>
             <div class="mb-4">
                 <Icon
                     :iconPath="mdiWindowClose"

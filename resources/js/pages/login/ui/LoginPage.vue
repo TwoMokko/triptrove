@@ -2,6 +2,7 @@
 import { ref } from "vue"
 import api from "@/app/api/api"
 import { useRouter } from "vue-router"
+import { useAuthStore } from "@/etities/auth/model"
 
 interface formDataType {
     email: string,
@@ -14,11 +15,13 @@ const form = ref<formDataType>({
 })
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const login = async () => {
     try {
         const response = await api.post('/login', form.value)
-        localStorage.setItem('auth_token', response.data.token)
+        authStore.token = response.data.token
+        // localStorage.setItem('auth_token', response.data.token)
         await router.push('/')
     } catch (error) {
         alert('Login failed')

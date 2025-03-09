@@ -32,7 +32,7 @@ const auth = async () => {
         isLoading.value = false
         await router.push('/login')
 
-        setTimeout(() => isLoading.value = false, 1000)
+        isLoading.value = false
     } catch (error) {
         console.error('Error creating user:', error)
     }
