@@ -33,7 +33,7 @@ class TravelController extends Controller
             'user_id' => 'required',
         ]);
 
-        // Вычислить поле order
+        // TODO: Вычислить поле order
 
         $travel = Travel::create($request->all());
         return response()->json($travel, 201);
