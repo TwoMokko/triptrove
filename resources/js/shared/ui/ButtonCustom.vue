@@ -2,7 +2,7 @@
 defineProps<{
     text: string,
     className?: string,
-    type?: string,
+    type?: 'button' | 'reset' | 'submit',
 }>()
 </script>
 
@@ -11,6 +11,7 @@ defineProps<{
         class="btn"
         :class="className"
         @click="$emit('handler')"
+        :type="type"
     >
         {{ text }}
     </button>
@@ -19,9 +20,8 @@ defineProps<{
 <style>
 .btn {
     background: linear-gradient(135deg, #a1f4ff 0%, #abc8ff 100%);
-    /*background: linear-gradient(135deg, #ffa75f 0%, #ffabd9 100%);*/
     color: white;
-    padding: 10px 40px;
+    padding: 0.75rem 40px;
     border: none;
     border-radius: 60px;
     cursor: pointer;

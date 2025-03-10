@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from "../../etities/auth/model";
 
 import HomePage from '../../pages/home/HomePage.vue'
 import ProfilePage from '../../pages/profile/ProfilePage.vue'
-import LoginPage from "../../pages/login/ui/LoginPage.vue"
-import RegisterPage from "../../pages/login/ui/RegisterPage.vue"
-import LogoutPage from "../../pages/login/ui/LogoutPage.vue"
+import LoginPage from "../../pages/auth/ui/LoginPage.vue"
+import RegisterPage from "../../pages/auth/ui/RegisterPage.vue"
 
 const routes = [
     {
@@ -37,14 +37,6 @@ const routes = [
             layout: 'auth'
         }
     },
-    {
-        name: 'logout',
-        path: '/logout',
-        component: LogoutPage,
-        meta: {
-            layout: 'auth'
-        }
-    },
     // {
     //     name: 'forbidden',
     //     path: '/forbidden',
@@ -58,10 +50,9 @@ export const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    const isAuthenticated = !!localStorage.getItem('auth_token')
     const userRole = localStorage.getItem('user_role') // Получаем роль пользователя
-
-    if (to.meta.requiresAuth && !isAuthenticated) {
+    const authStore = useAuthStore()
+    if (to.meta.requiresAuth && !authStore.isAuth) {
         next('/login')
     // } else if (to.meta.role && to.meta.role !== userRole) {
     //     next('/forbidden') // Перенаправляем на страницу "Доступ запрещён"
