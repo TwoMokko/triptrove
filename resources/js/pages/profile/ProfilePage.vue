@@ -9,7 +9,7 @@ import ButtonCustom from "@/shared/ui/ButtonCustom.vue"
 import Modal from '@/shared/ui/Modal.vue'
 import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
 
-const travels = ref<travelData[]>([])
+const travels = ref<travelData[] | undefined>()
 const userId: number = 1
 const newTravel = ref<travelData>({ user_id: userId })
 const changeTravel = ref<travelData>({ user_id: userId })
@@ -17,7 +17,11 @@ const changeId = ref<number | null>(null)
 const isModalOpenForCreateTravel = ref(false)
 
 const isLoading: ComputedRef<boolean> = computed(() => {
-    return travels.value.length <= 0
+    return travels.value === undefined
+})
+
+const isTravels: ComputedRef<boolean> = computed(() => {
+    return travels.value ? travels.value.length <= 0 : false
 })
 
 const getTravels = async (): Promise<void> => {
@@ -84,43 +88,56 @@ onMounted(() => {
 </script>
 
 <template>
-    <div v-if="isLoading" class="px-[10%] py-10">
-        <Loader />
-    </div>
-    <div v-else class="px-[10%] py-10">
-        <h1 class="text-2xl mb-4">Путешествия пользователя с ID: {{ newTravel.user_id }}</h1>
-        <div class="mb-4">
-            <div v-if="travels.length">
-                <div v-for="item in travels" :key="item.id" class="card">
-                    <div v-if="changeId !== item.id" class="grid gap-2 grid-cols-7">
-                        <div>{{ item.place }}</div>
-                        <div>{{ item.date }}</div>
-                        <div>{{ item.mode_of_transport }}</div>
-                        <div>{{ item.good_impression }}</div>
-                        <div>{{ item.bad_impression }}</div>
-                        <div>{{ item.general_impression }}</div>
-                        <div class="flex gap-2 justify-end">
-                            <div @click="updateTravel(item)" class="cursor-pointer">
-                                <Icon :iconPath="mdiPencil" class="w-6 h-6 text-secondary hover:text-dark cursor-pointer" />
+    <div  class="px-[10%] py-10">
+        <Loader v-if="isLoading"/>
+        <div v-else>
+            <div v-if="isTravels">
+                <div class="mb-4">no travels</div>
+                <div class="text-end">
+                    <ButtonCustom text="Новое путешествие" @handler="() => isModalOpenForCreateTravel = true" />
+                </div>
+                <Modal :isOpen="isModalOpenForCreateTravel" @close="() => isModalOpenForCreateTravel = false">
+                    <TravelForm v-model="newTravel" @handler="createTravel" :btn-text="'добавть путешествие'" />
+                </Modal>
+            </div>
+            <div v-else>
+                <h1 class="text-2xl mb-4">Путешествия пользователя с ID: {{ newTravel.user_id }}</h1>
+                <div class="mb-4">
+                    <div v-if="!isLoading">
+                        <div v-for="item in travels" :key="item.id" class="card">
+                            <div v-if="changeId !== item.id" class="grid gap-2 grid-cols-7">
+                                <div>{{ item.place }}</div>
+                                <div>{{ item.date }}</div>
+                                <div>{{ item.mode_of_transport }}</div>
+                                <div>{{ item.good_impression }}</div>
+                                <div>{{ item.bad_impression }}</div>
+                                <div>{{ item.general_impression }}</div>
+                                <div class="flex gap-2 justify-end">
+                                    <div @click="updateTravel(item)" class="cursor-pointer">
+                                        <Icon :iconPath="mdiPencil" class="w-6 h-6 text-secondary hover:text-dark cursor-pointer" />
+                                    </div>
+                                    <div @click="deleteTravel(item.id)" class="cursor-pointer">
+                                        <Icon :iconPath="mdiDelete" class="w-6 h-6 text-secondary hover:text-dark cursor-pointer" />
+                                    </div>
+                                </div>
                             </div>
-                            <div @click="deleteTravel(item.id)" class="cursor-pointer">
-                                <Icon :iconPath="mdiDelete" class="w-6 h-6 text-secondary hover:text-dark cursor-pointer" />
-                            </div>
+                            <Modal :isOpen="changeId === item.id" @close="() => changeId = null">
+                                <TravelForm v-model="changeTravel" @handler="saveTravel" :btn-text="'сохранить'" />
+                            </Modal>
                         </div>
                     </div>
-                    <Modal :isOpen="changeId === item.id" @close="() => changeId = null">
-                        <TravelForm v-model="changeTravel" @handler="saveTravel" :btn-text="'сохранить'" />
-                    </Modal>
+                    <p v-else>Loading...</p>
                 </div>
+                <div class="text-end">
+                    <ButtonCustom text="Новое путешествие" @handler="() => isModalOpenForCreateTravel = true" />
+                </div>
+                <Modal :isOpen="isModalOpenForCreateTravel" @close="() => isModalOpenForCreateTravel = false">
+                    <TravelForm v-model="newTravel" @handler="createTravel" :btn-text="'добавть путешествие'" />
+                </Modal>
             </div>
-            <p v-else>Loading...</p>
         </div>
-        <div class="text-end">
-            <ButtonCustom text="Новое путешествие" @handler="() => isModalOpenForCreateTravel = true" />
-        </div>
-        <Modal :isOpen="isModalOpenForCreateTravel" @close="() => isModalOpenForCreateTravel = false">
-            <TravelForm v-model="newTravel" @handler="createTravel" :btn-text="'добавть путешествие'" />
-        </Modal>
     </div>
+
+
 </template>
 

@@ -1,37 +1,49 @@
-import { createMemoryHistory, createRouter } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
-import HomePage from '../pages/home/HomePage.vue'
-import ProfilePage from '../pages/profile/ProfilePage.vue'
-import LoginPage from "../pages/login/ui/LoginPage.vue";
-import RegisterPage from "../pages/login/ui/RegisterPage.vue";
-import LogoutPage from "../pages/login/ui/LogoutPage.vue";
+import HomePage from '../../pages/home/HomePage.vue'
+import ProfilePage from '../../pages/profile/ProfilePage.vue'
+import LoginPage from "../../pages/login/ui/LoginPage.vue"
+import RegisterPage from "../../pages/login/ui/RegisterPage.vue"
+import LogoutPage from "../../pages/login/ui/LogoutPage.vue"
 
 const routes = [
     {
         name: 'home',
         path: '/',
-        component: HomePage
+        component: HomePage,
     },
     {
         name: 'profile',
         path: '/profile',
         component: ProfilePage,
-        meta: { requiresAuth: true/*, role: 'admin'*/ }
+        meta: {
+            requiresAuth: true,
+            /* role: 'admin'*/
+        }
     },
     {
         name: 'login',
         path: '/login',
-        component: LoginPage
+        component: LoginPage,
+        meta: {
+            layout: 'auth'
+        }
     },
     {
         name: 'register',
         path: '/register',
-        component: RegisterPage
+        component: RegisterPage,
+        meta: {
+            layout: 'auth'
+        }
     },
     {
         name: 'logout',
         path: '/logout',
-        component: LogoutPage
+        component: LogoutPage,
+        meta: {
+            layout: 'auth'
+        }
     },
     // {
     //     name: 'forbidden',
@@ -41,7 +53,7 @@ const routes = [
 ]
 
 export const router = createRouter({
-    history: createMemoryHistory(),
+    history: createWebHistory(),
     routes
 })
 

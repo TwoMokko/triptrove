@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router"
 import { ref, watch } from "vue"
 import { useAuthStore } from "@/etities/auth/model"
 import { storeToRefs } from "pinia"
 
 const { isAuth } = storeToRefs(useAuthStore())
-
-const route = useRoute()
 const isAuthenticated = ref(!!localStorage.getItem('auth_token'))
 
 watch(isAuth, () => {

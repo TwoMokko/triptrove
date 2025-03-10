@@ -14,7 +14,7 @@ class TravelController extends Controller
      */
     public function index()
     {
-        $travels = Travel::all();
+        $travels = Travel::all()->sortBy('order');
         return response()->json($travels);
     }
 
@@ -32,6 +32,8 @@ class TravelController extends Controller
             'general_impression' => 'required',
             'user_id' => 'required',
         ]);
+
+        // Вычислить поле order
 
         $travel = Travel::create($request->all());
         return response()->json($travel, 201);

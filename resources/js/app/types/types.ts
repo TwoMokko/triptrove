@@ -7,5 +7,6 @@ export type travelData = {
     bad_impression: string,
     general_impression: string,
     user_id: number,
+    order: number,
     timestamps?: string,
 }

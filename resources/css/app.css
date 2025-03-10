@@ -21,6 +21,10 @@ body {
     position: relative;
 }
 
+#root {
+    height: 100%;
+}
+
 .background {
     background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
     position: fixed;

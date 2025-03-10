@@ -40,14 +40,12 @@ const auth = async () => {
 </script>
 
 <template>
-    <div class="px-[10%] py-10">
-        <form @submit.prevent="validate" class="flex flex-col gap-4">
-            <input v-model="form.name" name="name" type="text" placeholder="Name" required />
-            <input v-model="form.email" name="email" type="email" placeholder="Email" required />
-            <input v-model="form.password" name="password" type="password" placeholder="Password" required />
-            <input v-model="form.password_confirmation" name="confirm_password" type="password" placeholder="Confirm Password" required />
-            <button type="submit">Do register</button>
-            <div v-if="isLoading">loading...</div>
-        </form>
-    </div>
+    <form @submit.prevent="validate" class="flex flex-col gap-4">
+        <input v-model="form.name" name="name" type="text" placeholder="Name" required />
+        <input v-model="form.email" name="email" type="email" placeholder="Email" required />
+        <input v-model="form.password" name="password" type="password" placeholder="Password" required />
+        <input v-model="form.password_confirmation" name="confirm_password" type="password" placeholder="Confirm Password" required />
+        <button type="submit">Do register</button>
+        <div v-if="isLoading">loading...</div>
+    </form>
 </template>

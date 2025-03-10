@@ -32,11 +32,9 @@ const login = async () => {
 
 </script>
 <template>
-    <div class="px-[10%] py-10">
-        <form @submit.prevent="login" class="flex flex-col gap-4">
-            <input v-model="form.email" name="email" type="email" placeholder="Email" required />
-            <input v-model="form.password" name="password" type="password" placeholder="Password" required />
-            <button type="submit">Login</button>
-        </form>
-    </div>
+    <form @submit.prevent="login" class="flex flex-col gap-4">
+        <input v-model="form.email" name="email" type="email" placeholder="Email" required />
+        <input v-model="form.password" name="password" type="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+    </form>
 </template>

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('good_impression');
             $table->text('bad_impression');
             $table->text('general_impression');
+            $table->integer('order');
             $table->unsignedBigInteger('user_id'); // Внешний ключ
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps(); // created_at и updated_at
