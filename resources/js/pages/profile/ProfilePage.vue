@@ -10,7 +10,7 @@ import Modal from '@/shared/ui/Modal.vue'
 import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
 
 const travels = ref<travelData[] | undefined>()
-const userId: number = 1
+const userId: number = 1 // получать id по токену
 const newTravel = ref<travelData>({ user_id: userId })
 const changeTravel = ref<travelData>({ user_id: userId })
 const changeId = ref<number | null>(null)
