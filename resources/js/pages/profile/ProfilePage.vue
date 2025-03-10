@@ -24,8 +24,6 @@ const isTravels: ComputedRef<boolean> = computed(() => {
     return travels.value ? travels.value.length <= 0 : false
 })
 
-
-// TODO: вынести фетчи
 const getTravels = async (): Promise<void> => {
     try {
         const response = await api.get('/travels')
