@@ -16,7 +16,7 @@ Route::put('/users/{id}', [TravelController::class, 'update']); // Обнови�
 Route::delete('/users/{id}', [TravelController::class, 'destroy']); // Удалить пользователя
 
 Route::get('/travels', [TravelController::class, 'index']); // Получить все путешествия по User ID для юсера (и созданные им и другими)
-Route::get('/travelsFromUser', [TravelController::class, 'fromUser']); // Получить все путешествия по User ID, созданные им
+Route::get('/travelsFromUser', [TravelController::class, 'getTravelsByUserID']); // Получить все путешествия по User ID, созданные им
 Route::get('/travelsFromOther', [TravelController::class, 'fromOther']); // Получить все путешествия по User ID, созданные другим возможные для редактирования
 Route::get('/travelsFromTag', [TravelController::class, 'fromTag']); // Получить все путешествия для User ID или для любого по тегу
 Route::post('/travels', [TravelController::class, 'store']); // Создать новое путешествие

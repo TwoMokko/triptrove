@@ -14,7 +14,28 @@ class TravelController extends Controller
      */
     public function index()
     {
-        $travels = Travel::all()->sortBy('order');
+        $travels = Travel::all();
+        return response()->json($travels);
+    }
+
+    public function getTravelsByUserID(Request $request)
+    {
+        // Получаем user_id из запроса (например, из query-параметра)
+        $userId = $request->query('user_id');
+
+        // Если user_id не передан, возвращаем все записи (или ошибку, в зависимости от логики)
+        if (!$userId) {
+            return response()->json([
+                'message' => 'User ID is required',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Получаем все записи с определённым user_id и сортируем их по order
+        $travels = Travel::where('user_id', $userId)
+            ->orderBy('order')
+            ->get();
+
+        // Возвращаем результат
         return response()->json($travels);
     }
 
@@ -33,9 +54,21 @@ class TravelController extends Controller
             'user_id' => 'required',
         ]);
 
-        // TODO: Вычислить поле order
+        // Получаем user_id из запроса
+        $userId = $request->input('user_id');
 
-        $travel = Travel::create($request->all());
+        // Находим максимальное значение поля `order` для записей с определённым user_id
+        $maxOrder = Travel::where('user_id', $userId)->max('order');
+
+        // Если записей нет, устанавливаем order = 1, иначе увеличиваем на 1
+        $order = $maxOrder ? $maxOrder + 1 : 1;
+
+        // Добавляем вычисленное значение `order` в данные запроса
+        $data = $request->all();
+        $data['order'] = $order;
+
+        // Создаем запись
+        $travel = Travel::create($data);
         return response()->json($travel, 201);
     }
 
@@ -88,6 +121,7 @@ class TravelController extends Controller
      */
     public function destroy($id)
     {
+        // Находим запись
         $travel = Travel::find($id);
 
         if (!$travel) {
@@ -96,8 +130,17 @@ class TravelController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
 
+        // Получаем order и user_id удаляемой записи
+        $deletedOrder = $travel->order;
+        $userId = $travel->user_id;
+
         // Удаляем запись
         $travel->delete();
+
+        // Сдвигаем все order, которые выше удалённого, на 1 вниз
+        Travel::where('user_id', $userId)
+            ->where('order', '>', $deletedOrder)
+            ->decrement('order'); // Уменьшаем order на 1
 
         // Возвращаем успешный ответ
         return response()->json([

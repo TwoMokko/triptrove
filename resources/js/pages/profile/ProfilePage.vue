@@ -26,7 +26,11 @@ const isTravels: ComputedRef<boolean> = computed(() => {
 
 const getTravels = async (): Promise<void> => {
     try {
-        const response = await api.get('/travels')
+        const response = await api.get('/travelsFromUser', {
+            params: {
+                user_id: userId, // Передаём user_id
+            },
+        });
         travels.value = response.data
     } catch (error) {
         console.error('Error fetching travels:', error)

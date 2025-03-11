@@ -55,8 +55,7 @@ const auth = async () => {
         <InputCustom v-model:value="form.name" :placeholder="'Name'" :type="'name'" :name="'name'" :required="true" />
         <InputCustom v-model:value="form.email" :placeholder="'Email'" :type="'email'" :name="'email'" :required="true" />
         <InputCustom v-model:value="form.password" :placeholder="'Password'" :type="'password'" :name="'password'" :required="true" />
-        <InputCustom v-model:value="form.password_confirmation" :placeholder="'Confirm Password'" :type="'password_confirmation'" :name="'confirm_password'" :required="true" />
-
+        <InputCustom v-model:value="form.password_confirmation" :placeholder="'Confirm Password'" :type="'password'" :name="'confirm_password'" :required="true" />
         <ButtonCustom :type="'submit'" :text="textBtn" />
         <Loader v-if="isLoading" />
     </form>
