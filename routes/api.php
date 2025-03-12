@@ -9,6 +9,8 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
+Route::middleware('auth:sanctum')->get('/usersByToken', [UserController::class, 'getUserByToken']);
+
 Route::get('/users', [UserController::class, 'index']); // Получить всех пользователей
 Route::post('/users', [UserController::class, 'store']); // Создать нового пользователя
 Route::get('/users/{id}', [TravelController::class, 'show']); // Получить пользователя по ID

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -54,5 +55,23 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         //
+    }
+
+    public function getUserByToken(Request $request)
+    {
+        // Получаем аутентифицированного пользователя
+        $user = Auth::user();
+
+        if ($user) {
+            // Возвращаем данные пользователя
+            return response()->json([
+                'user' => $user,
+            ]);
+        }
+
+        // Если пользователь не найден
+        return response()->json([
+            'error' => 'Пользователь не найден',
+        ], 404);
     }
 }

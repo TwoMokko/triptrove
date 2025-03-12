@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAuthStore } from "@/etities/auth/model"
 import { ref, onMounted, computed, ComputedRef } from 'vue'
 import api from "../../app/api/api.js"
 import { mdiPencil, mdiDelete } from '@mdi/js'
@@ -10,11 +11,13 @@ import Modal from '@/shared/ui/Modal.vue'
 import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
 
 const travels = ref<travelData[] | undefined>()
-const userId: number = 1 // получать id по токену
+const userId = ref<number>() // получать id по токену
 const newTravel = ref<travelData>({ user_id: userId })
 const changeTravel = ref<travelData>({ user_id: userId })
 const changeId = ref<number | null>(null)
 const isModalOpenForCreateTravel = ref(false)
+
+const authStore = useAuthStore()
 
 const isLoading: ComputedRef<boolean> = computed(() => {
     return travels.value === undefined
@@ -23,6 +26,21 @@ const isLoading: ComputedRef<boolean> = computed(() => {
 const isTravels: ComputedRef<boolean> = computed(() => {
     return travels.value ? travels.value.length <= 0 : false
 })
+
+const getUser = async () => {
+    try {
+        const response = await api.get('/usersByToken', {
+            headers: {
+                Authorization: `Bearer ${authStore.token}`, // Передаем токен в заголовке
+            },
+        })
+        console.log('User get:', response.data)
+        userId.value = response.data.user.id
+
+    } catch (error) {
+        console.error('Error creating travel:', error)
+    }
+}
 
 const getTravels = async (): Promise<void> => {
     try {
@@ -87,6 +105,7 @@ const deleteTravel = async (id: number): Promise<void> => {
 }
 
 onMounted(() => {
+    getUser()
     getTravels()
 })
 </script>
