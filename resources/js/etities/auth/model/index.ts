@@ -1,11 +1,11 @@
-import { watch, ref } from "vue";
-import { defineStore } from "pinia";
+import { watch, ref } from "vue"
+import { defineStore } from "pinia"
 
 export const useAuthStore = defineStore('auth', () => {
-    const token = ref(localStorage.getItem('auth_token') || '') // Сохраняем токен
-    const isAuth = ref(!!token.value) // isAuth зависит от наличия токена
+    const token = ref<string>(localStorage.getItem('auth_token') || '') // Сохраняем токен
+    const isAuth = ref<boolean>(!!token.value) // isAuth зависит от наличия токена
 
-    watch(token, (newValue) => {
+    watch(token, (newValue: string): void => {
         if (newValue) {
             localStorage.setItem('auth_token', newValue) // Сохраняем токен
             isAuth.value = true

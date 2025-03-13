@@ -5,12 +5,22 @@ import HomePage from '../../pages/home/HomePage.vue'
 import ProfilePage from '../../pages/profile/ProfilePage.vue'
 import LoginPage from "../../pages/auth/ui/LoginPage.vue"
 import RegisterPage from "../../pages/auth/ui/RegisterPage.vue"
+import TravelsPage from "../../pages/travels/TravelsPage.vue";
 
 const routes = [
     {
         name: 'home',
         path: '/',
         component: HomePage,
+    },
+    {
+        name: 'travels',
+        path: '/travels',
+        component: TravelsPage,
+        meta: {
+            requiresAuth: true,
+            /* role: 'admin'*/
+        }
     },
     {
         name: 'profile',

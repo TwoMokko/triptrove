@@ -18,6 +18,7 @@ watch(isAuth, () => {
         <RouterLink :to="{ name: 'home' }">home</RouterLink>
         <RouterLink :to="{ name: 'login' }" v-if="!isAuthenticated">login</RouterLink>
         <RouterLink :to="{ name: 'register' }" v-if="!isAuthenticated">register</RouterLink>
+        <RouterLink :to="{ name: 'travels' }" v-if="isAuthenticated">my travels</RouterLink>
         <RouterLink :to="{ name: 'profile' }" v-if="isAuthenticated">profile</RouterLink>
         <a
             v-if="isAuthenticated"
