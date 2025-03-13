@@ -3,7 +3,7 @@ import { useAuthStore } from "@/etities/auth/model"
 import { ref, onMounted, computed, ComputedRef } from 'vue'
 import api from "../../app/api/api.js"
 import { mdiPencil, mdiDelete } from '@mdi/js'
-import { travelData } from "@/app/types/types"
+import { travelData, userData } from "@/app/types/types"
 import Icon from "../../shared/ui/Icon.vue"
 import Loader from "@/shared/ui/Loader.vue"
 import ButtonCustom from "@/shared/ui/ButtonCustom.vue"
@@ -11,9 +11,9 @@ import Modal from '@/shared/ui/Modal.vue'
 import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
 
 const travels = ref<travelData[] | undefined>()
-const userId = ref<number>() // получать id по токену
-const newTravel = ref<travelData>({ user_id: userId })
-const changeTravel = ref<travelData>({ user_id: userId })
+const user = ref<userData>()
+const newTravel = ref<travelData>()
+const changeTravel = ref<travelData>()
 const changeId = ref<number | null>(null)
 const isModalOpenForCreateTravel = ref(false)
 
@@ -35,7 +35,7 @@ const getUser = async () => {
             },
         })
         console.log('User get:', response.data)
-        userId.value = response.data.user.id
+        user.value = response.data.user
 
     } catch (error) {
         console.error('Error creating travel:', error)
@@ -46,9 +46,9 @@ const getTravels = async (): Promise<void> => {
     try {
         const response = await api.get('/travelsFromUser', {
             params: {
-                user_id: userId, // Передаём user_id
+                user_id: user.value.id,
             },
-        });
+        })
         travels.value = response.data
     } catch (error) {
         console.error('Error fetching travels:', error)
@@ -60,7 +60,7 @@ const createTravel = async (): Promise<void> => {
         const response = await api.post('/travels', newTravel.value)
         console.log('Travel created:', response.data)
         getTravels().then(() => console.log({response}))
-        newTravel.value = { user_id: userId }
+        newTravel.value = { user_id: user.value.id }
 
         // показать загрузку на кнопке, потом закрыть окно
         isModalOpenForCreateTravel.value = false
@@ -105,8 +105,7 @@ const deleteTravel = async (id: number): Promise<void> => {
 }
 
 onMounted(() => {
-    getUser()
-    getTravels()
+    getUser().then(() => getTravels())
 })
 </script>
 
@@ -124,7 +123,7 @@ onMounted(() => {
                 </Modal>
             </div>
             <div v-else>
-                <h1 class="text-2xl mb-4">Путешествия пользователя с ID: {{ newTravel.user_id }}</h1>
+                <h1 class="text-2xl mb-4">Путешествия пользователя: {{ user.name }}</h1>
                 <div class="mb-4">
                     <div v-if="!isLoading">
                         <div v-for="item in travels" :key="item.id" class="card">
