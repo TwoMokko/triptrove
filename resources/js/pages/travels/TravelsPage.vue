@@ -132,6 +132,17 @@ onMounted(() => {
                 <h1 class="text-2xl mb-4">Путешествия пользователя: {{ user.name }}</h1>
                 <div class="mb-4">
                     <div v-if="!isLoading">
+                        <div class="grid gap-2 grid-cols-7 py-4 px-[60px] font-medium">
+                            <div >место</div>
+                            <div >когда</div>
+                            <div >на чем добирались</div>
+                            <div >хорошее</div>
+                            <div >плохое</div>
+                            <div >общие впечатления</div>
+                            <div class="flex gap-2 justify-end">изменить/удалить</div>
+                        </div>
+
+
                         <div v-for="item in travels" :key="item.id" class="card">
                             <div v-if="changeId !== item.id" class="grid gap-2 grid-cols-7">
                                 <div>{{ item.place }}</div>
