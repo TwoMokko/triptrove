@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from "../../etities/auth/model";
+import { useAuthStore } from "../../etities/auth"
 
 import HomePage from '../../pages/home/HomePage.vue'
 import ProfilePage from '../../pages/profile/ProfilePage.vue'

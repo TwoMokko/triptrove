@@ -4,7 +4,9 @@ import { computed } from "vue"
 import { layouts } from '@/shared/ui/layout'
 
 const route = useRoute()
-const layout = computed(() => layouts[route.meta.layout] || layouts.default);
+const layout = computed(() => layouts[route.meta.layout] || layouts.default)
+
+
 </script>
 
 <template>

@@ -1,29 +1,26 @@
 <script setup lang="ts">
-import { useAuthStore } from "@/etities/auth/model"
+import { useUsersStore } from "@/etities/user"
+import { useTravelsStore } from "@/etities/travel"
 import { ref, onMounted, computed, ComputedRef } from 'vue'
 import api from "../../app/api/api.js"
 import { mdiPencil, mdiDelete } from '@mdi/js'
-import { travelData, userData } from "@/app/types/types"
+import { travelData } from "@/app/types/types"
 import Icon from "../../shared/ui/Icon.vue"
 import Loader from "@/shared/ui/Loader.vue"
 import ButtonCustom from "@/shared/ui/ButtonCustom.vue"
 import Modal from '@/shared/ui/Modal.vue'
 import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
-
-const props = defineProps<{
-    user: userData,
-    travels: travelData[],
-}>()
-
+import { useAuthStore } from "@/etities/auth"
 
 const travels = ref<travelData[] | undefined>()
-const user = ref<userData>()
 const newTravel = ref<travelData>()
 const changeTravel = ref<travelData>()
 const changeId = ref<number | null>(null)
 const isModalOpenForCreateTravel = ref(false)
 
 const authStore = useAuthStore()
+const usersStore = useUsersStore()
+const travelsStore = useTravelsStore()
 
 const isLoading: ComputedRef<boolean> = computed(() => {
     return travels.value === undefined
@@ -33,26 +30,11 @@ const isTravels: ComputedRef<boolean> = computed(() => {
     return travels.value ? travels.value.length <= 0 : false
 })
 
-const getUser = async () => {
-    try {
-        const response = await api.get('/usersByToken', {
-            headers: {
-                Authorization: `Bearer ${authStore.token}`, // Передаем токен в заголовке
-            },
-        })
-        console.log('User get:', response.data)
-        user.value = response.data.user
-
-    } catch (error) {
-        console.error('Error creating travel:', error)
-    }
-}
-
 const getTravels = async (): Promise<void> => {
     try {
         const response = await api.get('/travelsFromUser', {
             params: {
-                user_id: user.value.id,
+                user_id: usersStore.currentUser.id,
             },
         })
         travels.value = response.data
@@ -73,6 +55,12 @@ const createTravel = async (): Promise<void> => {
     } catch (error) {
         console.error('Error creating travel:', error)
     }
+
+    // newTravel.value
+    // getTravels().then(() => console.log({response}))
+    // newTravel.value = { user_id: user.value.id }
+    // показать загрузку на кнопке, потом закрыть окно
+    // isModalOpenForCreateTravel.value = false
 }
 
 const updateTravel = (item: travelData): void => {
@@ -96,6 +84,11 @@ const saveTravel = async (): Promise<void> => {
             console.log('Network error'); // Ошибка сети
         }
     }
+
+    // getTravels().then(() => console.log({response}))
+
+    // показать загрузку на кнопке, потом закрыть окно
+    // changeId.value = null
 }
 
 const deleteTravel = async (id: number): Promise<void> => {
@@ -108,10 +101,18 @@ const deleteTravel = async (id: number): Promise<void> => {
     } catch (error) {
         console.error('Error deleting travel:', error)
     }
+
+    // getTravels().then(() => console.log({response}))
+
+    // спросить, удалять ли, потом показать, что идет удаление и после окно, что удалено
+}
+
+const fetchUser = async () => {
+    await usersStore.getUserByToken(authStore.token)
 }
 
 onMounted(() => {
-    getUser().then(() => getTravels())
+    fetchUser().then(() => getTravels())
 })
 </script>
 
@@ -129,7 +130,7 @@ onMounted(() => {
                 </Modal>
             </div>
             <div v-else>
-                <h1 class="text-2xl mb-4">Путешествия пользователя: {{ user.name }}</h1>
+                <h1 class="text-2xl mb-4">Путешествия пользователя: {{ usersStore.currentUser.name }}</h1>
                 <div class="mb-4">
                     <div v-if="!isLoading">
                         <div class="grid gap-2 grid-cols-7 py-4 px-[60px] font-medium">

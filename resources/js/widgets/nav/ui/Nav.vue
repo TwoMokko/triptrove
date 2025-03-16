@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue"
 import { storeToRefs } from "pinia"
-import { useAuthStore } from "@/etities/auth/model"
+import { useAuthStore } from "@/etities/auth"
 import { logout } from "@/pages/auth/model/logout";
 
 const { isAuth } = storeToRefs(useAuthStore())

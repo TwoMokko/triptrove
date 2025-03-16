@@ -2,7 +2,7 @@
 import { ref } from "vue"
 import api from "@/app/api/api"
 import { useRouter } from "vue-router"
-import { useAuthStore } from "@/etities/auth/model"
+import { useAuthStore } from "@/etities/auth"
 import InputCustom from "@/shared/ui/InputCustom.vue";
 import ButtonCustom from "@/shared/ui/ButtonCustom.vue";
 import Loader from "@/shared/ui/Loader.vue";

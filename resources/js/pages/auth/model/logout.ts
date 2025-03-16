@@ -1,6 +1,6 @@
 import api from "@/app/api/api.ts"
 import { useRouter } from 'vue-router'
-import { useAuthStore } from "@/etities/auth/model"
+import { useAuthStore } from "@/etities/auth"
 import { ref } from "vue";
 
 export const logout = () => {
