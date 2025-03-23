@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -49,8 +51,15 @@ class User extends Authenticatable
         ];
     }
 
-    public function travels()
+    // Отношение "один ко многим" (если пользователь создаёт путешествия)
+    public function createdTravels(): HasMany
     {
-        return $this->hasMany(Travel::class);
+        return $this->hasMany(Travel::class)->orderBy('order');
+    }
+
+    // Отношение "многие ко многим" (если пользователь участвует в путешествиях)
+    public function sharedTravels(): BelongsToMany
+    {
+        return $this->belongsToMany(Travel::class);
     }
 }

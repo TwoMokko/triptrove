@@ -25,3 +25,9 @@ Route::post('/travels', [TravelController::class, 'store']); // Создать �
 Route::get('/travels/{id}', [TravelController::class, 'show']); // Получить путешествие по ID
 Route::put('/travels/{id}', [TravelController::class, 'update']); // Обновить путешествие
 Route::delete('/travels/{id}', [TravelController::class, 'destroy']); // Удалить путешествие
+
+
+// TODO: разобраться с методами (что для чего и когда) и ыфше тоже
+Route::get('/travels/{travel_id}/users', [TravelController::class, 'getUsersForTravel']);
+Route::post('/travels/{travel_id}/users', [TravelController::class, 'attachUser']);
+Route::delete('/travels/{travel_id}/users/{user}', [TravelController::class, 'detachUser']);

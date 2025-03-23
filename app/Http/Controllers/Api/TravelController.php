@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Travel;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -31,12 +32,15 @@ class TravelController extends Controller
         }
 
         // Получаем все записи с определённым user_id и сортируем их по order
-        $travels = Travel::where('user_id', $userId)
-            ->orderBy('order')
-            ->get();
+//        $travels = Travel::where('user_id', $userId)
+//            ->orderBy('order')
+//            ->get();
+
+        $user = User::find($userId);
+        $createdTravels = $user->createdTravels;
 
         // Возвращаем результат
-        return response()->json($travels);
+        return response()->json($createdTravels);
     }
 
     /**
@@ -146,5 +150,34 @@ class TravelController extends Controller
         return response()->json([
             'message' => 'Travel deleted successfully',
         ], Response::HTTP_OK);
+    }
+
+    public function getTravelForUser($user_id)
+    {
+        $user = User::find($user_id);
+        $travels = $user->travels;
+
+        return response()->json($travels);
+    }
+
+    public function getUsersForTravel($travel_id)
+    {
+        $travel = Travel::find($travel_id);
+        $users = $travel->users;
+
+        return response()->json($users);
+    }
+
+    public function attachUser(Request $request, Travel $travel)
+    {
+        $request->validate(['user_id' => 'required|exists:users,id']);
+        $travel->users()->syncWithoutDetaching([$request->user_id]);
+        return response()->json(['message' => 'User attached']);
+    }
+
+    public function detachUser(Travel $travel, User $user)
+    {
+        $travel->users()->detach($user->id);
+        return response()->json(['message' => 'User detached']);
     }
 }

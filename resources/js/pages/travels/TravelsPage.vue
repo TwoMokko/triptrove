@@ -4,7 +4,7 @@ import { useTravelsStore } from "@/etities/travel"
 import { ref, onMounted, computed, ComputedRef } from 'vue'
 import api from "../../app/api/api.js"
 import { mdiPencil, mdiDelete } from '@mdi/js'
-import { travelData } from "@/app/types/types"
+import {travelData, userData} from "@/app/types/types"
 import Icon from "../../shared/ui/Icon.vue"
 import Loader from "@/shared/ui/Loader.vue"
 import ButtonCustom from "@/shared/ui/ButtonCustom.vue"
@@ -17,6 +17,9 @@ const newTravel = ref<travelData>()
 const changeTravel = ref<travelData>()
 const changeId = ref<number | null>(null)
 const isModalOpenForCreateTravel = ref(false)
+const user = ref<userData>()
+
+const usersForTravel = ref()
 
 const authStore = useAuthStore()
 const usersStore = useUsersStore()
@@ -34,7 +37,7 @@ const getTravels = async (): Promise<void> => {
     try {
         const response = await api.get('/travelsFromUser', {
             params: {
-                user_id: usersStore.currentUser.id,
+                user_id: user.value.id,
             },
         })
         travels.value = response.data
@@ -45,6 +48,8 @@ const getTravels = async (): Promise<void> => {
 
 const createTravel = async (): Promise<void> => {
     try {
+        // переписать!!!
+        newTravel.value.user_id = user.value.id
         const response = await api.post('/travels', newTravel.value)
         console.log('Travel created:', response.data)
         getTravels().then(() => console.log({response}))
@@ -107,12 +112,29 @@ const deleteTravel = async (id: number): Promise<void> => {
     // спросить, удалять ли, потом показать, что идет удаление и после окно, что удалено
 }
 
+const getUsersForTravels = async (): Promise<void> => {
+    try {
+        const response = await api.get(`/travels/${1}/users`, {
+            // params: {
+            //     travel_id: changeId.value,
+            // },
+        })
+        usersForTravel.value = response.data
+        console.log(usersForTravel.value)
+    } catch (error) {
+        console.error('Error fetching travels:', error)
+    }
+}
+
 const fetchUser = async () => {
     await usersStore.getUserByToken(authStore.token)
 }
 
 onMounted(() => {
-    fetchUser().then(() => getTravels())
+    fetchUser().then(() => {
+        user.value = usersStore.currentUser
+        getTravels()
+    })
 })
 </script>
 
@@ -130,7 +152,7 @@ onMounted(() => {
                 </Modal>
             </div>
             <div v-else>
-                <h1 class="text-2xl mb-4">Путешествия пользователя: {{ usersStore.currentUser.name }}</h1>
+                <h1 class="text-2xl mb-4">Путешествия пользователя: {{ user.name }}</h1>
                 <div class="mb-4">
                     <div v-if="!isLoading">
                         <div class="grid gap-2 grid-cols-7 py-4 px-[60px] font-medium">
@@ -178,4 +200,3 @@ onMounted(() => {
         </div>
     </div>
 </template>
-
