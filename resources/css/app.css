@@ -32,16 +32,16 @@ body {
     z-index: -1;
 }
 
-.card {
-    padding: 40px 60px;
-    border-radius: 20px;
-    background-color: #ffffff15;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.06);
+/*.card {*/
+/*    padding: 40px 60px;*/
+/*    border-radius: 20px;*/
+/*    background-color: #ffffff15;*/
+/*    box-shadow: 0 0 20px rgba(0, 0, 0, 0.06);*/
 
-    &:not(:last-child) {
-        margin-bottom: 10px;
-    }
-}
+/*    &:not(:last-child) {*/
+/*        margin-bottom: 10px;*/
+/*    }*/
+/*}*/
 
 :root {
     --dark-color                : #4e5359;

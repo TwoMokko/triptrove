@@ -16,7 +16,6 @@ const props = defineProps({
     }
 })
 
-
 // Определяем событие для обновления объекта
 const emit = defineEmits(['update:modelValue', 'handler'])
 
@@ -25,17 +24,19 @@ const localTravel = ref<travelData>({ ...props.modelValue })
 
 // Обновляем родительский объект при изменении локального
 const updateModel = () => {
-    emit('update:modelValue', localTravel.value);
+    console.log('values: ', localTravel.value)
+    emit('update:modelValue', localTravel.value)
 }
 
 // Следим за изменениями пропса `modelValue` (на случай, если он изменится извне)
 watch(
     () => props.modelValue,
     (newValue) => {
-        localTravel.value = { ...newValue };
+        localTravel.value = { ...newValue }
     },
     { deep: true }
 )
+
 </script>
 
 <template>

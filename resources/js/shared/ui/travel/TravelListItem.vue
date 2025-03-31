@@ -1,102 +1,78 @@
-
 <script setup lang="ts">
-// TODO: использование в компонентах этот компонент:
-// <div v-for="item in travels" :key="item.id">
-//     <TravelListItem
-//          :item="item"
-//          :change-id="changeId"
-//          :change-travel="changeTravel"
-//          @update="updateTravel"
-//          @delete="deleteTravel"
-//          @save="saveTravel"
-//          @update:changeTravel="val => changeTravel = val"
-//     />
-// </div>
+import { mdiPencil, mdiDelete } from '@mdi/js'
+import Icon from "@/shared/ui/Icon.vue"
+import Modal from '@/shared/ui/Modal.vue'
+import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
+import type { travelData } from "@/app/types/types"
+import { useTravelsStore } from "@/etities/travel"
 
-// TODO: Что-то тут не работает, написать заново.
-// import { computed, ref } from 'vue'
-// import { mdiPencil, mdiDelete } from '@mdi/js'
-// import Icon from "@/shared/ui/Icon.vue"
-// import Modal from '@/shared/ui/Modal.vue'
-// import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
-// import type { travelData } from "@/app/types/types"
-//
-// const props = defineProps({
-//     item: {
-//         type: Object as () => travelData,
-//         required: true
-//     },
-//     changeId: {
-//         type: Number,
-//         default: null
-//     },
-//     changeTravel: {
-//         type: Object as () => travelData,
-//         required: true
-//     }
-// })
-//
-// const emit = defineEmits([
-//     'update:changeTravel',
-//     'update',
-//     'delete',
-//     'save'
-// ])
-//
-// const localTravel = ref({...props.changeTravel})
-//
-// const isEditing = computed(() => props.changeId === props.item.id)
-//
-// const handleEdit = () => {
-//     emit('update', props.item)
-// }
-//
-// const handleDelete = () => {
-//     emit('delete', props.item.id)
-// }
-//
-// const handleSave = () => {
-//     emit('save', localTravel.value)
-// }
-//
-// const closeModal = () => {
-//     emit('update:changeTravel', null)
-// }
+const props = defineProps<{
+    item: travelData
+}>()
+
+const travelsStore = useTravelsStore()
+
+const handleEdit = () => {
+    travelsStore.setCurrentTravel({ ...props.item })
+}
+
+const handleDelete = async () => {
+    if (confirm('Вы уверены, что хотите удалить это путешествие?')) {
+        await travelsStore.removeTravel(props.item.id)
+    }
+}
+
+const handleSave = async () => {
+    if (travelsStore.currentTravel) {
+        await travelsStore.editTravel(
+            travelsStore.currentTravel.id,
+            travelsStore.currentTravel
+        )
+        travelsStore.setCurrentTravel(null)
+    }
+}
 </script>
 
 <template>
-<!--    <div class="card">-->
-<!--        <div v-if="!isEditing" class="grid gap-2 grid-cols-7">-->
-<!--            <div>{{ item.place }}</div>-->
-<!--            <div>{{ item.date }}</div>-->
-<!--            <div>{{ item.mode_of_transport }}</div>-->
-<!--            <div>{{ item.good_impression }}</div>-->
-<!--            <div>{{ item.bad_impression }}</div>-->
-<!--            <div>{{ item.general_impression }}</div>-->
-<!--            <div class="flex gap-2 justify-end">-->
-<!--                <div @click="handleEdit" class="cursor-pointer">-->
-<!--                    <Icon-->
-<!--                        :iconPath="mdiPencil"-->
-<!--                        class="w-6 h-6 text-secondary hover:text-dark cursor-pointer"-->
-<!--                    />-->
-<!--                </div>-->
-<!--                <div @click="handleDelete" class="cursor-pointer">-->
-<!--                    <Icon-->
-<!--                        :iconPath="mdiDelete"-->
-<!--                        class="w-6 h-6 text-secondary hover:text-dark cursor-pointer"-->
-<!--                    />-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
+    <div class="card">
+        <div class="grid gap-2 grid-cols-7">
+            <div>{{ item.place }}</div>
+            <div>{{ item.date }}</div>
+            <div>{{ item.mode_of_transport }}</div>
+            <div>{{ item.good_impression }}</div>
+            <div>{{ item.bad_impression }}</div>
+            <div>{{ item.general_impression }}</div>
+            <div class="flex gap-2 justify-end">
+                <button @click="handleEdit" class="cursor-pointer">
+                    <Icon
+                        :iconPath="mdiPencil"
+                        class="w-6 h-6 text-secondary hover:text-dark"
+                    />
+                </button>
+                <button @click="handleDelete" class="cursor-pointer">
+                    <Icon
+                        :iconPath="mdiDelete"
+                        class="w-6 h-6 text-secondary hover:text-dark"
+                    />
+                </button>
+            </div>
+        </div>
 
-<!--        <Modal :isOpen="isEditing" @close="closeModal">-->
-<!--            <TravelForm-->
-<!--                v-model="localTravel"-->
-<!--                @handler="handleSave"-->
-<!--                :btn-text="'сохранить'"-->
-<!--            />-->
-<!--        </Modal>-->
-<!--    </div>-->
+        <Modal
+            :isOpen="travelsStore.currentTravel?.id === item.id"
+            @close="travelsStore.setCurrentTravel(null)"
+        >
+            <TravelForm
+                v-model="travelsStore.currentTravel"
+                @handler="handleSave"
+                :btn-text="'Сохранить'"
+            />
+        </Modal>
+    </div>
 </template>
 
-
+<style scoped>
+.card {
+    @apply py-10 px-14 bg-[#ffffff15] rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.06)] mb-2.5;
+}
+</style>

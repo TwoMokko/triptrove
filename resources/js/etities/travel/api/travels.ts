@@ -18,6 +18,7 @@ export const createTravel = async (travelData: travelData) => {
     try {
         const response = await api.post('/travels', travelData)
         console.log('Travel created:', response.data)
+        return response.data
     } catch (error) {
         console.error('Error creating travel:', error)
     }
@@ -27,6 +28,7 @@ export const updateTravel = async (travelId: number, travelData: travelData) => 
     try {
         const response = await api.put(`/travels/${travelId}`, travelData)
         console.log('Travel updated:', response.data)
+        return response.data
     } catch (error) {
         console.error('Error updating travel:', error)
         if (error.response) {
