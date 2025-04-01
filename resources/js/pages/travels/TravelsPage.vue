@@ -10,9 +10,7 @@ import Modal from '@/shared/ui/Modal.vue'
 import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
 import { useAuthStore } from "@/etities/auth"
 import TravelListItem from "@/shared/ui/travel/TravelListItem.vue"
-
-// const travels = ref<travelData[] | undefined>()
-// const user = ref<userData>()
+import UsersSearch from "@/feature/user/ui/UsersSearch.vue";
 
 const usersForTravel = ref()
 
@@ -20,7 +18,7 @@ const authStore = useAuthStore()
 const usersStore = useUsersStore()
 const travelsStore = useTravelsStore()
 
-const isModalOpenForCreateTravel = ref(false)
+const isModalOpenForCreateTravel = ref<boolean>(false)
 const newTravel = ref<Omit<travelData, 'id'>>()
 
 
@@ -31,6 +29,15 @@ const getUsersForTravels = async (): Promise<void> => {
             //     travel_id: changeId.value,
             // },
         })
+        usersForTravel.value = response.data
+        console.log(usersForTravel.value)
+    } catch (error) {
+        console.error('Error fetching travels:', error)
+    }
+}
+const setUsersForTravels = async (): Promise<void> => {
+    try {
+        const response = await api.post(`/travels/${usersStore.currentUser.id}/users`, travelsStore.currentTravel)
         usersForTravel.value = response.data
         console.log(usersForTravel.value)
     } catch (error) {
@@ -54,6 +61,7 @@ onMounted(async () => {
 </script>
 
 <template>
+    <UsersSearch class="px-[10%] py-10" />
     <div  class="px-[10%] py-10">
         <Loader v-if="travelsStore.isLoading"/>
         <div v-else>

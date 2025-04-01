@@ -70,7 +70,7 @@ export const useTravelsStore = defineStore('travels', () => {
             const updatedTravel = await updateTravel(travelId, travelData)
             const index = travels.value.findIndex(travel => travel.id === travelId)
             if (index !== -1) {
-                travels.value[index] = { ...travels.value[index], ...updatedTravel }
+                travels.value[index] = { ...travels.value[index], ...updatedTravel.data }
             }
             return updatedTravel
         } catch (err) {

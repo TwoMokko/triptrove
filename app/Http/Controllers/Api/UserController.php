@@ -12,7 +12,7 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): \Illuminate\Http\JsonResponse
     {
         $users = User::all();
         return response()->json($users);
@@ -21,7 +21,7 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'name' => 'required|max:255',
@@ -57,7 +57,7 @@ class UserController extends Controller
         //
     }
 
-    public function getUserByToken(Request $request)
+    public function getUserByToken(): \Illuminate\Http\JsonResponse
     {
         // Получаем аутентифицированного пользователя
         $user = Auth::user();
@@ -73,5 +73,20 @@ class UserController extends Controller
         return response()->json([
             'error' => 'Пользователь не найден',
         ], 404);
+    }
+
+    public function getUsersFromSearchString(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $user_search = $request->query('user_search');
+        $searchTerm = "%".trim($user_search)."%";
+
+        return response()->json(
+            User::where(function($query) use ($searchTerm) {
+                $query->where('name', 'LIKE', $searchTerm)
+                    ->orWhere('email', 'LIKE', $searchTerm);
+            })
+                ->limit(20)
+                ->get()
+        );
     }
 }

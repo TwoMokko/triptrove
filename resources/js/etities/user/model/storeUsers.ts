@@ -8,9 +8,9 @@ export const useUsersStore = defineStore('users', () => {
     const currentUser = ref<userData>(null)
 
 
-    // const getUsers = async (searchQuery = '') => {
-    //     users.value = await fetchUsers(searchQuery)
-    // }
+    const getUsers = async (searchQuery = '') => {
+        users.value = await fetchUsers(searchQuery)
+    }
 
     const getUserByToken = async (token: string) => {
         currentUser.value = await fetchUserByToken(token)
