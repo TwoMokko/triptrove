@@ -4,6 +4,9 @@ import { travelData } from "@/app/types/types"
 import InputCustom from "@/shared/ui/InputCustom.vue"
 import TextareaCustom from "@/shared/ui/TextareaCustom.vue"
 import ButtonCustom from "@/shared/ui/ButtonCustom.vue"
+import UsersSharedList from "@/feature/user/ui/UsersSharedList.vue"
+import Icon from "@/shared/ui/Icon.vue"
+import { mdiLock, mdiLockOpenVariant } from '@mdi/js'
 
 const props = defineProps({
     modelValue: {
@@ -37,17 +40,37 @@ watch(
     { deep: true }
 )
 
+// добавить в данные travelData
+const lock = ref(false)
+
 </script>
 
 <template>
-    <div class="flex flex-col gap-3 mb-4">
+    <form class="flex flex-col gap-3 mb-4 overflow-y-scroll h-[calc(80vh-24px-80px-1rem-48px)]">
+        <div>
+            <Icon
+                v-if="lock"
+                @click="lock = !lock"
+                :iconPath="mdiLock"
+                class="w-6 h-6 text-secondary hover:text-dark"
+            />
+            <Icon
+                v-else
+                @click="lock = !lock"
+                :iconPath="mdiLockOpenVariant"
+                class="w-6 h-6 text-secondary hover:text-dark"
+            />
+        </div>
         <InputCustom v-model:value="localTravel.place" :placeholder="'место'" :type="'text'" @input="updateModel" />
         <InputCustom v-model:value="localTravel.date" :placeholder="'время когда'" :type="'text'" @input="updateModel" />
         <InputCustom v-model:value="localTravel.mode_of_transport" :placeholder="'на чем добирались'" :type="'text'" @input="updateModel" />
         <TextareaCustom v-model:text="localTravel.good_impression" :placeholder="'хорошее'" @change="updateModel" />
         <TextareaCustom v-model:text="localTravel.bad_impression" :placeholder="'плохое'" @change="updateModel" />
         <TextareaCustom v-model:text="localTravel.general_impression" :placeholder="'общие впечатления'" @change="updateModel" />
-    </div>
+
+
+        <UsersSharedList />
+    </form>
     <div class="text-end mt-4">
         <ButtonCustom :text="btnText" @click="$emit('handler')" class="w-full" />
     </div>

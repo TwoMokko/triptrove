@@ -10,7 +10,6 @@ import Modal from '@/shared/ui/Modal.vue'
 import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
 import { useAuthStore } from "@/etities/auth"
 import TravelListItem from "@/shared/ui/travel/TravelListItem.vue"
-import UsersSearch from "@/feature/user/ui/UsersSearch.vue";
 
 const usersForTravel = ref()
 
@@ -61,7 +60,6 @@ onMounted(async () => {
 </script>
 
 <template>
-    <UsersSearch class="px-[10%] py-10" />
     <div  class="px-[10%] py-10">
         <Loader v-if="travelsStore.isLoading"/>
         <div v-else>

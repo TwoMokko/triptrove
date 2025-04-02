@@ -1,13 +1,3 @@
-<template>
-    <textarea
-        class="focus-visible:outline-none resize-none py-4 px-8 rounded-3xl border border-secondary bg-transparent"
-        v-model="text"
-        :placeholder="placeholder"
-        @input="resizeTextarea"
-        @change="$emit('change')"
-    />
-</template>
-
 <script setup lang="ts">
 const text = defineModel<string>('text', { required: true })
 
@@ -24,3 +14,13 @@ const resizeTextarea = (event: Event): void => {
     // return textarea.scrollHeight
 }
 </script>
+
+<template>
+    <textarea
+        class="focus-visible:outline-none resize-none py-4 px-8 rounded-3xl border border-secondary bg-transparent min-h-20"
+        v-model="text"
+        :placeholder="placeholder"
+        @input="resizeTextarea"
+        @change="$emit('change')"
+    />
+</template>

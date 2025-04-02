@@ -83,6 +83,11 @@ const isCollapsed = ref<boolean>(false)
 
         .modal-wrap {
             padding: 40px 60px;
+
+            .modal-content {
+                //overflow-y: scroll;
+                //height: calc(80vh - 24px - 80px - 1rem);
+            }
         }
     }
 }
@@ -93,5 +98,8 @@ const isCollapsed = ref<boolean>(false)
     filter: blur(80);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.06);
     min-width: 50%;
+    overflow: hidden;
+    max-height: 80%;
+    max-width: 60%;
 }
 </style>

@@ -8,12 +8,12 @@ import ButtonCustom from "@/shared/ui/ButtonCustom.vue";
 import Loader from "@/shared/ui/Loader.vue";
 
 interface formDataType {
-    email: string,
+    login: string,
     password: string
 }
 
 const form = ref<formDataType>({
-    email: '',
+    login: '',
     password: ''
 })
 
@@ -49,7 +49,7 @@ const login = async () => {
         <RouterLink :to="{ name: 'register' }" >Нет аккаунта? Зарегистрироваться</RouterLink>
     </div>
     <form @submit.prevent="login" class="flex flex-col gap-4">
-        <InputCustom v-model:value="form.email" :placeholder="'Email'" :type="'email'" :name="'email'" :required="true" />
+        <InputCustom v-model:value="form.login" :placeholder="'Login'" :type="'text'" :name="'login'" :required="true" />
         <InputCustom v-model:value="form.password" :placeholder="'Password'" :type="'password'" :name="'password'" :required="true" />
         <ButtonCustom :type="'submit'" :text="textBtn" />
         <Loader v-if="isLoading" />

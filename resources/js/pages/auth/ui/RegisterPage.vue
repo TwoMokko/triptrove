@@ -9,6 +9,7 @@ import Loader from "@/shared/ui/Loader.vue";
 interface formDataType {
     name: string,
     email: string,
+    login: string,
     password: string,
     password_confirmation: string
 }
@@ -16,6 +17,7 @@ interface formDataType {
 const form = ref<formDataType>({
     name: '',
     email: '',
+    login: '',
     password: '',
     password_confirmation: ''
 })
@@ -54,6 +56,7 @@ const auth = async () => {
     <form @submit.prevent="validate" class="flex flex-col gap-4">
         <InputCustom v-model:value="form.name" :placeholder="'Name'" :type="'name'" :name="'name'" :required="true" />
         <InputCustom v-model:value="form.email" :placeholder="'Email'" :type="'email'" :name="'email'" :required="true" />
+        <InputCustom v-model:value="form.login" :placeholder="'Login'" :type="'text'" :name="'login'" :required="true" />
         <InputCustom v-model:value="form.password" :placeholder="'Password'" :type="'password'" :name="'password'" :required="true" />
         <InputCustom v-model:value="form.password_confirmation" :placeholder="'Confirm Password'" :type="'password'" :name="'confirm_password'" :required="true" />
         <ButtonCustom :type="'submit'" :text="textBtn" />

@@ -9,6 +9,7 @@ export type travelData = {
     user_id: number,
     order: number,
     timestamps?: string,
+    lock?: boolean,
 }
 
 export type userData = {

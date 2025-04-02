@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
     <input
-        class="focus-visible:outline-none py-3 px-8 rounded-3xl border border-secondary bg-transparent"
+        class="focus-visible:outline-none py-3 px-8 rounded-3xl border border-secondary bg-transparent w-full"
         v-model="value"
         :placeholder="placeholder"
         :type="type"

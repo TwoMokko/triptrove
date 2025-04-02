@@ -24,6 +24,7 @@ class UserController extends Controller
     public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
+            'login' => 'required|string|max:255|unique:users',
             'name' => 'required|max:255',
             'email' => 'required',
             'password' => 'required',
@@ -83,9 +84,9 @@ class UserController extends Controller
         return response()->json(
             User::where(function($query) use ($searchTerm) {
                 $query->where('name', 'LIKE', $searchTerm)
-                    ->orWhere('email', 'LIKE', $searchTerm);
+                    ->orWhere('login', 'LIKE', $searchTerm);
             })
-                ->limit(20)
+                ->limit(10)
                 ->get()
         );
     }
