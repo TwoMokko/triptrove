@@ -1,32 +1,30 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { useAuthStore } from "@/etities/auth/index.js"
 import { router } from "@/app/providers/router.js"
-import InputCustom from "@/shared/ui/InputCustom.vue";
-import ButtonCustom from "@/shared/ui/ButtonCustom.vue";
+import InputCustom from "@/shared/ui/InputCustom.vue"
+import ButtonCustom from "@/shared/ui/ButtonCustom.vue"
 
-const code = ref('');
-const authStore = useAuthStore();
+const code = ref<string>('')
+const message = ref<string>()
+const authStore = useAuthStore()
 
 const submit = async () => {
-    try {
-        const resp = await authStore.verifyCode(code.value)
-
-        switch (resp) {
-            case 400: console.log('error 400'); break;
-            case 401: console.log('error 401'); break;
-            case 404: console.log('error 404'); break;
-            case 429: console.log('error 429'); break;
-            default: await router.push('/login'); break;
-        }
-
-    } catch (error) {
-        alert(error.response.data.error)
+    const resp = await authStore.verifyCode(code.value)
+    if (resp.status == 201) {
+        message.value = resp.data.error = ''
+        authStore.currentVerifyLogin = ''
+        await router.push('/login')
+    }
+    else {
+        message.value = resp.data.error
     }
 }
 
 const resend = async () => {
-    await authStore.resendCode()
+    const resp = await authStore.resendCode()
+    console.log('her', resp)
+    message.value = resp.data ? resp.data.error : resp.message
 }
 </script>
 
@@ -34,6 +32,7 @@ const resend = async () => {
     <form @submit.prevent="submit" class="flex flex-col gap-2">
         <InputCustom v-model:value="code" :type="'text'" :placeholder="'6-digit code'" />
         <ButtonCustom :type="'submit'" :text="'Verify'"/>
-        <button @click="resend">Resend Code</button>
+        <div class="text-center cursor-pointer" @click="resend">Resend Code</div>
     </form>
+    <div class="text-center mt-2" v-if="message">{{ message }}</div>
 </template>

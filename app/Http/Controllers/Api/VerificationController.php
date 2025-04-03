@@ -18,35 +18,40 @@ class VerificationController extends Controller
      */
     public function verify(Request $request)
     {
-        $request->validate([
-            'code' => 'required|digits:6',
-        ]);
+//        $request->validate([
+//            'code' => 'required|digits:6',
+//        ]);
+        if (strlen($request->code) != 6) {
+            return response()->json(['error' => 'Код должен быть 6-значным'], 422);
+        }
 
-        $user = $request->user();
+        if (!$request->login) return response()->json(['error' => 'Login не найден'], 404);
+        $user = $request->user() ?? User::where('login', $request->login)->first();
 
         // Проверка наличия записи верификации
         $verification = EmailVerification::where('user_id', $user->id)->first();
 
         if (!$verification) {
-            return response()->json(['error' => 'Verification code not found'], 404);
+            return response()->json(['error' => 'Код не найден'], 404);
         }
 
         // Проверка времени жизни кода
         if (Carbon::now()->gt($verification->expires_at)) {
             $verification->delete();
-            return response()->json(['error' => 'Code expired'], 400);
+            return response()->json(['error' => 'Код просрочен, получите новый код'], 400);
         }
 
         // Проверка попыток
         if ($verification->attempts >= 3) {
             $verification->delete();
-            return response()->json(['error' => 'Too many attempts'], 429);
+            return response()->json(['error' => 'Слишком много попыток, получите новый код'], 429);
         }
 
-        // Проверка кода
         if (!Hash::check($request->code, $verification->code)) {
-            $verification->increment('attempts');
-            return response()->json(['error' => 'Invalid code'], 401);
+            $verification->increment('attempts'); // Увеличиваем только при ошибке
+            return response()->json([
+                'error' => 'Неверный код, осталось попыток: ' . 3 - $verification->attempts,
+            ], 401);
         }
 
         // Успешная верификация
@@ -54,7 +59,7 @@ class VerificationController extends Controller
         $user->save();
         $verification->delete();
 
-        return response()->json(['message' => 'Email verified successfully']);
+        return response()->json(['message' => 'Email verified successfully'], 201);
     }
 
     /**
@@ -62,7 +67,8 @@ class VerificationController extends Controller
      */
     public function resend(Request $request)
     {
-        $user = $request->user();
+        if (!$request->login) return response()->json(['error' => 'Login не найден'], 404);
+        $user = $request->user() ?? User::where('login', $request->login)->first();
 
         // Проверка уже подтвержденного email
         if ($user->email_verified_at) {

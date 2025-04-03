@@ -22,10 +22,12 @@ const authStore = useAuthStore()
 
 const isLoading = ref<boolean>(false)
 const textBtn = ref<string>('Login')
+const message = ref<string>()
 
 const login = async () => {
     isLoading.value = true
     textBtn.value = '...'
+    message.value = ''
 
     try {
         const response = await api.post('/login', form.value)
@@ -36,10 +38,19 @@ const login = async () => {
         isLoading.value = false
         textBtn.value = 'Login'
     } catch (error) {
-        alert('Login failed')
+        message.value = error.response.data.message
         console.error(error)
         textBtn.value = 'Login'
     }
+}
+
+const doVerify = async () => {
+    isLoading.value = true
+    authStore.currentVerifyLogin = form.value.login
+    const resp = await authStore.resendCode()
+    console.log('doVerify update', resp)
+    isLoading.value = false
+    if (!resp.data) await router.push('/verify')
 }
 
 
@@ -54,4 +65,8 @@ const login = async () => {
         <ButtonCustom :type="'submit'" :text="textBtn" />
         <Loader v-if="isLoading" />
     </form>
+    <div class="text-center mt-2" v-if="message">
+        <div>{{ message }}</div>
+        <div class="cursor-pointer text-primary" @click="doVerify">Подтвердить</div>
+    </div>
 </template>

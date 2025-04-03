@@ -5,6 +5,8 @@ import api from "@/app/api/api"
 import InputCustom from "@/shared/ui/InputCustom.vue";
 import ButtonCustom from "@/shared/ui/ButtonCustom.vue";
 import Loader from "@/shared/ui/Loader.vue";
+import {useAuthStore} from "@/etities/auth";
+import {storeToRefs} from "pinia";
 
 interface formDataType {
     name: string,
@@ -21,8 +23,11 @@ const form = ref<formDataType>({
     password: '',
     password_confirmation: ''
 })
+
+const { currentVerifyLogin } = storeToRefs(useAuthStore())
 const router = useRouter()
 const isLoading = ref<boolean>(false)
+const errorMessage = ref<string>('')
 const textBtn = ref<string>('Do register')
 
 const validate = () => {
@@ -34,17 +39,24 @@ const auth = async () => {
     // какой вариант сделать loading или менять текст
     isLoading.value = true
     textBtn.value = '...'
+    errorMessage.value = ''
 
     try {
         const response = await api.post('/register', form.value)
         console.log('User created:', response.data)
-        isLoading.value = false
-        await router.push('/verify')
+        currentVerifyLogin.value = response.data.user.login
 
         isLoading.value = false
-        textBtn.value = 'Do register'
+
+        await router.push('/verify')
+
     } catch (error) {
-        console.error('Error creating user:', error)
+        console.error('Error creating user:', error.response.data.message)
+        errorMessage.value = error.response.data.message
+    }
+    finally {
+        textBtn.value = 'Do register'
+        isLoading.value = false
     }
 }
 </script>
@@ -61,5 +73,6 @@ const auth = async () => {
         <InputCustom v-model:value="form.password_confirmation" :placeholder="'Confirm Password'" :type="'password'" :name="'confirm_password'" :required="true" />
         <ButtonCustom :type="'submit'" :text="textBtn" />
         <Loader v-if="isLoading" />
+        <div v-if="errorMessage">{{ errorMessage }}</div>
     </form>
 </template>

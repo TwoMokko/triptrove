@@ -10,10 +10,14 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
-Route::post('/verify', [VerificationController::class, 'verify'])
-    ->middleware('auth:sanctum');
-Route::post('/resend', [VerificationController::class, 'resend'])
-    ->middleware('auth:sanctum');
+
+
+Route::post('/verify', [VerificationController::class, 'verify']);
+Route::post('/resend', [VerificationController::class, 'resend']);
+//Route::post('/verify', [VerificationController::class, 'verify'])
+//    ->middleware('auth:sanctum');
+//Route::post('/resend', [VerificationController::class, 'resend'])
+//    ->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->get('/usersByToken', [UserController::class, 'getUserByToken']);
 
@@ -33,7 +37,7 @@ Route::put('/travels/{id}', [TravelController::class, 'update']); // Обнов�
 Route::delete('/travels/{id}', [TravelController::class, 'destroy']); // Удалить путешествие
 
 
-// TODO: разобраться с методами (что для чего и когда) и ыфше тоже
+// TODO: разобраться с методами (что для чего и когда) и выше тоже
 Route::get('/usersSearch', [UserController::class, 'getUsersFromSearchString']); // Получить всех пользователей по строке поиска
 Route::get('/travels/{travel_id}/users', [TravelController::class, 'getUsersForTravel']);
 Route::post('/travels/{travel_id}/users', [TravelController::class, 'attachUser']);

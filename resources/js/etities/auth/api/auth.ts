@@ -1,25 +1,25 @@
 import api from "../../../app/api/api";
 
-export const fetchVerifyCode = async (code: string) => {
+export const fetchVerifyCode = async (code: string, login: string) => {
     try {
-        const response = await api.post('/verify', { code })
-        console.log('verify: ', response.data)
-        return response.data
+        const response = await api.post('/verify', { code, login })
+        console.log('verify: ', response)
+        return response
 
     } catch (error) {
-        console.error('Error verify:', error.status)
-        return error.status
+        console.error('Error verify:', error)
+        return error.response
     }
 }
 
-export const fetchResendCode = async () => {
+export const fetchResendCode = async (login: string) => {
     try {
-        const response = await api.post('/resend')
+        const response = await api.post('/resend', { login })
         console.log('resend code: ', response.data)
         return response.data
 
     } catch (error) {
-        console.error('Error resend code:', error)
-        return error.status
+        console.error('Error resend code:', error.response)
+        return error.response
     }
 }
