@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\VerificationController;
 use App\Http\Controllers\Api\TravelController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -8,6 +9,11 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+
+Route::post('/verify', [VerificationController::class, 'verify'])
+    ->middleware('auth:sanctum');
+Route::post('/resend', [VerificationController::class, 'resend'])
+    ->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->get('/usersByToken', [UserController::class, 'getUserByToken']);
 

@@ -24,6 +24,9 @@ const handleDelete = async () => {
 
 const handleSave = async () => {
     if (travelsStore.currentTravel) {
+
+        console.log('save: ', travelsStore.currentTravel)
+
         await travelsStore.editTravel(
             travelsStore.currentTravel.id,
             travelsStore.currentTravel

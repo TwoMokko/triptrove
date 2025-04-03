@@ -63,4 +63,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Travel::class);
     }
+
+    public function emailVerification(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(EmailVerification::class);
+    }
 }

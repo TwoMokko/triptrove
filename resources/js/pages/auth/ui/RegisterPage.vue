@@ -39,7 +39,7 @@ const auth = async () => {
         const response = await api.post('/register', form.value)
         console.log('User created:', response.data)
         isLoading.value = false
-        await router.push('/login')
+        await router.push('/verify')
 
         isLoading.value = false
         textBtn.value = 'Do register'

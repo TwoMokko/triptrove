@@ -1,6 +1,12 @@
 import { watch, ref } from "vue"
 import { defineStore } from "pinia"
-import { login, logout, fetchUserByToken } from '../api/auth'
+import {
+    // login,
+    // logout,
+    // fetchUserByToken,
+    fetchVerifyCode,
+    fetchResendCode
+} from '../api/auth'
 
 export const useAuthStore = defineStore('auth', () => {
     const token = ref<string>(localStorage.getItem('auth_token') || '') // Сохраняем токен
@@ -16,6 +22,13 @@ export const useAuthStore = defineStore('auth', () => {
             isAuth.value = false
         }
     })
+
+    const verifyCode = async (code: string) => {
+        return await fetchVerifyCode(code)
+    }
+    const resendCode = async () => {
+        return  await fetchResendCode()
+    }
 
     // const loginUser = async (credentials) => {
     //     const response = await login(credentials)
@@ -44,5 +57,8 @@ export const useAuthStore = defineStore('auth', () => {
         // loginUser,
         // logoutUser,
         // fetchUser,
+
+        verifyCode,
+        resendCode
     }
 })

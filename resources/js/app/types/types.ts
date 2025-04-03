@@ -8,8 +8,8 @@ export type travelData = {
     general_impression: string,
     user_id: number,
     order: number,
+    published: boolean,
     timestamps?: string,
-    lock?: boolean,
 }
 
 export type userData = {

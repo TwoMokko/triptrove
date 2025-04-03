@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\VerificationCodeMail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -26,7 +28,29 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return response()->json(['message' => 'User registered successfully'], 201);
+        $this->generateAndSendCode($user);
+
+        return response()->json(['message' => 'Verification code sent']);
+
+//        return response()->json(['message' => 'User registered successfully'], 201);
+    }
+
+    private function generateAndSendCode(User $user)
+    {
+        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $hashedCode = Hash::make($code);
+
+        $user->emailVerification()->updateOrCreate(
+            [],
+            [
+                'code' => $hashedCode,
+                'expires_at' => now()->addHour(),
+                'attempts' => 0
+            ]
+        );
+
+        // Отправка email с кодом через ваш сервис
+        Mail::to($user->email)->send(new VerificationCodeMail($code));
     }
 
     /**

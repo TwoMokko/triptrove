@@ -65,6 +65,9 @@ export const useTravelsStore = defineStore('travels', () => {
     }
 
     const editTravel = async (travelId: number, travelData: Partial<travelData>) => {
+
+        console.log('edit: ', travelData)
+
         isLoading.value = true
         try {
             const updatedTravel = await updateTravel(travelId, travelData)

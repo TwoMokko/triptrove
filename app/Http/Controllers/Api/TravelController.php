@@ -49,6 +49,7 @@ class TravelController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'published' => 'sometimes|boolean',
             'place' => 'required|max:255',
             'date' => 'required',
             'mode_of_transport' => 'required',
@@ -101,6 +102,7 @@ class TravelController extends Controller
 
         // Валидация данных
         $validatedData = $request->validate([
+            'published' => 'sometimes|boolean',
             'place' => 'sometimes|string|max:255',
             'date' => 'sometimes|string',
             'mode_of_transport' => 'sometimes|string',

@@ -5,7 +5,8 @@ import HomePage from '../../pages/home/HomePage.vue'
 import ProfilePage from '../../pages/profile/ProfilePage.vue'
 import LoginPage from "../../pages/auth/ui/LoginPage.vue"
 import RegisterPage from "../../pages/auth/ui/RegisterPage.vue"
-import TravelsPage from "../../pages/travels/TravelsPage.vue";
+import TravelsPage from "../../pages/travels/TravelsPage.vue"
+import VerifyPage from "../../pages/auth/ui/VerifyPage.vue"
 
 const routes = [
     {
@@ -43,6 +44,14 @@ const routes = [
         name: 'register',
         path: '/register',
         component: RegisterPage,
+        meta: {
+            layout: 'auth'
+        }
+    },
+    {
+        name: 'verify',
+        path: '/verify',
+        component: VerifyPage,
         meta: {
             layout: 'auth'
         }

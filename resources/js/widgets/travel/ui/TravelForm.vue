@@ -40,26 +40,19 @@ watch(
     { deep: true }
 )
 
-// добавить в данные travelData
-const lock = ref(false)
-
 </script>
 
 <template>
     <form class="flex flex-col gap-3 mb-4 overflow-y-scroll h-[calc(80vh-24px-80px-1rem-48px)]">
-        <div>
-            <Icon
-                v-if="lock"
-                @click="lock = !lock"
-                :iconPath="mdiLock"
-                class="w-6 h-6 text-secondary hover:text-dark"
-            />
-            <Icon
-                v-else
-                @click="lock = !lock"
-                :iconPath="mdiLockOpenVariant"
-                class="w-6 h-6 text-secondary hover:text-dark"
-            />
+        <div class="flex gap-2">
+            <label>
+                <input type="checkbox" v-model="localTravel.published" hidden="hidden" @change="updateModel">
+                <Icon
+                    :iconPath="localTravel.published ? mdiLockOpenVariant : mdiLock"
+                    class="w-6 h-6 text-secondary hover:text-dark"
+                />
+            </label>
+            <div>Приватное или публичное</div>
         </div>
         <InputCustom v-model:value="localTravel.place" :placeholder="'место'" :type="'text'" @input="updateModel" />
         <InputCustom v-model:value="localTravel.date" :placeholder="'время когда'" :type="'text'" @input="updateModel" />

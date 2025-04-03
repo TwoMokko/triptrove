@@ -26,6 +26,7 @@ onMounted(() => {
         <div v-else>
             <h1 class="text-2xl mb-4">Имя: {{ usersStore.currentUser.name }}</h1>
             <div>id: {{ usersStore.currentUser.id }}</div>
+            <div>login: {{ usersStore.currentUser.login }}</div>
             <div>email: {{ usersStore.currentUser.email }}</div>
         </div>
     </div>
