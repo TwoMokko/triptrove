@@ -7,6 +7,7 @@ import LoginPage from "../../pages/auth/ui/LoginPage.vue"
 import RegisterPage from "../../pages/auth/ui/RegisterPage.vue"
 import TravelsPage from "../../pages/travels/TravelsPage.vue"
 import VerifyPage from "../../pages/auth/ui/VerifyPage.vue"
+import NotFoundPage from "../../pages/notFound/notFoundPage.vue"
 
 const routes = [
     {
@@ -37,7 +38,8 @@ const routes = [
         path: '/login',
         component: LoginPage,
         meta: {
-            layout: 'auth'
+            layout: 'auth',
+            guestOnly: true
         }
     },
     {
@@ -45,7 +47,8 @@ const routes = [
         path: '/register',
         component: RegisterPage,
         meta: {
-            layout: 'auth'
+            layout: 'auth',
+            guestOnly: true
         }
     },
     {
@@ -53,7 +56,8 @@ const routes = [
         path: '/verify',
         component: VerifyPage,
         meta: {
-            layout: 'auth'
+            layout: 'auth',
+            guestOnly: true
         }
     },
     // {
@@ -61,6 +65,11 @@ const routes = [
     //     path: '/forbidden',
     //     component: Компонент "Доступ запрещен"
     // },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'not-found',
+        component: NotFoundPage
+    },
 ]
 
 export const router = createRouter({
@@ -69,13 +78,34 @@ export const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    const userRole = localStorage.getItem('user_role') // Получаем роль пользователя
     const authStore = useAuthStore()
-    if (to.meta.requiresAuth && !authStore.isAuth) {
-        next('/login')
-    // } else if (to.meta.role && to.meta.role !== userRole) {
-    //     next('/forbidden') // Перенаправляем на страницу "Доступ запрещён"
-    } else {
-        next()
+    const isAuthenticated = authStore.isAuth
+
+    // Защита страниц только для гостей
+    if (to.meta.guestOnly && isAuthenticated) {
+        next({ name: 'profile' }) // Перенаправляем в личный кабинет
+        return // Важно: прекращаем дальнейшую обработку
     }
+
+    // Защита авторизованных страниц
+    if (to.meta.requiresAuth && !isAuthenticated) {
+        // Сохраняем исходный маршрут для редиректа после входа
+        next({
+            name: 'login',
+            query: { redirect: to.fullPath }
+        })
+        return
+    }
+
+    // Проверка ролей (если нужно)
+    // if (to.meta.role) {
+    //     const userRole = authStore.user?.role // Получаем роль из хранилища
+    //     if (userRole !== to.meta.role) {
+    //         next({ name: 'forbidden' })
+    //         return
+    //     }
+    // }
+
+    // Продолжаем навигацию
+    next()
 })

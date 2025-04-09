@@ -2,11 +2,11 @@
 import { ref, watch } from "vue"
 import { storeToRefs } from "pinia"
 import { useAuthStore } from "@/etities/auth"
-import { logout } from "@/pages/auth/model/logout";
+import { useLogout } from "@/pages/auth/model/logout"
 
 const { isAuth } = storeToRefs(useAuthStore())
 const isAuthenticated = ref(!!localStorage.getItem('auth_token'))
-const { isLoadingLogout, doLogout } = logout()
+const { isLoadingLogout, doLogout } = useLogout()
 
 watch(isAuth, () => {
     isAuthenticated.value = !!localStorage.getItem("auth_token")

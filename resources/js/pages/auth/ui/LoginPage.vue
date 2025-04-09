@@ -3,16 +3,17 @@ import { ref } from "vue"
 import api from "@/app/api/api"
 import { useRouter } from "vue-router"
 import { useAuthStore } from "@/etities/auth"
-import InputCustom from "@/shared/ui/InputCustom.vue";
-import ButtonCustom from "@/shared/ui/ButtonCustom.vue";
-import Loader from "@/shared/ui/Loader.vue";
+import InputCustom from "@/shared/ui/InputCustom.vue"
+import ButtonCustom from "@/shared/ui/ButtonCustom.vue"
+import Loader from "@/shared/ui/Loader.vue"
 
-interface formDataType {
-    login: string,
+
+interface FormDataType {
+    login: string
     password: string
 }
 
-const form = ref<formDataType>({
+const form = ref<FormDataType>({
     login: '',
     password: ''
 })
@@ -20,9 +21,9 @@ const form = ref<formDataType>({
 const router = useRouter()
 const authStore = useAuthStore()
 
-const isLoading = ref<boolean>(false)
-const textBtn = ref<string>('Login')
-const message = ref<string>()
+const isLoading = ref(false)
+const textBtn = ref('Login')
+const message = ref('')
 
 const login = async () => {
     isLoading.value = true
@@ -31,28 +32,33 @@ const login = async () => {
 
     try {
         const response = await api.post('/login', form.value)
-        authStore.token = response.data.token
-        // localStorage.setItem('auth_token', response.data.token)
+        authStore.setAuthData({
+            token: response.data.token,
+        })
         await router.push('/')
-
-        isLoading.value = false
-        textBtn.value = 'Login'
     } catch (error) {
-        message.value = error.response.data.message
+        message.value = error.response?.data?.message || 'Login failed'
         console.error(error)
+        authStore.setAuthData({
+            login: form.value.login
+        })
+    } finally {
+        isLoading.value = false
         textBtn.value = 'Login'
     }
 }
 
 const doVerify = async () => {
     isLoading.value = true
-    authStore.currentVerifyLogin = form.value.login
-    const resp = await authStore.resendCode()
-    console.log('doVerify update', resp)
-    isLoading.value = false
-    if (!resp.data) await router.push('/verify')
+    try {
+        await authStore.resendCode()
+        await router.push('/verify')
+    } catch (error) {
+        message.value = error.response?.data?.message || 'Failed to resend code'
+    } finally {
+        isLoading.value = false
+    }
 }
-
 
 </script>
 <template>
@@ -63,10 +69,10 @@ const doVerify = async () => {
         <InputCustom v-model:value="form.login" :placeholder="'Login'" :type="'text'" :name="'login'" :required="true" />
         <InputCustom v-model:value="form.password" :placeholder="'Password'" :type="'password'" :name="'password'" :required="true" />
         <ButtonCustom :type="'submit'" :text="textBtn" />
-        <Loader v-if="isLoading" />
     </form>
     <div class="text-center mt-2" v-if="message">
         <div>{{ message }}</div>
-        <div class="cursor-pointer text-primary" @click="doVerify">Подтвердить</div>
+        <div v-if="message === 'Email не подтвержден'" class="cursor-pointer text-primary" @click="doVerify">Подтвердить</div>
     </div>
+    <Loader v-if="isLoading" />
 </template>

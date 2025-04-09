@@ -7,14 +7,15 @@ import {
     deleteTravel,
     fetchSharedTravels,
     fetchSharedUsers,
-    fetchAttachUser, fetchDetachUser,
+    fetchAttachUser, fetchDetachUser, fetchPublishedTravels,
 } from '../api/travels'
 import type { travelData } from "@/app/types/types"
 
 export const useTravelsStore = defineStore('travels', () => {
     // State
+    const publishedTravels = ref([])
     const travels = ref<travelData[]>([])
-    const sharedTravels = ref<travelData[]>([])
+    const sharedTravels = ref<{ id: number, name: string, login: string, travels: travelData[] }[]>([])
 
     const currentTravel = ref<travelData | null>(null)
     const isLoading = ref(false)
@@ -24,12 +25,25 @@ export const useTravelsStore = defineStore('travels', () => {
     const sharedUsers = ref()
 
     // Getters
+    const hasPublishedTravels = computed(() => publishedTravels.value.length > 0)
     const hasTravels = computed(() => travels.value.length > 0)
+    const hasSharedTravels = computed(() => sharedTravels.value.length > 0)
     const getTravelById = computed(() => (id: number) =>
         travels.value.find(travel => travel.id === id)
     )
 
     // Actions
+    const getPublishedTravels = async (page: number) => {
+        isLoading.value = true
+        try {
+            publishedTravels.value = await fetchPublishedTravels(page)
+        } catch (err) {
+            error.value = 'Ошибка загрузки published путешествий'
+            console.error(err)
+        } finally {
+            isLoading.value = false
+        }
+    }
     const getTravels = async (userId: number) => {
         isLoading.value = true
         try {
@@ -160,6 +174,7 @@ export const useTravelsStore = defineStore('travels', () => {
 
     return {
         // State
+        publishedTravels,
         travels,
         sharedTravels,
         currentTravel,
@@ -168,10 +183,13 @@ export const useTravelsStore = defineStore('travels', () => {
         sharedUsers,
 
         // Getters
+        hasPublishedTravels,
         hasTravels,
+        hasSharedTravels,
         getTravelById,
 
         // Actions
+        getPublishedTravels,
         getTravels,
         getSharedTravels,
         addTravel,

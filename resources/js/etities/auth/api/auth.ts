@@ -1,4 +1,4 @@
-import api from "../../../app/api/api";
+import api from "../../../app/api/api"
 
 export const fetchVerifyCode = async (code: string, login: string) => {
     try {
@@ -7,9 +7,9 @@ export const fetchVerifyCode = async (code: string, login: string) => {
         return response
 
     } catch (error) {
-        // throw error
         console.error('Error verify:', error)
-        return error.response
+        throw error
+        // return error.response
     }
 }
 

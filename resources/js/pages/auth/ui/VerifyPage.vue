@@ -4,32 +4,32 @@ import { useAuthStore } from "@/etities/auth/index.js"
 import { router } from "@/app/providers/router.js"
 import InputCustom from "@/shared/ui/InputCustom.vue"
 import ButtonCustom from "@/shared/ui/ButtonCustom.vue"
+// import { useRouter } from "vue-router"
 
-const code = ref<string>('')
-const message = ref<string>()
+const code = ref('')
+const message = ref('')
 const authStore = useAuthStore()
+// const router = useRouter()
 
 const submit = async () => {
-    // try {
-    // } catch (errors) {
-    //
-    // }
-
-    const resp = await authStore.verifyCode(code.value)
-    if (resp.status == 201) {
-        message.value = resp.data.error = ''
-        authStore.currentVerifyLogin = ''
-        await router.push('/login')
-    }
-    else {
-        message.value = resp.data.error
+    try {
+        const resp = await authStore.verifyCode(code.value)
+        if (resp.status === 201) {
+            message.value = ''
+            await router.push('/login')
+        }
+    } catch (error) {
+        message.value = error.response?.data?.error || 'Verification failed'
     }
 }
 
 const resend = async () => {
-    const resp = await authStore.resendCode()
-    console.log('her', resp)
-    message.value = resp.data ? resp.data.error : resp.message
+    try {
+        const resp = await authStore.resendCode()
+        message.value = resp.data?.message || 'Code resent'
+    } catch (error) {
+        message.value = error.response?.data?.error || 'Failed to resend code'
+    }
 }
 </script>
 

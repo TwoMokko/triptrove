@@ -11,13 +11,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
 
-
 Route::post('/verify', [VerificationController::class, 'verify']);
 Route::post('/resend', [VerificationController::class, 'resend']);
-//Route::post('/verify', [VerificationController::class, 'verify'])
-//    ->middleware('auth:sanctum');
-//Route::post('/resend', [VerificationController::class, 'resend'])
-//    ->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->get('/usersByToken', [UserController::class, 'getUserByToken']);
 
@@ -28,6 +23,7 @@ Route::put('/users/{id}', [TravelController::class, 'update']); // Обнови�
 Route::delete('/users/{id}', [TravelController::class, 'destroy']); // Удалить пользователя
 
 Route::get('/travels', [TravelController::class, 'index']); // Получить все путешествия по User ID для юсера (и созданные им и другими)
+Route::get('/travels/published', [TravelController::class, 'getAllPublishedTravels']); // Получить все путешествия published
 Route::get('/travelsFromUser', [TravelController::class, 'getTravelsByUserID']); // Получить все путешествия по User ID, созданные им
 Route::get('/travelsFromOther', [TravelController::class, 'fromOther']); // Получить все путешествия по User ID, созданные другим возможные для редактирования
 Route::get('/travelsFromTag', [TravelController::class, 'fromTag']); // Получить все путешествия для User ID или для любого по тегу
@@ -40,5 +36,6 @@ Route::delete('/travels/{id}', [TravelController::class, 'destroy']); // Уда�
 // TODO: разобраться с методами (что для чего и когда) и выше тоже
 Route::get('/usersSearch', [UserController::class, 'getUsersFromSearchString']); // Получить всех пользователей по строке поиска
 Route::get('/getSharedUsers', [TravelController::class, 'getUsersForTravel']);
+Route::get('/getSharedTravels', [TravelController::class, 'getTravelsForUser']);
 Route::post('/attachUser', [TravelController::class, 'attachUserToTravel']);
 Route::delete('/detachUser', [TravelController::class, 'detachUser']);

@@ -1,74 +1,78 @@
-import { watch, ref } from "vue"
+import { watch, ref, computed } from "vue"
 import { defineStore } from "pinia"
 import {
-    // login,
-    // logout,
-    // fetchUserByToken,
     fetchVerifyCode,
     fetchResendCode
 } from '../api/auth'
+import type { AuthResponse } from '../../../app/types/auth'
 
 export const useAuthStore = defineStore('auth', () => {
-    const token = ref<string>(localStorage.getItem('auth_token') || '') // Сохраняем токен
-    const isAuth = ref<boolean>(!!token.value) // isAuth зависит от наличия токена
+    // State
+    const token = ref<string>(localStorage.getItem('auth_token') || '')
     const currentVerifyLogin = ref<string>(localStorage.getItem('auth_login') || '')
-    // const user = ref(null)
+    // const user = ref<User | null>(null)
 
-    watch(token, (newValue: string): void => {
-        if (newValue) {
-            localStorage.setItem('auth_token', newValue) // Сохраняем токен
-            isAuth.value = true
+    // Computed
+    const isAuth = computed(() => !!token.value)
+
+    // Watchers
+    watch(token, (newToken: string) => {
+        if (newToken) {
+            localStorage.setItem('auth_token', newToken)
         } else {
-            localStorage.removeItem('auth_token') // Удаляем токен
-            isAuth.value = false
+            localStorage.removeItem('auth_token')
+            // user.value = null // Очищаем пользователя при logout
         }
     })
 
-    watch(currentVerifyLogin, (newValue: string): void => {
-        if (newValue) {
-            localStorage.setItem('auth_login', newValue) // Сохраняем login
+    watch(currentVerifyLogin, (newLogin: string) => {
+        if (newLogin) {
+            localStorage.setItem('auth_login', newLogin)
         } else {
-            localStorage.removeItem('auth_login') // Удаляем login
+            localStorage.removeItem('auth_login')
         }
     })
 
-    const verifyCode = async (code: string) => {
-        return await fetchVerifyCode(code, currentVerifyLogin.value)
-    }
-    const resendCode = async () => {
-        return  await fetchResendCode(currentVerifyLogin.value)
+    // Actions
+    const setAuthData = (data: { token: string; login: string }) => {
+        token.value = data.token
+        currentVerifyLogin.value = data.login
     }
 
-    // const loginUser = async (credentials) => {
-    //     const response = await login(credentials)
-    //     setToken(response.token)
-    //     isAuthenticated.value = true
-    //     await fetchUser()
-    // }
-    //
-    // const logoutUser = async () => {
-    //     await logout()
-    //     clearToken()
-    //     isAuthenticated.value = false
-    //     user.value = null
-    // }
-    //
-    // const fetchUser = async () => {
-    //     if (token.value) {
-    //         user.value = await fetchUserByToken(token.value)
-    //     }
-    // }
+    const clearAuthData = () => {
+        token.value = ''
+        currentVerifyLogin.value = ''
+    }
+
+    const verifyCode = async (code: string): Promise<AuthResponse> => {
+        try {
+            const response = await fetchVerifyCode(code, currentVerifyLogin.value)
+            setAuthData({
+                token: response.token,
+                login: currentVerifyLogin.value
+            })
+            return response
+        } catch (error) {
+            // clearAuthData()
+            throw error
+        }
+    }
+
+    const resendCode = async (): Promise<void> => {
+        if (!currentVerifyLogin.value) {
+            throw new Error('No login provided for verification')
+        }
+        await fetchResendCode(currentVerifyLogin.value)
+    }
 
     return {
         token,
         isAuth,
         currentVerifyLogin,
         // user,
-        // loginUser,
-        // logoutUser,
-        // fetchUser,
-
         verifyCode,
-        resendCode
+        resendCode,
+        setAuthData,
+        clearAuthData
     }
 })

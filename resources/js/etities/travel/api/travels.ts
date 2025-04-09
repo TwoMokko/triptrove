@@ -1,6 +1,18 @@
 import { travelData } from "@/app/types/types"
-import api from "../../../app/api/api";
+import api from "../../../app/api/api"
 
+export const fetchPublishedTravels = async (page?: number) => {
+    try {
+        const response = await api.get('/travels/published', {
+            query: { page: page ?? 1 },
+            watch: false
+        })
+        return response.data
+    } catch (error) {
+        console.error('Error fetching travels:', error)
+        throw error
+    }
+}
 export const fetchTravels = async (userId: number): travelData[] => {
     try {
         const response = await api.get('/travelsFromUser', {
@@ -11,6 +23,7 @@ export const fetchTravels = async (userId: number): travelData[] => {
         return response.data
     } catch (error) {
         console.error('Error fetching travels:', error)
+        throw error
     }
 }
 
@@ -23,6 +36,7 @@ export const createTravel = async (userId: number) => {
         return response.data
     } catch (error) {
         console.error('Error creating travel:', error)
+        throw error
     }
 }
 
@@ -35,6 +49,7 @@ export const updateTravel = async (travelId: number, travelData: travelData) => 
         console.error('Error updating travel:', error)
         if (error.response) {
             console.log(error.response.data.message); // Ошибка от сервера
+            throw error.response
         } else {
             console.log('Network error'); // Ошибка сети
         }
@@ -48,11 +63,22 @@ export const deleteTravel = async (travelId: number) => {
 
     } catch (error) {
         console.error('Error deleting travel:', error)
+        throw error
     }
 }
 
-export const fetchSharedTravels = (userId: number) => {
-
+export const fetchSharedTravels = async (userId: number) => {
+    try {
+        const response = await api.get(`/getSharedTravels`, {
+            params: {
+                user_id: userId,
+            },
+        })
+        return response.data
+    } catch (error) {
+        console.error('Error fetching shared users:', error)
+        throw error
+    }
 }
 
 export const fetchSharedUsers = async (travelId: number) => {
@@ -65,6 +91,7 @@ export const fetchSharedUsers = async (travelId: number) => {
         return response.data
     } catch (error) {
         console.error('Error fetching shared users:', error)
+        throw error
     }
 }
 
@@ -77,8 +104,8 @@ export const fetchAttachUser = async (travelId: number, userId: number) => {
         return response.data
     } catch (error) {
         console.error('Error attach user:', error)
-        error.value = err.response?.data?.message || 'Failed to attach users';
-        throw err
+        error = error.response?.data?.message || 'Failed to attach users';
+        throw error
     }
 }
 
@@ -93,7 +120,7 @@ export const fetchDetachUser = async (travelId: number, userId: number) => {
         return response.data
     } catch (error) {
         console.error('Error detach user:', error)
-        error.value = err.response?.data?.message || 'Failed to detach users';
-        throw err
+        error = error.response?.data?.message || 'Failed to detach users';
+        throw error
     }
 }

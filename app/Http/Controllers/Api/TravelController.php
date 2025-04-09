@@ -7,6 +7,7 @@ use App\Models\Travel;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class TravelController extends Controller
 {
@@ -46,34 +47,26 @@ class TravelController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
-            'published' => 'sometimes|boolean',
-            'place' => 'required|max:255',
-            'date' => 'required',
-            'mode_of_transport' => 'required',
-            'good_impression' => 'required',
-            'bad_impression' => 'required',
-            'general_impression' => 'required',
-            'user_id' => 'required',
+            'user_id' => 'required|exists:users,id',
         ]);
 
-        // Получаем user_id из запроса
-        $userId = $request->input('user_id');
+        // Создаём путешествие с дефолтными значениями
+        $travel = Travel::create([
+            'user_id' => $request->user_id,
+            'place' => '', // Дефолтное название
+            'date' => '', // Дата
+            'mode_of_transport' => '', // Дефолтный транспорт
+            'order' => Travel::where('user_id', $request->user_id)->max('order') + 1 ?? 1,
+            'published' => false,
+            // Остальные текстовые поля можно оставить пустыми или задать дефолты
+            'good_impression' => '',
+            'bad_impression' => '',
+            'general_impression' => ''
+        ]);
 
-        // Находим максимальное значение поля `order` для записей с определённым user_id
-        $maxOrder = Travel::where('user_id', $userId)->max('order');
-
-        // Если записей нет, устанавливаем order = 1, иначе увеличиваем на 1
-        $order = $maxOrder ? $maxOrder + 1 : 1;
-
-        // Добавляем вычисленное значение `order` в данные запроса
-        $data = $request->all();
-        $data['order'] = $order;
-
-        // Создаем запись
-        $travel = Travel::create($data);
         return response()->json($travel, 201);
     }
 
@@ -154,32 +147,147 @@ class TravelController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function getTravelForUser($user_id)
+    public function getAllPublishedTravels(Request $request): \Illuminate\Http\JsonResponse
     {
-        $user = User::find($user_id);
-        $travels = $user->travels;
+        // Получаем опубликованные путешествия с пагинацией
+        $travels = Travel::with('creator:id,name,login')
+            ->where('published', true)
+            ->orderBy('order', 'desc')
+            ->paginate(20);
 
-        return response()->json($travels);
+        // Группируем по создателям
+        $grouped = $travels->groupBy('user_id')->map(function ($userTravels, $userId) {
+            $creator = $userTravels->first()->creator;
+
+            return [
+                'id' => $creator->id,
+                'name' => $creator->name,
+                'login' => $creator->login,
+                'travels' => $userTravels->map(function ($travel) {
+                    return $travel->makeHidden(['user_id'])->toArray();
+                })->values()->toArray()
+            ];
+        })->values();
+
+        // Добавляем метаданные пагинации
+        $response = [
+            'data' => $grouped,
+            'meta' => [
+                'current_page' => $travels->currentPage(),
+                'last_page' => $travels->lastPage(),
+                'per_page' => $travels->perPage(),
+                'total' => $travels->total(),
+            ],
+            'links' => [
+                'first' => $travels->url(1),
+                'last' => $travels->url($travels->lastPage()),
+                'prev' => $travels->previousPageUrl(),
+                'next' => $travels->nextPageUrl(),
+            ],
+        ];
+
+        return response()->json($response);
     }
 
-    public function getUsersForTravel($travel_id)
+//    public function getTravelForUser($user_id): \Illuminate\Http\JsonResponse
+//    {
+//        $user = User::find($user_id);
+//        $travels = $user->travels;
+//
+//        return response()->json($travels);
+//    }
+//
+    public function getTravelsForUser(Request $request): \Illuminate\Http\JsonResponse
     {
-        $travel = Travel::find($travel_id);
-        $users = $travel->users;
+        // Получаем все путешествия с создателями
+        $travels = Travel::with('creator:id,name,login')
+            ->whereHas('users', function($query) use ($request) {
+                $query->where('users.id', $request->user_id);
+            })
+            ->get();
+
+        // Группируем по создателям
+        $grouped = $travels->groupBy('user_id')->map(function ($userTravels, $userId) {
+            $creator = $userTravels->first()->creator;
+
+            return [
+                'id' => $creator->id,
+                'name' => $creator->name,
+                'login' => $creator->login,
+                'travels' => $userTravels->map(function ($travel) {
+                    return $travel->makeHidden(['created_at', 'updated_at'])->toArray();
+//                    return $travel->toArray();
+                })->values()->toArray()
+            ];
+        })->values();
+
+        return response()->json($grouped);
+    }
+
+    public function getUsersForTravel(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $request->validate([
+            'travel_id' => 'required|integer|exists:travels,id'
+        ]);
+
+        $users = DB::table('users')
+            ->join('travel_user', 'users.id', '=', 'travel_user.user_id')
+            ->where('travel_user.travel_id', $request->travel_id)
+            ->get();
 
         return response()->json($users);
     }
 
-    public function attachUser(Request $request, Travel $travel)
+    public function attachUserToTravel(Request $request): \Illuminate\Http\JsonResponse
     {
-        $request->validate(['user_id' => 'required|exists:users,id']);
-        $travel->users()->syncWithoutDetaching([$request->user_id]);
-        return response()->json(['message' => 'User attached']);
+        $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+            'travel_id' => 'required|integer|exists:travels,id'
+        ]);
+
+        $travel = Travel::findOrFail($request->travel_id);
+        $userId = $request->user_id;
+
+        // Проверяем, не существует ли уже такая связь
+        if (!$travel->users()->where('user_id', $userId)->exists()) {
+            $travel->users()->attach($userId);
+
+            return response()->json([
+                'message' => 'User successfully attached to travel',
+                'attached' => true
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'User is already attached to this travel',
+            'attached' => false
+        ], 200);
     }
 
-    public function detachUser(Travel $travel, User $user)
+
+    public function detachUser(Request $request): \Illuminate\Http\JsonResponse
     {
-        $travel->users()->detach($user->id);
-        return response()->json(['message' => 'User detached']);
+        $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+            'travel_id' => 'required|integer|exists:travels,id'
+        ]);
+
+        $travel = Travel::findOrFail($request->travel_id);
+        $userId = $request->user_id;
+
+        // Проверяем, существует ли такая связь
+        if ($travel->users()->where('user_id', $userId)->exists()) {
+            $travel->users()->detach($userId);
+
+            return response()->json([
+                'message' => 'User successfully detached from travel',
+                'detached' => true
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'User is not attached to this travel',
+            'detached' => false
+        ], 200);
     }
 }
