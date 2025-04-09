@@ -7,6 +7,7 @@ export const fetchVerifyCode = async (code: string, login: string) => {
         return response
 
     } catch (error) {
+        // throw error
         console.error('Error verify:', error)
         return error.response
     }

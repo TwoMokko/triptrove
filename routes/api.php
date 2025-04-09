@@ -39,6 +39,6 @@ Route::delete('/travels/{id}', [TravelController::class, 'destroy']); // Уда�
 
 // TODO: разобраться с методами (что для чего и когда) и выше тоже
 Route::get('/usersSearch', [UserController::class, 'getUsersFromSearchString']); // Получить всех пользователей по строке поиска
-Route::get('/travels/{travel_id}/users', [TravelController::class, 'getUsersForTravel']);
-Route::post('/travels/{travel_id}/users', [TravelController::class, 'attachUser']);
-Route::delete('/travels/{travel_id}/users/{user}', [TravelController::class, 'detachUser']);
+Route::get('/getSharedUsers', [TravelController::class, 'getUsersForTravel']);
+Route::post('/attachUser', [TravelController::class, 'attachUserToTravel']);
+Route::delete('/detachUser', [TravelController::class, 'detachUser']);

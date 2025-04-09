@@ -2,7 +2,6 @@
 import { useUsersStore } from "@/etities/user"
 import { useTravelsStore } from "@/etities/travel"
 import { ref, onMounted } from 'vue'
-import api from "../../app/api/api.js"
 import { travelData } from "@/app/types/types"
 import Loader from "@/shared/ui/Loader.vue"
 import ButtonCustom from "@/shared/ui/ButtonCustom.vue"
@@ -21,34 +20,26 @@ const isModalOpenForCreateTravel = ref<boolean>(false)
 const newTravel = ref<Omit<travelData, 'id'>>()
 
 
-const getUsersForTravels = async (): Promise<void> => {
-    try {
-        const response = await api.get(`/travels/${usersStore.currentUser.id}/users`, {
-            // params: {
-            //     travel_id: changeId.value,
-            // },
-        })
-        usersForTravel.value = response.data
-        console.log(usersForTravel.value)
-    } catch (error) {
-        console.error('Error fetching travels:', error)
-    }
-}
-const setUsersForTravels = async (): Promise<void> => {
-    try {
-        const response = await api.post(`/travels/${usersStore.currentUser.id}/users`, travelsStore.currentTravel)
-        usersForTravel.value = response.data
-        console.log(usersForTravel.value)
-    } catch (error) {
-        console.error('Error fetching travels:', error)
-    }
-}
-
-const createTravel = (): void => {
+const createTravel = async (): void => {
     isModalOpenForCreateTravel.value = false
-    travelsStore.addTravel({ ...newTravel.value, user_id: usersStore.currentUser.id })
+    // travelsStore.addTravel({ ...newTravel.value, user_id: usersStore.currentUser.id })
+    if (travelsStore.currentTravel) {
+
+        console.log('save new travel: ', travelsStore.currentTravel)
+
+        await travelsStore.editTravel(
+            travelsStore.currentTravel.id,
+            travelsStore.currentTravel
+        )
+        travelsStore.setCurrentTravel(null)
+    }
 }
 
+
+const openCreateTravel = async (): void =>  {
+    newTravel.value = await travelsStore.addTravel(usersStore.currentUser.id)
+    isModalOpenForCreateTravel.value = true
+}
 
 onMounted(async () => {
     await usersStore.getUserByToken(authStore.token)
@@ -68,7 +59,7 @@ onMounted(async () => {
                 <div class="text-end">
                     <ButtonCustom
                         text="Новое путешествие"
-                        @handler="() => isModalOpenForCreateTravel = true"
+                        @handler="openCreateTravel"
                     />
                 </div>
                 <Modal
@@ -76,7 +67,7 @@ onMounted(async () => {
                     @close="() => isModalOpenForCreateTravel = false"
                 >
                     <TravelForm
-                        v-model="newTravel"
+                        v-model="travelsStore.currentTravel"
                         @handler="createTravel"
                         :btn-text="'Добавить путешествие'"
                     />
@@ -107,8 +98,8 @@ onMounted(async () => {
                 </div>
                 <div class="text-end">
                     <ButtonCustom
-                        :text="'Новое путешествие'"
-                        @handler="() => isModalOpenForCreateTravel = true"
+                        text="Новое путешествие"
+                        @handler="openCreateTravel"
                     />
                 </div>
                 <Modal
@@ -116,7 +107,7 @@ onMounted(async () => {
                     @close="() => isModalOpenForCreateTravel = false"
                 >
                     <TravelForm
-                        v-model="newTravel"
+                        v-model="travelsStore.currentTravel"
                         @handler="createTravel"
                         :btn-text="'Добавить путешествие'"
                     />

@@ -24,7 +24,9 @@ class Travel extends Model
     // Для "многие ко многим" (участники путешествия)
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+//        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'travel_user', 'travel_id', 'user_id')
+            ->withTimestamps(); // если нужно сохранять created_at/updated_at
     }
 
     public function tags()

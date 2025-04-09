@@ -20,3 +20,9 @@ export type userData = {
     name: string,
     updated_at: string
 }
+
+interface AttachResponse {
+    message: string,
+    attached_count: number,
+    already_attached?: number[]
+}

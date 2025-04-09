@@ -10,6 +10,11 @@ const message = ref<string>()
 const authStore = useAuthStore()
 
 const submit = async () => {
+    // try {
+    // } catch (errors) {
+    //
+    // }
+
     const resp = await authStore.verifyCode(code.value)
     if (resp.status == 201) {
         message.value = resp.data.error = ''

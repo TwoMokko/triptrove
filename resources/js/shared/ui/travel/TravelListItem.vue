@@ -14,6 +14,7 @@ const travelsStore = useTravelsStore()
 
 const handleEdit = () => {
     travelsStore.setCurrentTravel({ ...props.item })
+    // travelsStore.getSharedUsers()
 }
 
 const handleDelete = async () => {

@@ -5,7 +5,9 @@ import {
     createTravel,
     updateTravel,
     deleteTravel,
-    fetchSharedTravels
+    fetchSharedTravels,
+    fetchSharedUsers,
+    fetchAttachUser, fetchDetachUser,
 } from '../api/travels'
 import type { travelData } from "@/app/types/types"
 
@@ -17,6 +19,9 @@ export const useTravelsStore = defineStore('travels', () => {
     const currentTravel = ref<travelData | null>(null)
     const isLoading = ref(false)
     const error = ref<string | null>(null)
+
+    // const usersShared = ref<{ travelId: number, users: userData[] }[]>()
+    const sharedUsers = ref()
 
     // Getters
     const hasTravels = computed(() => travels.value.length > 0)
@@ -48,19 +53,32 @@ export const useTravelsStore = defineStore('travels', () => {
             isLoading.value = false
         }
     }
-
-    const addTravel = async (travelData: Omit<travelData, 'id'>) => {
-        isLoading.value = true
+    const getSharedUsers = async () => {
+        // isLoading.value = true
         try {
-            const newTravel = await createTravel(travelData)
+            sharedUsers.value = await fetchSharedUsers(currentTravel.value.id)
+        } catch (err) {
+            error.value = 'Ошибка загрузки общих пользователей'
+            console.error(err)
+        } finally {
+            // isLoading.value = false
+        }
+    }
+
+    const addTravel = async (userId: number) => {
+        // isLoading.value = true
+        try {
+            const newTravel = await createTravel(userId)
             travels.value.push(newTravel)
+            currentTravel.value = newTravel
+            console.log({newTravel})
             return newTravel
         } catch (err) {
             error.value = 'Ошибка создания путешествия'
             console.error(err)
             throw err
         } finally {
-            isLoading.value = false
+            // isLoading.value = false
         }
     }
 
@@ -103,6 +121,43 @@ export const useTravelsStore = defineStore('travels', () => {
         currentTravel.value = travel
     }
 
+    const attachUser = async (userId: number) => {
+        const find = sharedUsers.value.find(itm => itm.user_id == userId)
+
+        if (find) {
+            console.log('уже есть')
+            return
+        }
+
+        try {
+            // isLoading.value = true
+            const response = await fetchAttachUser(currentTravel.value.id, userId)
+            await getSharedUsers()
+            console.log('what: ', response.data)
+            return response.data
+        } catch (err) {
+            error.value = err.response?.data?.message || 'Failed to attach users';
+            throw err
+        } finally {
+            // isLoading.value = false
+        }
+    }
+
+    const detachUser = async (userId: number) => {
+        try {
+            // isLoading.value = true
+            const response = await fetchDetachUser(currentTravel.value.id, userId)
+            await getSharedUsers()
+            console.log('what: ', response.data)
+            return response.data
+        } catch (err) {
+            error.value = err.response?.data?.message || 'Failed to detach users';
+            throw err
+        } finally {
+            // isLoading.value = false
+        }
+    }
+
     return {
         // State
         travels,
@@ -110,6 +165,7 @@ export const useTravelsStore = defineStore('travels', () => {
         currentTravel,
         isLoading,
         error,
+        sharedUsers,
 
         // Getters
         hasTravels,
@@ -121,6 +177,9 @@ export const useTravelsStore = defineStore('travels', () => {
         addTravel,
         editTravel,
         removeTravel,
-        setCurrentTravel
+        setCurrentTravel,
+        attachUser,
+        detachUser,
+        getSharedUsers,
     }
 })
