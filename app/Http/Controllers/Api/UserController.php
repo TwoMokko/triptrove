@@ -79,13 +79,15 @@ class UserController extends Controller
     public function getUsersFromSearchString(Request $request): \Illuminate\Http\JsonResponse
     {
         $user_id = $request->query('user_id');
+        $creator_user_id = $request->query('creator_user_id');
         $user_search = $request->query('user_search');
         $searchTerm = "%".trim($user_search)."%";
 
         return response()->json(
-            User::where(function($query) use ($searchTerm) {
-                $query->where('name', 'LIKE', $searchTerm)
-                    ->orWhere('login', 'LIKE', $searchTerm);
+            User::select('id', 'login', 'name')
+                ->where(function($query) use ($searchTerm) {
+                    $query->where('name', 'LIKE', $searchTerm)
+                        ->orWhere('login', 'LIKE', $searchTerm);
             })
                 ->where('id', '!=', $user_id)
                 ->limit(10)

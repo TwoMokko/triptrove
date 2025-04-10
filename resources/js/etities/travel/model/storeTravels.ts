@@ -96,38 +96,38 @@ export const useTravelsStore = defineStore('travels', () => {
         }
     }
 
-    const editTravel = async (travelId: number, travelData: Partial<travelData>) => {
+    const editTravel = async (travelId: number, travelData: Partial<travelData>, userId: number) => {
 
         console.log('edit: ', travelData)
 
-        isLoading.value = true
+        // isLoading.value = true
         try {
-            const updatedTravel = await updateTravel(travelId, travelData)
+            const updatedTravel = await updateTravel(travelId, travelData, userId)
             const index = travels.value.findIndex(travel => travel.id === travelId)
             if (index !== -1) {
                 travels.value[index] = { ...travels.value[index], ...updatedTravel.data }
             }
             return updatedTravel
         } catch (err) {
-            error.value = 'Ошибка обновления путешествия'
+            // error.value = 'Ошибка обновления путешествия'
             console.error(err)
             throw err
         } finally {
-            isLoading.value = false
+            // isLoading.value = false
         }
     }
 
-    const removeTravel = async (travelId: number) => {
-        isLoading.value = true
+    const removeTravel = async (travelId: number, userId: number) => {
+        // isLoading.value = true
         try {
-            await deleteTravel(travelId)
+            await deleteTravel(travelId, userId)
             travels.value = travels.value.filter(travel => travel.id !== travelId)
         } catch (err) {
-            error.value = 'Ошибка удаления путешествия'
+            // error.value = 'Ошибка удаления путешествия'
             console.error(err)
             throw err
         } finally {
-            isLoading.value = false
+            // isLoading.value = false
         }
     }
 

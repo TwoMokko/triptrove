@@ -5,12 +5,15 @@ import Modal from '@/shared/ui/Modal.vue'
 import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
 import type { travelData } from "@/app/types/types"
 import { useTravelsStore } from "@/etities/travel"
+import { useUsersStore } from "@/etities/user"
+import { storeToRefs } from "pinia"
 
 const props = defineProps<{
     item: travelData
 }>()
 
 const travelsStore = useTravelsStore()
+const { currentUser } = storeToRefs(useUsersStore())
 
 const handleEdit = () => {
     travelsStore.setCurrentTravel({ ...props.item })
@@ -19,7 +22,12 @@ const handleEdit = () => {
 
 const handleDelete = async () => {
     if (confirm('Вы уверены, что хотите удалить это путешествие?')) {
-        await travelsStore.removeTravel(props.item.id)
+        try {
+            await travelsStore.removeTravel(props.item.id, currentUser.value.id)
+        }
+        catch (error) {
+            alert(error.response.data.message)
+        }
     }
 }
 
@@ -30,7 +38,8 @@ const handleSave = async () => {
 
         await travelsStore.editTravel(
             travelsStore.currentTravel.id,
-            travelsStore.currentTravel
+            travelsStore.currentTravel,
+            currentUser.value.id
         )
         travelsStore.setCurrentTravel(null)
     }

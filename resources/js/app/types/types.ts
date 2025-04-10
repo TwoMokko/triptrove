@@ -6,10 +6,12 @@ export type travelData = {
     good_impression: string,
     bad_impression: string,
     general_impression: string,
-    user_id: number,
-    order: number,
-    published: boolean,
-    timestamps?: string,
+    order: string,
+    published: string,
+    user_id: string,
+    created_at: string,
+    updated_at: string,
+    users: userShort[]
 }
 
 export type userData = {
@@ -28,3 +30,16 @@ interface AttachResponse {
 }
 
 
+interface userShort {
+    id: number,
+    name: string,
+    login: string,
+    pivot: {
+        travel_id: number,
+        user_id: number,
+        created_at: string,
+        updated_at: string,
+    }
+}
+
+export type travelsResponse = travelData[]

@@ -16,7 +16,9 @@ onMounted(async () => {
     <div class="px-[10%] py-10">
         <Loader v-if="travelsStore.isLoading"/>
         <template v-else>
-            <h1 class="text-2xl mb-4">Все публичные путешествия</h1>
+            <div class="test rounded-3xl mb-4 py-20 text-white">
+                <h1 class="text-2xl">ALL PUBLIC TRAVELS</h1>
+            </div>
             <div v-for="creator in travelsStore.publishedTravels.data">
                 <h3 class="text-xl mb-4">name: {{ creator.name }}, login: {{ creator.login }}</h3>
                 <div>
@@ -30,3 +32,12 @@ onMounted(async () => {
         </template>
     </div>
 </template>
+<style>
+.test {
+    background: linear-gradient(135deg, #abc8ff 0%, #a1f4ff 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+</style>

@@ -40,9 +40,12 @@ export const createTravel = async (userId: number) => {
     }
 }
 
-export const updateTravel = async (travelId: number, travelData: travelData) => {
+export const updateTravel = async (travelId: number, travelData: travelData, userId: number) => {
     try {
-        const response = await api.put(`/travels/${travelId}`, travelData)
+        const response = await api.put(`/travels/${travelId}`, {
+            ...travelData,
+            current_user_id: userId
+        })
         console.log('Travel updated:', response.data)
         return response.data
     } catch (error) {
@@ -56,9 +59,13 @@ export const updateTravel = async (travelId: number, travelData: travelData) => 
     }
 }
 
-export const deleteTravel = async (travelId: number) => {
+export const deleteTravel = async (travelId: number, userId: number) => {
     try {
-        const response = await api.delete(`/travels/${travelId}`)
+        const response = await api.delete(`/travels/${travelId}`, {
+            params: {
+                user_id: userId
+            }
+        })
         console.log('Travel deleted:', response.data)
 
     } catch (error) {

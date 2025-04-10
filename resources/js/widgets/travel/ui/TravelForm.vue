@@ -40,6 +40,14 @@ watch(
     { deep: true }
 )
 
+const handleUsersUpdate = (updatedUsers) => {
+    localTravel.value = {
+        ...localTravel.value,
+        users: updatedUsers
+    }
+    updateModel()
+}
+
 </script>
 
 <template>
@@ -62,7 +70,10 @@ watch(
         <TextareaCustom v-model:text="localTravel.general_impression" :placeholder="'общие впечатления'" @change="updateModel" />
 
 
-        <UsersSharedList />
+        <UsersSharedList
+            v-model="localTravel.users"
+            @update:modelValue="handleUsersUpdate"
+        />
     </form>
     <div class="text-end mt-4">
         <ButtonCustom :text="btnText" @click="$emit('handler')" class="w-full" />
