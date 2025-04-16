@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import { computed, ComputedRef, onMounted } from 'vue'
+import { computed, ComputedRef } from 'vue'
 import Loader from "@/shared/ui/Loader.vue"
 import { useUsersStore } from "@/etities/user"
-import { useAuthStore } from "@/etities/auth"
 
-const authStore = useAuthStore()
 const usersStore = useUsersStore()
 
+const currentUser = computed(() => usersStore.currentUser)
 const isLoading: ComputedRef<boolean> = computed(() => {
     return usersStore.currentUser === null
-})
-
-const fetchUser = async () => {
-    await usersStore.getUserByToken(authStore.token)
-}
-
-onMounted(() => {
-    fetchUser()
 })
 </script>
 
 <template>
-    <div  class="px-[10%] py-10">
-        <Loader v-if="isLoading" />
-        <div v-else>
-            <h1 class="text-2xl mb-4">Имя: {{ usersStore.currentUser.name }}</h1>
-            <div>id: {{ usersStore.currentUser.id }}</div>
-            <div>login: {{ usersStore.currentUser.login }}</div>
-            <div>email: {{ usersStore.currentUser.email }}</div>
+    <Loader v-if="isLoading" />
+    <div v-else class="px-[10%] py-10">
+        <div class="flex gap-6 items-center">
+            <div>
+                <img
+                    :src="currentUser.photo ? `/images/users/avatars/${currentUser.avatar}` : '/images/users/avatars/default-user.svg'"
+                    alt="ava"
+                    class="w-40 h-40 rounded-full object-cover"
+                >
+            </div>
+            <div>
+                <h1 class="text-2xl mb-4">Имя: {{ currentUser.name }}</h1>
+                <div>id: {{ currentUser.id }}</div>
+                <div>login: {{ currentUser.login }}</div>
+                <div>email: {{ currentUser.email }}</div>
+            </div>
         </div>
     </div>
 </template>

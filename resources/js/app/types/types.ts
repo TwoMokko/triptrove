@@ -20,7 +20,8 @@ export type userData = {
     email_verified_at: string | null,
     id: number,
     name: string,
-    updated_at: string
+    avatar_url: string,
+    updated_at: string,
 }
 
 interface AttachResponse {

@@ -1,11 +1,24 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import { useTravelsStore } from "@/etities/travel"
 import Loader from "@/shared/ui/Loader.vue"
-import TravelListItem from "@/shared/ui/travel/TravelListItem.vue";
+import TravelListItemPublished from "@/feature/travel/TravelListItemPublished.vue"
+import { useUsersStore } from "@/etities/user"
 
+const usersStore = useUsersStore()
 const travelsStore = useTravelsStore()
 const page = ref(1)
+
+const currentUserId = computed(() => usersStore.currentUser?.id)
+
+watch(currentUserId, (newId) => {
+    console.log('Current user ID changed:', newId)
+}, { immediate: true })
+
+const isYoursTravels = computed(() => {
+    const id = currentUserId.value
+    return (creatorId: number) => id === creatorId
+})
 
 onMounted(async () => {
     await travelsStore.getPublishedTravels(page.value)
@@ -13,23 +26,24 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="px-[10%] py-10">
-        <Loader v-if="travelsStore.isLoading"/>
-        <template v-else>
-            <div class="test rounded-3xl mb-4 py-20 text-white">
-                <h1 class="text-2xl">ALL PUBLIC TRAVELS</h1>
+    <Loader v-if="travelsStore.isLoading"/>
+    <div v-else class="px-[10%] py-10">
+        <div class="test rounded-3xl mb-4 py-20 text-white">
+            <h1 class="text-2xl">ALL PUBLIC TRAVELS</h1>
+        </div>
+        <div v-for="creator in travelsStore.publishedTravels.data" :key="creator.id">
+            <div class="flex gap-2 items-end mb-4">
+                <h3 class="text-xl">{{ creator.login }} ({{ creator.name }})</h3>
+                <div v-if="isYoursTravels(creator.id)" class="text-primary">ваши</div>
             </div>
-            <div v-for="creator in travelsStore.publishedTravels.data">
-                <h3 class="text-xl mb-4">name: {{ creator.name }}, login: {{ creator.login }}</h3>
-                <div>
-                    <TravelListItem
-                        v-for="item in creator.travels"
-                        :key="item.id"
-                        :item="item"
-                    />
-                </div>
+            <div>
+                <TravelListItemPublished
+                    v-for="item in creator.travels"
+                    :key="item.id"
+                    :item="item"
+                />
             </div>
-        </template>
+        </div>
     </div>
 </template>
 <style>

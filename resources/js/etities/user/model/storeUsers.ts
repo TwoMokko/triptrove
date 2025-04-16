@@ -4,6 +4,7 @@ import { fetchUsers, fetchUserByToken } from '../api/users'
 import { userData } from "../../../app/types/types"
 
 export const useUsersStore = defineStore('users', () => {
+    console.log('🍍 UsersStore initialized!')
     const users = ref<userData[]>([])
     const currentUser = ref<userData>(null)
 
@@ -16,10 +17,15 @@ export const useUsersStore = defineStore('users', () => {
         currentUser.value = await fetchUserByToken(token)
     }
 
+    const resetCurrentUser = () => {
+        currentUser.value = null
+    }
+
     return {
         users,
         currentUser,
         // getUsers,
         getUserByToken,
+        resetCurrentUser,
     }
 })

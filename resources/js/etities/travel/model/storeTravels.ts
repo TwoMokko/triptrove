@@ -107,6 +107,18 @@ export const useTravelsStore = defineStore('travels', () => {
             if (index !== -1) {
                 travels.value[index] = { ...travels.value[index], ...updatedTravel.data }
             }
+
+            sharedTravels.value = sharedTravels.value.map(usersTravel => {
+                return {
+                    ...usersTravel,
+                    travels: usersTravel.travels.map(travel => {
+                        if (travel.id === travelId) {
+                            return { ...travel, ...updatedTravel.data }
+                        }
+                        return travel
+                    })
+                }
+            })
             return updatedTravel
         } catch (err) {
             // error.value = 'Ошибка обновления путешествия'
