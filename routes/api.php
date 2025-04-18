@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\VerificationController;
 use App\Http\Controllers\Api\TravelController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\PhotoController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -39,3 +40,15 @@ Route::get('/getSharedUsers', [TravelController::class, 'getUsersForTravel']);
 Route::get('/getSharedTravels', [TravelController::class, 'getTravelsForUser']);
 Route::post('/attachUser', [TravelController::class, 'attachUserToTravel']);
 Route::delete('/detachUser', [TravelController::class, 'detachUser']);
+
+// Для обложки путешествия
+Route::post('/travels/{travel}/cover', [TravelController::class, 'updateCover'])
+    ->middleware('auth:sanctum');
+
+// Для аватара пользователя
+Route::post('/profile/avatar', [UserController::class, 'updateAvatar'])
+    ->middleware('auth:sanctum');
+
+//// Для добавления фото к путешествию
+//Route::post('/travels/{travel}/photos', [TravelController::class, 'uploadPhoto'])
+//    ->middleware('auth:sanctum');

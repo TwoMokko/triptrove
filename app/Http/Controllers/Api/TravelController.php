@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UploadPhotoRequest;
 use App\Models\Travel;
 use App\Models\User;
+use App\Services\PhotoUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -321,6 +323,67 @@ class TravelController extends Controller
         });
 
         return response()->json($response);
+    }
+
+    public function updateCover(UploadPhotoRequest $request, Travel $travel)
+    {
+        if ($request->user()->id !== $travel->user_id) {
+            abort(403, 'Unauthorized');
+        }
+        try {
+            $uploadService = new PhotoUploadService(
+                file: $request->file('photo'),
+                folder: 'travels',
+                subfolder: 'covers'
+            );
+
+            $result = $uploadService->uploadAndSaveToDB(
+                model: $travel,
+                dbField: 'cover', // Указываем название поля
+                extraData: ['cover_updated_at' => now()],
+                deleteOld: true
+            );
+
+            return response()->json([
+                'success' => true,
+                'travel' => $result['model']
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function addPhoto(UploadPhotoRequest $request, Travel $travel)
+    {
+        try {
+            $uploadService = new PhotoUploadService(
+                file: $request->file('photo'),
+                folder: 'travels',
+                subfolder: 'photos'
+            );
+
+            $result = $uploadService->uploadAndSaveToDB(
+                model: $travel,
+                dbField: 'cover', // Указываем название поля
+                extraData: ['cover_updated_at' => now()],
+                deleteOld: true
+            );
+
+            return response()->json([
+                'success' => true,
+                'photo' => $result['model']->photos()->latest()->first()
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
     }
 
 //    public function getUsersForTravel(Request $request): JsonResponse

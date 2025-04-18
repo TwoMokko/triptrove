@@ -1,15 +1,18 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import {defineStore} from 'pinia'
+import {computed, ref} from 'vue'
 import {
-    fetchTravels,
     createTravel,
-    updateTravel,
     deleteTravel,
+    fetchAttachUser,
+    fetchDetachUser,
+    fetchPublishedTravels,
     fetchSharedTravels,
     fetchSharedUsers,
-    fetchAttachUser, fetchDetachUser, fetchPublishedTravels,
+    fetchTravels,
+    updateTravel,
+    uploadPhoto,
 } from '../api/travels'
-import type { travelData } from "@/app/types/types"
+import type {travelData} from "@/app/types/types"
 
 export const useTravelsStore = defineStore('travels', () => {
     // State
@@ -184,6 +187,18 @@ export const useTravelsStore = defineStore('travels', () => {
         }
     }
 
+    const uploadTravelCover = async (file: File, travelId: number) => {
+        const formData = new FormData()
+        formData.append('photo', file)
+        try {
+            this.currentTravel.cover = await uploadPhoto(travelId, formData)
+        }
+        catch (err) {
+            throw err
+        }
+    }
+
+
     return {
         // State
         publishedTravels,
@@ -211,5 +226,6 @@ export const useTravelsStore = defineStore('travels', () => {
         attachUser,
         detachUser,
         getSharedUsers,
+        uploadTravelCover,
     }
 })

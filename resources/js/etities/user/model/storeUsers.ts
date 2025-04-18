@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { fetchUsers, fetchUserByToken } from '../api/users'
+import { fetchUserByToken, fetchUsers, uploadPhoto } from '../api/users'
 import { userData } from "../../../app/types/types"
+import { useAuthStore } from "../../auth"
 
 export const useUsersStore = defineStore('users', () => {
-    console.log('🍍 UsersStore initialized!')
     const users = ref<userData[]>([])
     const currentUser = ref<userData>(null)
 
+    const authStore = useAuthStore()
 
     const getUsers = async (searchQuery = '') => {
         users.value = await fetchUsers(searchQuery)
@@ -21,11 +22,23 @@ export const useUsersStore = defineStore('users', () => {
         currentUser.value = null
     }
 
+    const updateAvatar = async (file) => {
+        try {
+            const formData = new FormData()
+            formData.append('photo', file)
+            currentUser.value.avatar = await uploadPhoto(formData, authStore.token)
+        }
+        catch (err) {
+            throw err
+        }
+    }
+
     return {
         users,
         currentUser,
         // getUsers,
         getUserByToken,
         resetCurrentUser,
+        updateAvatar,
     }
 })

@@ -24,6 +24,8 @@ onMounted(async () => {
         } finally {
             isAppLoading.value = false
         }
+    } else {
+        isAppLoading.value = false
     }
 })
 

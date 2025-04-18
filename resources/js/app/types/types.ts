@@ -11,6 +11,7 @@ export type travelData = {
     user_id: string,
     created_at: string,
     updated_at: string,
+    cover: string,
     users: userShort[]
 }
 
@@ -20,7 +21,7 @@ export type userData = {
     email_verified_at: string | null,
     id: number,
     name: string,
-    avatar_url: string,
+    avatar: string,
     updated_at: string,
 }
 

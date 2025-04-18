@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UploadPhotoRequest;
 use App\Models\User;
+use App\Services\PhotoUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -28,6 +31,7 @@ class UserController extends Controller
             'name' => 'required|max:255',
             'email' => 'required',
             'password' => 'required',
+            'avatar' => 'default-user.svg'
         ]);
 
         $user = User::create($request->all());
@@ -93,5 +97,41 @@ class UserController extends Controller
                 ->limit(10)
                 ->get()
         );
+    }
+
+    public function updateAvatar(UploadPhotoRequest $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $user = $request->user(); // Получаем текущего аутентифицированного пользователя
+
+            $uploadService = new PhotoUploadService(
+                $request->file('photo'),
+                'users',
+                'avatars'
+            );
+
+            $result = $uploadService->uploadAndSaveToDB(
+                model: $user,
+                dbField: 'avatar',
+                extraData: ['avatar_updated_at' => now()],
+                deleteOld: true
+            );
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'user' => $result['model']
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
     }
 }

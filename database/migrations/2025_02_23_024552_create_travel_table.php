@@ -19,6 +19,8 @@ return new class extends Migration
             $table->text('good_impression');
             $table->text('bad_impression');
             $table->text('general_impression');
+            $table->string('cover')->nullable();
+            $table->timestamp('cover_updated_at')->nullable();
             $table->integer('order');
             $table->boolean('published')->default(false);
             $table->unsignedBigInteger('user_id'); // Внешний ключ

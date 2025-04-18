@@ -131,3 +131,18 @@ export const fetchDetachUser = async (travelId: number, userId: number) => {
         throw error
     }
 }
+
+export const uploadPhoto = async (travelId, formData) => {
+    try {
+        const response = await api.post(`/travels/${travelId}/photos`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        return response.data
+    }
+    catch (err) {
+        throw err
+    }
+}
+
