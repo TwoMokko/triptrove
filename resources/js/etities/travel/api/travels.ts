@@ -27,18 +27,28 @@ export const fetchTravels = async (userId: number): travelData[] => {
     }
 }
 
-export const createTravel = async (userId: number) => {
+export const createTravel = async (travelData: travelData) => {
     try {
-        const response = await api.post('/travels', {
-            user_id: userId,
-        })
+        const response = await api.post('/travels', travelData)
         console.log('Travel created:', response.data)
         return response.data
     } catch (error) {
         console.error('Error creating travel:', error)
-        throw error
     }
 }
+
+// export const createTravel = async (userId: number) => {
+//     try {
+//         const response = await api.post('/travels', {
+//             user_id: userId,
+//         })
+//         console.log('Travel created:', response.data)
+//         return response.data
+//     } catch (error) {
+//         console.error('Error creating travel:', error)
+//         throw error
+//     }
+// }
 
 export const updateTravel = async (travelId: number, travelData: travelData, userId: number) => {
     try {

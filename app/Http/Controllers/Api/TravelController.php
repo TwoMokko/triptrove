@@ -51,28 +51,91 @@ class TravelController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
+        $data = $request->validate([
+            'published' => 'sometimes|boolean',
+            'place' => 'required|max:255',
+            'date' => 'required',
+            'mode_of_transport' => 'required',
+            'good_impression' => 'required',
+            'bad_impression' => 'required',
+            'general_impression' => 'required',
+            'user_id' => 'required',
         ]);
 
-        // Создаём путешествие с дефолтными значениями
-        $travel = Travel::create([
-            'user_id' => $request->user_id,
-            'place' => '', // Дефолтное название
-            'date' => '', // Дата
-            'mode_of_transport' => '', // Дефолтный транспорт
-            'order' => Travel::where('user_id', $request->user_id)->max('order') + 1 ?? 1,
-            'published' => false,
-            // Остальные текстовые поля можно оставить пустыми или задать дефолты
-            'good_impression' => '',
-            'bad_impression' => '',
-            'general_impression' => ''
-        ]);
+//        $request->validate([
+//            'published' => 'sometimes|boolean',
+//            'place' => 'required|max:255',
+//            'date' => 'required',
+//            'mode_of_transport' => 'required',
+//            'good_impression' => 'required',
+//            'bad_impression' => 'required',
+//            'general_impression' => 'required',
+//            'user_id' => 'required',
+//        ]);
+
+        // Получаем user_id из запроса
+        $userId = $request->input('user_id');
+
+        // Находим максимальное значение поля `order` для записей с определённым user_id
+        $maxOrder = Travel::where('user_id', $userId)->max('order');
+
+        // Если записей нет, устанавливаем order = 1, иначе увеличиваем на 1
+        $order = $maxOrder ? $maxOrder + 1 : 1;
+
+        // Добавляем вычисленное значение `order` в данные запроса
+//        $data = $request->all();
+        $data['order'] = $order;
+
+        // Создаем запись
+        $travel = Travel::create($data);
+
+        if ($request->has('users')) {
+            $newUserIds = collect($request->users)->pluck('id')->toArray();
+            $currentUserIds = $travel->users->pluck('id')->toArray();
+
+            // Пользователи для добавления
+            $usersToAttach = array_diff($newUserIds, $currentUserIds);
+            // Пользователи для удаления
+            $usersToDetach = array_diff($currentUserIds, $newUserIds);
+
+            if (!empty($usersToAttach)) {
+                $travel->users()->attach($usersToAttach);
+            }
+
+            if (!empty($usersToDetach)) {
+                $travel->users()->detach($usersToDetach);
+            }
+        }
+
+        // Загружаем обновленные данные
+        $travel->load('users:id,name,login');
 
         return response()->json($travel, 201);
     }
+//    public function store(Request $request): JsonResponse
+//    {
+//        $request->validate([
+//            'user_id' => 'required|exists:users,id',
+//        ]);
+//
+//        // Создаём путешествие с дефолтными значениями
+//        $travel = Travel::create([
+//            'user_id' => $request->user_id,
+//            'place' => '', // Дефолтное название
+//            'date' => '', // Дата
+//            'mode_of_transport' => '', // Дефолтный транспорт
+//            'order' => Travel::where('user_id', $request->user_id)->max('order') + 1 ?? 1,
+//            'published' => false,
+//            // Остальные текстовые поля можно оставить пустыми или задать дефолты
+//            'good_impression' => '',
+//            'bad_impression' => '',
+//            'general_impression' => ''
+//        ]);
+//
+//        return response()->json($travel, 201);
+//    }
 
 
     /**

@@ -82,22 +82,37 @@ export const useTravelsStore = defineStore('travels', () => {
         }
     }
 
-    const addTravel = async (userId: number) => {
-        // isLoading.value = true
+    const addTravel = async (travelData: Omit<travelData, 'id'>) => {
+        isLoading.value = true
         try {
-            const newTravel = await createTravel(userId)
+            const newTravel = await createTravel(travelData)
             travels.value.push(newTravel)
-            currentTravel.value = newTravel
-            console.log({newTravel})
             return newTravel
         } catch (err) {
             error.value = 'Ошибка создания путешествия'
             console.error(err)
             throw err
         } finally {
-            // isLoading.value = false
+            isLoading.value = false
         }
     }
+
+    // const addTravel = async (userId: number) => {
+    //     // isLoading.value = true
+    //     try {
+    //         const newTravel = await createTravel(userId)
+    //         travels.value.push(newTravel)
+    //         currentTravel.value = newTravel
+    //         console.log({newTravel})
+    //         return newTravel
+    //     } catch (err) {
+    //         error.value = 'Ошибка создания путешествия'
+    //         console.error(err)
+    //         throw err
+    //     } finally {
+    //         // isLoading.value = false
+    //     }
+    // }
 
     const editTravel = async (travelId: number, travelData: Partial<travelData>, userId: number) => {
 

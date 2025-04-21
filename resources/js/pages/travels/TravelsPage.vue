@@ -6,18 +6,26 @@ import { travelData } from "@/app/types/types"
 import Loader from "@/shared/ui/Loader.vue"
 import ButtonCustom from "@/shared/ui/ButtonCustom.vue"
 import TravelListItem from "@/feature/travel/TravelListItem.vue"
+import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
+import Modal from "@/shared/ui/Modal.vue"
 
 const usersStore = useUsersStore()
 const travelsStore = useTravelsStore()
 
-// const isModalOpenForCreateTravel = ref<boolean>(false)
-const newTravel = ref<Omit<travelData, 'id'>>()
+const isModalOpenForCreateTravel = ref<boolean>(false)
+const newTravel = ref<Omit<travelData, 'id'>>({ users: [] })
 
-
-const createTravel = async (): void =>  {
-    newTravel.value = await travelsStore.addTravel(usersStore.currentUser.id)
-    travelsStore.setCurrentTravel(newTravel.value)
+const createTravel = (): void => {
+    isModalOpenForCreateTravel.value = false
+    console.log(newTravel.value)
+    travelsStore.addTravel({ ...newTravel.value, user_id: usersStore.currentUser.id })
+    newTravel.value = { users: [] }
 }
+
+// const createTravel = async (): void =>  {
+//     newTravel.value = await travelsStore.addTravel(usersStore.currentUser.id)
+//     travelsStore.setCurrentTravel(newTravel.value)
+// }
 
 onMounted(async () => {
     if (usersStore.currentUser) {
@@ -36,9 +44,19 @@ onMounted(async () => {
             <div class="text-end">
                 <ButtonCustom
                     text="Новое путешествие"
-                    @handler="createTravel"
+                    @handler="() => isModalOpenForCreateTravel = true"
                 />
             </div>
+            <Modal
+                :isOpen="isModalOpenForCreateTravel"
+                @close="() => isModalOpenForCreateTravel = false"
+            >
+                <TravelForm
+                    v-model="newTravel"
+                    @handler="createTravel"
+                    :btn-text="'Добавить путешествие'"
+                />
+            </Modal>
         </div>
         <div v-else>
             <h2 class="text-2xl mb-4">Путешествия пользователя: {{ usersStore.currentUser.name }}</h2>
@@ -66,9 +84,19 @@ onMounted(async () => {
             <div class="text-end">
                 <ButtonCustom
                     text="Новое путешествие"
-                    @handler="createTravel"
+                    @handler="() => isModalOpenForCreateTravel = true"
                 />
             </div>
+            <Modal
+                :isOpen="isModalOpenForCreateTravel"
+                @close="() => isModalOpenForCreateTravel = false"
+            >
+                <TravelForm
+                    v-model="newTravel"
+                    @handler="createTravel"
+                    :btn-text="'Добавить путешествие'"
+                />
+            </Modal>
         </div>
 
         <div v-if="travelsStore.hasSharedTravels" class="mt-4">

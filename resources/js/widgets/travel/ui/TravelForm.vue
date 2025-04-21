@@ -45,6 +45,7 @@ const handleUsersUpdate = (updatedUsers) => {
         ...localTravel.value,
         users: updatedUsers
     }
+    console.log({localTravel})
     updateModel()
 }
 

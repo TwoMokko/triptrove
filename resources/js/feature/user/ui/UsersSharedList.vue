@@ -62,6 +62,7 @@ const getUsersForSearch = async (): Promise<void> => {
             },
         })
         usersSearch.value = response.data
+        console.log(usersSearch.value)
     } catch (error) {
         console.error('Error fetching users:', error)
     }
@@ -92,7 +93,7 @@ const getUsersForSearch = async (): Promise<void> => {
                     v-for="user in usersSearch"
                     :key="user.id"
                 >
-                    <div v-if="user.id == currentTravel.user_id"><span class="text-primary">является создателем</span> {{ user.name }} ({{ user.login }})</div>
+                    <div v-if="user.id == currentUser.id || (currentTravel && user.id == currentTravel.user_id)"><span class="text-primary">является создателем</span> {{ user.name }} ({{ user.login }})</div>
                     <div
                         v-else
                         @click="addUser(user)"
