@@ -29,7 +29,7 @@ export const uploadPhoto = async (formData, token) => {
                 'Authorization': `Bearer ${token}`
             },
         })
-        return response.data
+        return response.data.user.avatar
     } catch (err) {
         throw err
     }

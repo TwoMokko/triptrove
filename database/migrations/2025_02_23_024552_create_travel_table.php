@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('travels', function (Blueprint $table) {
             $table->id();
             $table->string('place');
-            $table->string('date');
+            $table->string('when');
+            $table->string('amount')->nullable();
             $table->string('mode_of_transport');
-            $table->text('good_impression');
-            $table->text('bad_impression');
+            $table->text('accommodation');
+            $table->text('advice');
+            $table->text('entertainment');
             $table->text('general_impression');
             $table->string('cover')->nullable();
             $table->timestamp('cover_updated_at')->nullable();

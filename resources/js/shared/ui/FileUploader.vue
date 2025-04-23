@@ -32,6 +32,7 @@ const handleUpload = async (e) => {
         try {
             await userStore.updateAvatar(file)
             previewUrl.value = URL.createObjectURL(file)
+            // previewUrl.value = userStore.currentUser.avatar
         }
         catch (err) {
             alert(err)

@@ -64,10 +64,12 @@ const handleUsersUpdate = (updatedUsers) => {
             <div>Приватное или публичное</div>
         </div>
         <InputCustom v-model:value="localTravel.place" :placeholder="'место'" :type="'text'" @input="updateModel" />
-        <InputCustom v-model:value="localTravel.date" :placeholder="'время когда'" :type="'text'" @input="updateModel" />
+        <InputCustom v-model:value="localTravel.when" :placeholder="'время когда'" :type="'text'" @input="updateModel" />
+        <InputCustom v-model:value="localTravel.amount" :placeholder="'сумма'" :type="'text'" @input="updateModel" />
         <InputCustom v-model:value="localTravel.mode_of_transport" :placeholder="'на чем добирались'" :type="'text'" @input="updateModel" />
-        <TextareaCustom v-model:text="localTravel.good_impression" :placeholder="'хорошее'" @change="updateModel" />
-        <TextareaCustom v-model:text="localTravel.bad_impression" :placeholder="'плохое'" @change="updateModel" />
+        <TextareaCustom v-model:text="localTravel.accommodation" :placeholder="'где жили'" @change="updateModel" />
+        <TextareaCustom v-model:text="localTravel.advice" :placeholder="'совет'" @change="updateModel" />
+        <TextareaCustom v-model:text="localTravel.entertainment" :placeholder="'экскурсии и развлечения'" @change="updateModel" />
         <TextareaCustom v-model:text="localTravel.general_impression" :placeholder="'общие впечатления'" @change="updateModel" />
 
 

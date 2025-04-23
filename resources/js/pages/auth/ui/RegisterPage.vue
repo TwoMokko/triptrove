@@ -13,7 +13,8 @@ interface formDataType {
     email: string,
     login: string,
     password: string,
-    password_confirmation: string
+    password_confirmation: string,
+    avatar: string,
 }
 
 const form = ref<formDataType>({
@@ -21,7 +22,8 @@ const form = ref<formDataType>({
     email: '',
     login: '',
     password: '',
-    password_confirmation: ''
+    password_confirmation: '',
+    avatar: 'users/avatars/default-user.svg',
 })
 
 const { currentVerifyLogin } = storeToRefs(useAuthStore())

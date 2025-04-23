@@ -56,10 +56,12 @@ class TravelController extends Controller
         $data = $request->validate([
             'published' => 'sometimes|boolean',
             'place' => 'required|max:255',
-            'date' => 'required',
+            'when' => 'required',
+            'amount' => 'required',
             'mode_of_transport' => 'required',
-            'good_impression' => 'required',
-            'bad_impression' => 'required',
+            'accommodation' => 'required',
+            'advice' => 'required',
+            'entertainment' => 'required',
             'general_impression' => 'required',
             'user_id' => 'required',
         ]);
@@ -176,12 +178,14 @@ class TravelController extends Controller
             // Валидация основных данных
             $validatedData = $request->validate([
                 'published' => 'sometimes|boolean',
-                'place' => 'sometimes|string|max:255',
-                'date' => 'sometimes|string',
-                'mode_of_transport' => 'sometimes|string',
-                'good_impression' => 'sometimes|string',
-                'bad_impression' => 'sometimes|string',
-                'general_impression' => 'sometimes|string',
+                'place' => 'required|max:255',
+                'when' => 'required',
+                'amount' => 'required',
+                'mode_of_transport' => 'required',
+                'accommodation' => 'required',
+                'advice' => 'required',
+                'entertainment' => 'required',
+                'general_impression' => 'required',
 //                'users' => 'sometimes|array',
 //                'users.*.id' => 'required|integer|exists:users,id'
             ]);
@@ -293,10 +297,12 @@ class TravelController extends Controller
                     return [
                         'id' => $travel->id,
                         'place' => $travel->place,
-                        'date' => $travel->date,
+                        'when' => $travel->when,
+                        'amount' => $travel->amount,
                         'mode_of_transport' => $travel->mode_of_transport,
-                        'good_impression' => $travel->good_impression,
-                        'bad_impression' => $travel->bad_impression,
+                        'accommodation' => $travel->accommodation,
+                        'advice' => $travel->advice,
+                        'entertainment' => $travel->entertainment,
                         'general_impression' => $travel->general_impression,
                         'order' => $travel->order,
                         'published' => $travel->published,
@@ -306,7 +312,8 @@ class TravelController extends Controller
                             return [
                                 'id' => $user->id,
                                 'name' => $user->name,
-                                'login' => $user->login
+                                'login' => $user->login,
+                                'avatar' => $user->avatar,
                             ];
                         })->toArray()
                     ];
@@ -359,14 +366,17 @@ class TravelController extends Controller
                 'id' => $creator->id,
                 'name' => $creator->name,
                 'login' => $creator->login,
+                'avatar' => $creator->avatar,
                 'travels' => $creator->createdTravels->map(function ($travel) {
                     return [
                         'id' => $travel->id,
                         'place' => $travel->place,
-                        'date' => $travel->date,
+                        'when' => $travel->when,
+                        'amount' => $travel->amount,
                         'mode_of_transport' => $travel->mode_of_transport,
-                        'good_impression' => $travel->good_impression,
-                        'bad_impression' => $travel->bad_impression,
+                        'accommodation' => $travel->accommodation,
+                        'advice' => $travel->advice,
+                        'entertainment' => $travel->entertainment,
                         'general_impression' => $travel->general_impression,
                         'order' => $travel->order,
                         'published' => $travel->published,
@@ -377,7 +387,8 @@ class TravelController extends Controller
                             return [
                                 'id' => $user->id,
                                 'name' => $user->name,
-                                'login' => $user->login
+                                'login' => $user->login,
+                                'avatar' => $user->avatar
                             ];
                         })->toArray()
                     ];

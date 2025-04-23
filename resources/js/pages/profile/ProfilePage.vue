@@ -20,7 +20,7 @@ const isLoading: ComputedRef<boolean> = computed(() => {
                 target="user"
                 folder="avatars"
                 db-field="avatar"
-                :src="currentUser.avatar ? `storage/${currentUser.avatar}` : '/images/users/avatars/default-user.svg'"
+                :src="currentUser.avatar ? `storage/${currentUser.avatar}` : '/storage/users/avatars/default-user.svg'"
                 :class-name="'w-40 h-40 rounded-full'"
             />
             <div>

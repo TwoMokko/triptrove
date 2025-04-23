@@ -15,22 +15,34 @@ const usersStore = useUsersStore()
 const isAppLoading = ref(false)
 
 onMounted(async () => {
-    watch(
-        () => authStore.token,
-        async (newToken) => {
-            if (newToken) {
-                isAppLoading.value = true
-                try {
-                    await usersStore.getUserByToken(newToken)
-                } catch (error) {
-                    console.error('Failed to load user:', error)
-                    authStore.clearAuthData()
-                } finally {
-                    isAppLoading.value = false
-                }
-            }
+    // watch(
+    //     () => authStore.token,
+    //     async (newToken) => {
+    //         if (newToken) {
+    //             isAppLoading.value = true
+    //             try {
+    //                 await usersStore.getUserByToken(newToken)
+    //             } catch (error) {
+    //                 console.error('Failed to load user:', error)
+    //                 authStore.clearAuthData()
+    //             } finally {
+    //                 isAppLoading.value = false
+    //             }
+    //         }
+    //     }
+    // )
+
+    if (authStore.token) {
+        isAppLoading.value = true
+        try {
+            await usersStore.getUserByToken(authStore.token)
+        } catch (error) {
+            console.error('Failed to load user:', error)
+            authStore.clearAuthData()
+        } finally {
+            isAppLoading.value = false
         }
-    )
+    }
 })
 
 </script>

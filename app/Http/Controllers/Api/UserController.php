@@ -31,7 +31,7 @@ class UserController extends Controller
             'name' => 'required|max:255',
             'email' => 'required',
             'password' => 'required',
-            'avatar' => 'default-user.svg'
+            'avatar' => 'users/avatars/default-user.svg'
         ]);
 
         $user = User::create($request->all());

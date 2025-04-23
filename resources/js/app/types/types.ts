@@ -1,10 +1,12 @@
 export type travelData = {
     id: number,
     place: string,
-    date: string,
+    when: string,
+    amount: string,
     mode_of_transport: string,
-    good_impression: string,
-    bad_impression: string,
+    accommodation: string,
+    advice: string,
+    entertainment: string,
     general_impression: string,
     order: string,
     published: string,
@@ -36,6 +38,7 @@ interface userShort {
     id: number,
     name: string,
     login: string,
+    avatar: string,
     pivot: {
         travel_id: number,
         user_id: number,

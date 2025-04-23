@@ -62,12 +62,14 @@ onMounted(async () => {
             <h2 class="text-2xl mb-4">Путешествия пользователя: {{ usersStore.currentUser.name }}</h2>
             <div class="mb-4">
                 <div>
-                    <div class="grid gap-2 grid-cols-7 py-4 px-[60px] font-medium">
+                    <div class="grid gap-2 grid-cols-9 py-4 px-[60px] font-medium">
                         <div >место</div>
                         <div >когда</div>
+                        <div >сумма</div>
                         <div >на чем добирались</div>
-                        <div >хорошее</div>
-                        <div >плохое</div>
+                        <div >где жили</div>
+                        <div >совет</div>
+                        <div >экскурсии и развлечения</div>
                         <div >общие впечатления</div>
                         <div class="flex gap-2 justify-end">изменить/удалить</div>
                     </div>

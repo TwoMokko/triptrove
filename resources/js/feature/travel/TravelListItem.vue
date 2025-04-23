@@ -48,12 +48,14 @@ const handleSave = async () => {
 
 <template>
     <div class="card">
-        <div class="grid gap-2 grid-cols-7">
+        <div class="grid gap-2 grid-cols-9">
             <div>{{ item.place }}</div>
-            <div>{{ item.date }}</div>
+            <div>{{ item.when }}</div>
+            <div>{{ item.amount }}</div>
             <div>{{ item.mode_of_transport }}</div>
-            <div>{{ item.good_impression }}</div>
-            <div>{{ item.bad_impression }}</div>
+            <div>{{ item.accommodation }}</div>
+            <div>{{ item.advice }}</div>
+            <div>{{ item.entertainment }}</div>
             <div>{{ item.general_impression }}</div>
             <div class="flex gap-2 justify-end">
                 <button @click="handleEdit" class="cursor-pointer">
