@@ -7,6 +7,7 @@ import type { travelData } from "@/app/types/types"
 import { useTravelsStore } from "@/etities/travel"
 import { useUsersStore } from "@/etities/user"
 import { storeToRefs } from "pinia"
+import { computed } from "vue"
 
 const props = defineProps<{
     item: travelData
@@ -15,9 +16,14 @@ const props = defineProps<{
 const travelsStore = useTravelsStore()
 const { currentUser } = storeToRefs(useUsersStore())
 
-const handleEdit = () => {
+const isDragging = computed(() => false)
+
+const handleMouseDown = (e: MouseEvent) => {
+    e.stopPropagation()
+}
+const handleEdit = (e: Event) => {
+    e.stopPropagation()
     travelsStore.setCurrentTravel({ ...props.item })
-    // travelsStore.getSharedUsers()
 }
 
 const handleDelete = async () => {
@@ -47,7 +53,11 @@ const handleSave = async () => {
 </script>
 
 <template>
-    <div class="card">
+    <div
+        :class="{ 'dragging': isDragging }"
+        class="overflow-hidden cursor-grab py-10 px-14 bg-[#ffffff15] rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.06)] mb-2.5 hover:bg-[#ffffff50] transition-all ease-in duration-200"
+        @mousedown="handleMouseDown"
+    >
         <div class="grid gap-2 grid-cols-9">
             <div>{{ item.place }}</div>
             <div>{{ item.when }}</div>
@@ -87,7 +97,7 @@ const handleSave = async () => {
 </template>
 
 <style scoped>
-.card {
-    @apply py-10 px-14 bg-[#ffffff15] rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.06)] mb-2.5;
+.dragging {
+    @apply opacity-75;
 }
 </style>

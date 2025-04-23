@@ -1,5 +1,5 @@
-import {defineStore} from 'pinia'
-import {computed, ref} from 'vue'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 import {
     createTravel,
     deleteTravel,
@@ -12,7 +12,8 @@ import {
     updateTravel,
     uploadPhoto,
 } from '../api/travels'
-import type {travelData} from "@/app/types/types"
+import { travelData, OrderUpdatePayload } from "../../../app/types/types"
+import {debounce} from "../../../shared/lib/debounce"
 
 export const useTravelsStore = defineStore('travels', () => {
     // State
@@ -213,6 +214,44 @@ export const useTravelsStore = defineStore('travels', () => {
         }
     }
 
+    const updateTravelsOrder = (() => {
+        // Выносим debounce наружу, чтобы он создавался один раз
+        const debouncedUpdate = debounce(async (updates: Array<{ id: string | number, order: number }>, oldTravels: travelData[], abortSignal) => {
+            try {
+                // await api.patch('/travels/update-order', { items: updates }, { signal: abortSignal })
+                console.log('Order updated successfully:', updates)
+            } catch (error) {
+                console.error('Failed to update order:', error)
+                if (error.name !== 'AbortError') {
+                    travels.value = oldTravels
+                }
+                // Откатываем изменения при ошибке
+                travels.value = oldTravels
+                throw error
+            }
+        }, 3000)
+
+        let abortController: AbortController | null = null
+
+        return (updates: Array<{ id: string | number, order: number }>) => {
+            abortController?.abort()
+            abortController = new AbortController()
+
+            const oldTravels = [...travels.value]
+
+            // Оптимистичное обновление локального состояния
+            travels.value = travels.value
+                .map(item => {
+                    const update = updates.find(u => u.id === item.id)
+                    return update ? { ...item, order: update.order } : item
+                })
+                .sort((a, b) => a.order - b.order)
+
+            // Запускаем отложенное обновление на сервере
+            debouncedUpdate(updates, oldTravels, abortController.signal)
+        }
+    })()
+
 
     return {
         // State
@@ -242,5 +281,6 @@ export const useTravelsStore = defineStore('travels', () => {
         detachUser,
         getSharedUsers,
         uploadTravelCover,
+        updateTravelsOrder
     }
 })

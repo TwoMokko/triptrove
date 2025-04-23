@@ -48,3 +48,9 @@ interface userShort {
 }
 
 export type travelsResponse = travelData[]
+
+export interface OrderUpdatePayload {
+    id: string | number,
+    order: number,
+}
+

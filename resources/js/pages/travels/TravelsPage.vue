@@ -5,7 +5,8 @@ import { ref, onMounted } from 'vue'
 import { travelData } from "@/app/types/types"
 import Loader from "@/shared/ui/Loader.vue"
 import ButtonCustom from "@/shared/ui/ButtonCustom.vue"
-import TravelListItem from "@/feature/travel/TravelListItem.vue"
+// import TravelListItem from "@/feature/travel/TravelListItem.vue"
+import TravelList from "@/feature/travel/TravelList.vue"
 import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
 import Modal from "@/shared/ui/Modal.vue"
 
@@ -75,11 +76,12 @@ onMounted(async () => {
                     </div>
 
 
-                    <TravelListItem
-                        v-for="item in travelsStore.travels"
-                        :key="item.id"
-                        :item="item"
-                    />
+                    <TravelList />
+<!--                    <TravelListItem-->
+<!--                        v-for="item in travelsStore.travels"-->
+<!--                        :key="item.id"-->
+<!--                        :item="item"-->
+<!--                    />-->
 
                 </div>
             </div>
@@ -106,11 +108,12 @@ onMounted(async () => {
             <div v-for="creator in travelsStore.sharedTravels">
                 <h3 class="text-xl mb-4">name: {{ creator.name }}, login: {{ creator.login }}</h3>
                 <div>
-                    <TravelListItem
-                        v-for="item in creator.travels"
-                        :key="item.id"
-                        :item="item"
-                    />
+                    <TravelList />
+<!--                    <TravelListItem-->
+<!--                        v-for="item in creator.travels"-->
+<!--                        :key="item.id"-->
+<!--                        :item="item"-->
+<!--                    />-->
                 </div>
             </div>
 
