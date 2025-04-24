@@ -52,3 +52,5 @@ Route::post('/profile/avatar', [UserController::class, 'updateAvatar'])
 //// Для добавления фото к путешествию
 //Route::post('/travels/{travel}/photos', [TravelController::class, 'uploadPhoto'])
 //    ->middleware('auth:sanctum');
+
+Route::patch('/travels/update-order', [TravelController::class, 'updateOrder']);

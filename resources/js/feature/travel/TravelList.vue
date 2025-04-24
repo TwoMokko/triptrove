@@ -1,20 +1,31 @@
 <script setup lang="ts">
 import { computed, ref } from "vue"
 import { useTravelsStore } from "@/etities/travel"
+import { useUsersStore } from "@/etities/user"
 import { travelData } from "@/app/types/types"
 import TravelListItem from './TravelListItem.vue'
 
+interface Props {
+    travels: travelData[],
+    listType?: 'personal' | 'shared',
+    creatorId?: number
+}
+const props = defineProps<Props>()
+
 const travelsStore = useTravelsStore()
+const usersStore = useUsersStore()
 
-const draggedItem = ref<travelData | null>(null)
 const dropTarget = ref<travelData | null>(null)
-
-const sortedTravels = computed(() => {
-    return [...travelsStore.travels].sort((a, b) => a.order - b.order)
-})
+const draggedItem = ref<{
+    data: travelData,
+    sourceList: 'personal' | 'shared'
+} | null>(null)
 
 const handleDragStart = (e: DragEvent, item: travelData) => {
-    draggedItem.value = item
+    draggedItem.value = {
+        data: item,
+        sourceList: props.listType || 'personal'
+    }
     e.dataTransfer?.setData('text/plain', item.id.toString());
     (e.target as HTMLElement).classList.add('dragging')
 }
@@ -42,34 +53,36 @@ const handleDrop = async (e: DragEvent, targetItem: travelData) => {
     e.preventDefault();
     (e.currentTarget as HTMLElement).classList.remove('drag-over')
 
-    if (!draggedItem.value || draggedItem.value.id === targetItem.id) return
+    if (!draggedItem.value || !targetItem) return
 
-    const items = [...travelsStore.travels];
-    const draggedIndex = items.findIndex(i => i.id === draggedItem.value?.id)
-    const targetIndex = items.findIndex(i => i.id === targetItem.id)
+    if (draggedItem.value.sourceList === props.listType) {
+        const items = [...props.travels]
+        const draggedIndex = items.findIndex(i => i.id === draggedItem.value?.data.id)
+        const targetIndex = items.findIndex(i => i.id === targetItem.id)
 
-    if (draggedIndex === - 1 || targetIndex === - 1) return
+        if (draggedIndex === -1 || targetIndex === -1) return
 
-    const [removed] = items.splice(draggedIndex, 1)
-    items.splice(targetIndex, 0, removed)
+        const [removed] = items.splice(draggedIndex, 1)
+        items.splice(targetIndex, 0, removed)
 
-    const updates = items.map((item, index) => ({
-        id: item.id,
-        order: index + 1
-    }))
+        const updates = items.map((item, index) => ({
+            id: item.id,
+            order: index + 1
+        }))
 
-   try {
-       await travelsStore.updateTravelsOrder(updates)
-   }
-   catch (err) {
-       alert(err)
-   }
+        try {
+            await travelsStore.updateTravelsOrder(updates, props.listType === 'shared', props.creatorId ? props.creatorId : usersStore.currentUser.id)
+        } catch (err) {
+            console.error('Order update failed:', err)
+            alert('Не удалось обновить порядок')
+        }
+    }
 }
 </script>
 
 <template>
     <TravelListItem
-        v-for="item in sortedTravels"
+        v-for="item in props.travels"
         :key="item.id"
         :item="item"
         draggable="true"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiPencil, mdiDelete } from '@mdi/js'
+import { mdiPencil, mdiDelete, mdiLock, mdiLockOpenVariant } from '@mdi/js'
 import Icon from "@/shared/ui/Icon.vue"
 import Modal from '@/shared/ui/Modal.vue'
 import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
@@ -58,7 +58,13 @@ const handleSave = async () => {
         class="overflow-hidden cursor-grab py-10 px-14 bg-[#ffffff15] rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.06)] mb-2.5 hover:bg-[#ffffff50] transition-all ease-in duration-200"
         @mousedown="handleMouseDown"
     >
-        <div class="grid gap-2 grid-cols-9">
+        <div class="grid gap-2 grid-cols-10">
+            <div>
+                <Icon
+                    :iconPath="item.published ? mdiLockOpenVariant : mdiLock"
+                    class="w-6 h-6 text-secondary hover:text-dark"
+                />
+            </div>
             <div>{{ item.place }}</div>
             <div>{{ item.when }}</div>
             <div>{{ item.amount }}</div>
@@ -68,13 +74,13 @@ const handleSave = async () => {
             <div>{{ item.entertainment }}</div>
             <div>{{ item.general_impression }}</div>
             <div class="flex gap-2 justify-end">
-                <button @click="handleEdit" class="cursor-pointer">
+                <button @click="handleEdit" class="cursor-pointer" title="редактировать">
                     <Icon
                         :iconPath="mdiPencil"
                         class="w-6 h-6 text-secondary hover:text-dark"
                     />
                 </button>
-                <button @click="handleDelete" class="cursor-pointer">
+                <button @click="handleDelete" class="cursor-pointer" title="удалить">
                     <Icon
                         :iconPath="mdiDelete"
                         class="w-6 h-6 text-secondary hover:text-dark"

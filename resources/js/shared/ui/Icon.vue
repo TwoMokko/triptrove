@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{
-    iconPath: string;
-    size?: number | string;
+    iconPath: string,
+    size?: number | string,
 }>();
 </script>
 

@@ -156,3 +156,13 @@ export const uploadPhoto = async (travelId, formData) => {
     }
 }
 
+export const fetchUpdateTravelsOrder = async (items, signal, currentCreatorId) => {
+    try {
+        const response = await api.patch('/travels/update-order', { items: items, creatorId: currentCreatorId }, { signal: signal })
+        return response.data
+    }
+    catch (err) {
+        throw err
+    }
+}
+

@@ -8,12 +8,12 @@ import {
     fetchPublishedTravels,
     fetchSharedTravels,
     fetchSharedUsers,
-    fetchTravels,
-    updateTravel,
+    fetchTravels, fetchUpdateTravelsOrder,
+    updateTravel, updateTravelsOrder,
     uploadPhoto,
 } from '../api/travels'
 import { travelData, OrderUpdatePayload } from "../../../app/types/types"
-import {debounce} from "../../../shared/lib/debounce"
+import { debounce } from "../../../shared/lib/debounce"
 
 export const useTravelsStore = defineStore('travels', () => {
     // State
@@ -215,40 +215,64 @@ export const useTravelsStore = defineStore('travels', () => {
     }
 
     const updateTravelsOrder = (() => {
-        // Выносим debounce наружу, чтобы он создавался один раз
-        const debouncedUpdate = debounce(async (updates: Array<{ id: string | number, order: number }>, oldTravels: travelData[], abortSignal) => {
-            try {
-                // await api.patch('/travels/update-order', { items: updates }, { signal: abortSignal })
-                console.log('Order updated successfully:', updates)
-            } catch (error) {
-                console.error('Failed to update order:', error)
-                if (error.name !== 'AbortError') {
-                    travels.value = oldTravels
-                }
-                // Откатываем изменения при ошибке
-                travels.value = oldTravels
-                throw error
-            }
-        }, 3000)
-
+        let debounceTimeout: ReturnType<typeof setTimeout> | null = null
         let abortController: AbortController | null = null
+        let pendingUpdates: Array<{ id: string | number; order: number }> | null = null
+        let pendingIsShared: boolean | null = null
+        let currentCreatorId: number | undefined
 
-        return (updates: Array<{ id: string | number, order: number }>) => {
+        const executeUpdate = async () => {
+            if (!pendingUpdates || pendingIsShared === null) return
+
+            const updates = pendingUpdates
+            const isShared = pendingIsShared
+            const oldTravels = isShared ? [...sharedTravels.value.find(itm => itm.id == currentCreatorId).travels] : [...travels.value]
+
             abortController?.abort()
             abortController = new AbortController()
 
-            const oldTravels = [...travels.value]
+            try {
+                await fetchUpdateTravelsOrder(updates, abortController.signal, currentCreatorId)
+                console.log('Order updated successfully:', updates)
+            } catch (error) {
+                console.error('Failed to update order:', error)
+                if (isShared) sharedTravels.value.find(itm => itm.id == currentCreatorId).travels = oldTravels
+                else travels.value = oldTravels
+                // if (error.name !== 'AbortError') {
+                //     if (isShared) sharedTravels.value.find(itm => itm.id == currentCreatorId).travels = oldTravels
+                //     else travels.value = oldTravels
+                // }
+                throw error
+            } finally {
+                pendingUpdates = null
+                pendingIsShared = null
+                abortController = null
+            }
+        }
 
-            // Оптимистичное обновление локального состояния
-            travels.value = travels.value
-                .map(item => {
-                    const update = updates.find(u => u.id === item.id)
-                    return update ? { ...item, order: update.order } : item
-                })
-                .sort((a, b) => a.order - b.order)
+        return (updates: Array<{ id: string | number; order: number }>, isShared: boolean, creatorId?: number) => {
+            currentCreatorId = creatorId
+            if (isShared) {
+                sharedTravels.value.find(itm => itm.id == currentCreatorId).travels = sharedTravels.value.find(itm => itm.id == currentCreatorId).travels
+                    .map((item) => {
+                        const update = updates.find((u) => u.id == item.id)
+                        return update ? { ...item, order: update.order } : item
+                    })
+                    .sort((a, b) => a.order - b.order)
+            } else {
+                travels.value = travels.value
+                    .map(item => {
+                        const update = updates.find(u => u.id === item.id)
+                        return update ? { ...item, order: update.order } : item
+                    })
+                    .sort((a, b) => a.order - b.order)
+            }
 
-            // Запускаем отложенное обновление на сервере
-            debouncedUpdate(updates, oldTravels, abortController.signal)
+            pendingUpdates = updates
+            pendingIsShared = isShared
+
+            if (debounceTimeout) clearTimeout(debounceTimeout)
+            debounceTimeout = setTimeout(executeUpdate, 500)
         }
     })()
 
@@ -281,6 +305,6 @@ export const useTravelsStore = defineStore('travels', () => {
         detachUser,
         getSharedUsers,
         uploadTravelCover,
-        updateTravelsOrder
+        updateTravelsOrder,
     }
 })

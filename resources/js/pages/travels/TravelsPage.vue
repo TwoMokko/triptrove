@@ -63,7 +63,8 @@ onMounted(async () => {
             <h2 class="text-2xl mb-4">Путешествия пользователя: {{ usersStore.currentUser.name }}</h2>
             <div class="mb-4">
                 <div>
-                    <div class="grid gap-2 grid-cols-9 py-4 px-[60px] font-medium">
+                    <div class="grid gap-2 grid-cols-10 py-4 px-[60px] font-medium">
+                        <div >публичность</div>
                         <div >место</div>
                         <div >когда</div>
                         <div >сумма</div>
@@ -76,7 +77,7 @@ onMounted(async () => {
                     </div>
 
 
-                    <TravelList />
+                    <TravelList :travels="travelsStore.travels" list-type="personal" />
 <!--                    <TravelListItem-->
 <!--                        v-for="item in travelsStore.travels"-->
 <!--                        :key="item.id"-->
@@ -108,7 +109,7 @@ onMounted(async () => {
             <div v-for="creator in travelsStore.sharedTravels">
                 <h3 class="text-xl mb-4">name: {{ creator.name }}, login: {{ creator.login }}</h3>
                 <div>
-                    <TravelList />
+                    <TravelList :travels="creator.travels" list-type="shared" :creator-id="creator.id" />
 <!--                    <TravelListItem-->
 <!--                        v-for="item in creator.travels"-->
 <!--                        :key="item.id"-->
