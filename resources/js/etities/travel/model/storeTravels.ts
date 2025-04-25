@@ -215,6 +215,8 @@ export const useTravelsStore = defineStore('travels', () => {
     }
 
     const updateTravelsOrder = (() => {
+        // TODO: поменять логику (не обновлять sharedTravels, добавить возможность сортировки для путешесвий с определенным пользователем или группой)
+
         let debounceTimeout: ReturnType<typeof setTimeout> | null = null
         let abortController: AbortController | null = null
         let pendingUpdates: Array<{ id: string | number; order: number }> | null = null
@@ -232,7 +234,7 @@ export const useTravelsStore = defineStore('travels', () => {
             abortController = new AbortController()
 
             try {
-                await fetchUpdateTravelsOrder(updates, abortController.signal, currentCreatorId)
+                await fetchUpdateTravelsOrder(updates, abortController.signal)
                 console.log('Order updated successfully:', updates)
             } catch (error) {
                 console.error('Failed to update order:', error)

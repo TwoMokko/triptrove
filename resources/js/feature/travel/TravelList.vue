@@ -15,6 +15,8 @@ const props = defineProps<Props>()
 const travelsStore = useTravelsStore()
 const usersStore = useUsersStore()
 
+const isDnD = computed(() => props.listType === 'personal')
+
 const dropTarget = ref<travelData | null>(null)
 const draggedItem = ref<{
     data: travelData,
@@ -85,7 +87,8 @@ const handleDrop = async (e: DragEvent, targetItem: travelData) => {
         v-for="item in props.travels"
         :key="item.id"
         :item="item"
-        draggable="true"
+        :draggable="isDnD"
+        :class="{ 'cursor-grab': isDnD }"
         @dragstart="handleDragStart($event, item)"
         @dragover.prevent="handleDragOver($event, item)"
         @dragenter.prevent="handleDragEnter($event, item)"

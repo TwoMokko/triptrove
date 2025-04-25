@@ -55,7 +55,7 @@ const handleSave = async () => {
 <template>
     <div
         :class="{ 'dragging': isDragging }"
-        class="overflow-hidden cursor-grab py-10 px-14 bg-[#ffffff15] rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.06)] mb-2.5 hover:bg-[#ffffff50] transition-all ease-in duration-200"
+        class="overflow-hidden py-10 px-14 bg-[#ffffff15] rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.06)] mb-2.5 hover:bg-[#ffffff50] transition-all ease-in duration-200"
         @mousedown="handleMouseDown"
     >
         <div class="grid gap-2 grid-cols-10">

@@ -466,83 +466,30 @@ class TravelController extends Controller
             'items' => 'required|array',
             'items.*.id' => 'required|integer|exists:travels,id',
             'items.*.order' => 'required|integer|min:1',
-            'creatorId' => 'nullable|integer|exists:users,id'
         ]);
 
-        $creatorId = $request->input('creatorId');
+        // Проверка сигнала отмены (AbortController)
+        if ($request->hasHeader('Abort-Signal')) {
+            return response()->json(['message' => 'Request aborted'], 499); // 499 - Client Closed Request
+        }
 
         try {
-            DB::transaction(function () use ($validated, $creatorId) {
-                // 1. Получаем ВСЕ элементы (видимые и невидимые)
-                $allItems = Travel::where('user_id', $creatorId)
-                    ->orderBy('order')
-                    ->get();
-
-                // 2. Создаем карту новых порядков для видимых элементов
-                $visibleOrders = [];
+            DB::transaction(function () use ($validated) {
                 foreach ($validated['items'] as $item) {
-                    $visibleOrders[$item['id']] = $item['order'];
+                    DB::table('travels')
+                        ->where('id', $item['id'])
+                        ->update(['order' => $item['order']]);
                 }
-
-                // 3. Вычисляем новые порядки для всех элементов
-                $newOrders = [];
-                $visibleIndex = 1;
-                $hiddenIndex = 1;
-
-                foreach ($allItems as $item) {
-                    if (isset($visibleOrders[$item->id])) {
-                        // Видимый элемент - используем заданный порядок
-                        $newOrders[$item->id] = $visibleOrders[$item->id];
-                        $visibleIndex++;
-                    } else {
-                        // Невидимый элемент - сохраняем относительный порядок
-                        $newOrders[$item->id] = $item->order;
-                        $hiddenIndex++;
-                    }
-                }
-
-                // 4. Нормализуем порядки (убираем пропуски)
-                asort($newOrders);
-                $normalizedOrder = 1;
-                $updates = [];
-
-                foreach ($newOrders as $id => $_) {
-                    $updates[] = [
-                        'id' => $id,
-                        'order' => $normalizedOrder++
-                    ];
-                }
-
-                // 5. Массовое обновление
-                $caseSql = 'CASE id ';
-                $ids = [];
-                $params = [];
-
-                foreach ($updates as $update) {
-                    $caseSql .= 'WHEN ? THEN ? ';
-                    $ids[] = $update['id'];
-                    $params[] = $update['id'];
-                    $params[] = $update['order'];
-                }
-
-                $caseSql .= 'END';
-                $idsPlaceholder = implode(',', array_fill(0, count($ids), '?'));
-
-                DB::update(
-                    "UPDATE travels SET `order` = $caseSql WHERE id IN ($idsPlaceholder)",
-                    array_merge($params, $ids)
-                );
             });
 
-            return response()->json(['success' => true]);
+            return response()->json(['message' => 'Order updated successfully']);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Order update failed',
-                'error' => $e->getMessage()
-            ], 500);
+//            Log::error('Order update failed: ' . $e->getMessage());
+            return response()->json(['message' => 'Update failed'], 500);
         }
     }
+
 
 //    public function getUsersForTravel(Request $request): JsonResponse
 //    {
