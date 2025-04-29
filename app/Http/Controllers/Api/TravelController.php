@@ -114,6 +114,8 @@ class TravelController extends Controller
         // Загружаем обновленные данные
         $travel->load('users:id,name,login');
 
+        $travel->users()->attach($request->user()->id);
+
         return response()->json($travel, 201);
     }
 //    public function store(Request $request): JsonResponse
@@ -490,6 +492,32 @@ class TravelController extends Controller
         }
     }
 
+
+    public function getTravelsWithUsers(Request $request): JsonResponse
+    {
+        $userIds = $request->validate([
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'integer'
+        ])['user_ids'];
+
+        $travels = Travel::whereExists(function ($query) use ($userIds) {
+            $query->select(DB::raw(1))
+                ->from('travel_user')
+                ->whereColumn('travel_user.travel_id', 'travels.id')
+                ->whereIn('travel_user.user_id', $userIds)
+                ->groupBy('travel_user.travel_id')
+                ->havingRaw('COUNT(DISTINCT travel_user.user_id) = ?', [count($userIds)]);
+        })
+            ->whereNotExists(function ($query) use ($userIds) {
+                $query->select(DB::raw(1))
+                    ->from('travel_user')
+                    ->whereColumn('travel_user.travel_id', 'travels.id')
+                    ->whereNotIn('travel_user.user_id', $userIds);
+            })
+            ->get();
+
+        return response()->json($travels);
+    }
 
 //    public function getUsersForTravel(Request $request): JsonResponse
 //    {

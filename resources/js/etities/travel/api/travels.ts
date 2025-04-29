@@ -26,6 +26,17 @@ export const fetchTravels = async (userId: number): travelData[] => {
         throw error
     }
 }
+export const fetchTravelsWithUsers = async (userIds: number[]): travelData[] => {
+    try {
+        const response = await api.post('/travels/getTravelsWithUsers', {
+            user_ids: userIds
+        })
+        return response.data
+    } catch (error) {
+        console.error('Error fetching travels with users:', error)
+        throw error
+    }
+}
 
 export const createTravel = async (travelData: travelData) => {
     try {

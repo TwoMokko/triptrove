@@ -31,6 +31,7 @@ const createTravel = (): void => {
 onMounted(async () => {
     if (usersStore.currentUser) {
         await travelsStore.getTravels(usersStore.currentUser.id)
+        await travelsStore.getTravelsWithUsers([1, 2])
         await travelsStore.getSharedTravels(usersStore.currentUser.id)
     }
 })
@@ -118,6 +119,13 @@ onMounted(async () => {
                 </div>
             </div>
 
+        </div>
+
+        <div>
+            <h2 class="text-2xl mb-4">Путешествия с пользователями: ВЫБИРАТЬ</h2>
+            <div class="mb-4">
+                <TravelList :travels="travelsStore.travelsWithUsers" list-type="shared" />
+            </div>
         </div>
     </div>
 </template>

@@ -8,7 +8,7 @@ import {
     fetchPublishedTravels,
     fetchSharedTravels,
     fetchSharedUsers,
-    fetchTravels, fetchUpdateTravelsOrder,
+    fetchTravels, fetchTravelsWithUsers, fetchUpdateTravelsOrder,
     updateTravel, updateTravelsOrder,
     uploadPhoto,
 } from '../api/travels'
@@ -19,6 +19,7 @@ export const useTravelsStore = defineStore('travels', () => {
     // State
     const publishedTravels = ref([])
     const travels = ref<travelData[]>([])
+    const travelsWithUsers = ref<travelData[]>([])
     const sharedTravels = ref<{ id: number, name: string, login: string, travels: travelData[] }[]>([])
 
     const currentTravel = ref<travelData | null>(null)
@@ -57,6 +58,17 @@ export const useTravelsStore = defineStore('travels', () => {
             console.error(err)
         } finally {
             isLoading.value = false
+        }
+    }
+    const getTravelsWithUsers = async (userIds: number[]) => {
+        // isLoading.value = true
+        try {
+            travelsWithUsers.value = await fetchTravelsWithUsers(userIds)
+        } catch (err) {
+            error.value = 'Ошибка загрузки путешествий с другими пользователями'
+            console.error(err)
+        } finally {
+            // isLoading.value = false
         }
     }
 
@@ -283,6 +295,7 @@ export const useTravelsStore = defineStore('travels', () => {
         // State
         publishedTravels,
         travels,
+        travelsWithUsers,
         sharedTravels,
         currentTravel,
         isLoading,
@@ -298,6 +311,7 @@ export const useTravelsStore = defineStore('travels', () => {
         // Actions
         getPublishedTravels,
         getTravels,
+        getTravelsWithUsers,
         getSharedTravels,
         addTravel,
         editTravel,

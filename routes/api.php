@@ -54,3 +54,5 @@ Route::post('/profile/avatar', [UserController::class, 'updateAvatar'])
 //    ->middleware('auth:sanctum');
 
 Route::patch('/travels/update-order', [TravelController::class, 'updateOrder']);
+
+Route::post('/travels/getTravelsWithUsers', [TravelController::class, 'getTravelsWithUsers']);
