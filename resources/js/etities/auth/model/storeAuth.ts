@@ -1,24 +1,27 @@
 import { watch, ref, computed } from "vue"
-import { defineStore } from "pinia"
+import {defineStore, storeToRefs} from "pinia"
 import {
     fetchVerifyCode,
     fetchResendCode
 } from '../api/auth'
 import type { AuthResponse } from '../../../app/types/auth'
+import { useUsersStore } from "../../user"
 
 export const useAuthStore = defineStore('auth', () => {
     // State
     const token = ref<string>(localStorage.getItem('auth_token') || '')
     const currentVerifyLogin = ref<string>(localStorage.getItem('auth_login') || '')
+    const userStore = useUsersStore()
     // const user = ref<User | null>(null)
 
     // Computed
     const isAuth = computed(() => !!token.value)
 
     // Watchers
-    watch(token, (newToken: string) => {
+    watch(token, async (newToken: string) => {
         if (newToken) {
             localStorage.setItem('auth_token', newToken)
+            await userStore.getUserByToken(newToken)
         } else {
             localStorage.removeItem('auth_token')
             // user.value = null // Очищаем пользователя при logout

@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import {
-    fetchTravels,
+    queryTravels,
     createTravel,
     updateTravel,
     deleteTravel,
-    fetchSharedTravels
+    querySharedTravels
 } from '../api/travels'
 import { travelData } from "@/app/types/types"
 
@@ -14,11 +14,11 @@ export const useTravelsStore = defineStore('travels', () => {
     const sharedTravels = ref([])
 
     const getTravels = async (userId) => {
-        travels.value = fetchTravels(userId)
+        travels.value = queryTravels(userId)
     }
 
     const getSharedTravels = async (userId) => {
-        sharedTravels.value = await fetchSharedTravels(userId)
+        sharedTravels.value = await querySharedTravels(userId)
     }
 
     const addTravel = async (travelData: travelData) => {

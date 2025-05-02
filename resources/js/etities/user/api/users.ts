@@ -3,7 +3,7 @@ import api from "../../../app/api/api"
 
 export const fetchUserByToken = async (token: string): userData => {
     try {
-        const response = await api.get('/usersByToken', {
+        const response = await api.get('/user', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

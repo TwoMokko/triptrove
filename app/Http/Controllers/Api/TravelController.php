@@ -48,6 +48,28 @@ class TravelController extends Controller
         return response()->json($response);
     }
 
+    function getFriendsUsers(Request $request): JsonResponse
+    {
+        $request->validate([
+            'user_id' => 'required|integer|exists:users,id'
+        ]);
+
+        // Получаем всех создателей, у которых есть путешествия с участием нашего пользователя
+        $creators = User::whereHas('createdTravels.users', function($query) use ($request) {
+            $query->where('users.id', $request->user_id);
+        })
+            ->with(['createdTravels' => function($query) use ($request) {
+                $query->with(['users:id,name,login'])
+                    ->whereHas('users', function($q) use ($request) {
+                        $q->where('users.id', $request->user_id);
+                    })
+                    ->orderBy('order');
+            }])
+            ->get(['id', 'name', 'login']);
+
+        return response()->json($creators);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -496,9 +518,13 @@ class TravelController extends Controller
     public function getTravelsWithUsers(Request $request): JsonResponse
     {
         $userIds = $request->validate([
-            'user_ids' => 'required|array',
+            'user_ids' => 'array',
             'user_ids.*' => 'integer'
         ])['user_ids'];
+
+        if (empty($userIds)) {
+            return response()->json([]);
+        }
 
         $travels = Travel::whereExists(function ($query) use ($userIds) {
             $query->select(DB::raw(1))

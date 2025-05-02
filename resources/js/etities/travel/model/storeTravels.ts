@@ -3,17 +3,18 @@ import { computed, ref } from 'vue'
 import {
     createTravel,
     deleteTravel,
-    fetchAttachUser,
-    fetchDetachUser,
-    fetchPublishedTravels,
-    fetchSharedTravels,
-    fetchSharedUsers,
-    fetchTravels, fetchTravelsWithUsers, fetchUpdateTravelsOrder,
+    queryAttachUser,
+    queryDetachUser, queryFriendUsers,
+    queryPublishedTravels,
+    querySharedTravels,
+    querySharedUsers,
+    queryTravels, queryTravelsWithUsers, queryUpdateTravelsOrder,
     updateTravel, updateTravelsOrder,
     uploadPhoto,
 } from '../api/travels'
 import { travelData, OrderUpdatePayload } from "../../../app/types/types"
 import { debounce } from "../../../shared/lib/debounce"
+import { useUsersStore } from "../../user"
 
 export const useTravelsStore = defineStore('travels', () => {
     // State
@@ -28,11 +29,16 @@ export const useTravelsStore = defineStore('travels', () => {
 
     // const usersShared = ref<{ travelId: number, users: userData[] }[]>()
     const sharedUsers = ref()
+    const usersFriend = ref([])
+
+    const usersStore = useUsersStore()
 
     // Getters
     const hasPublishedTravels = computed(() => publishedTravels.value.length > 0)
     const hasTravels = computed(() => travels.value.length > 0)
     const hasSharedTravels = computed(() => sharedTravels.value.length > 0)
+    const hasUsersFriend = computed(() => usersFriend.value.length > 0)
+    const hasFriendsTravels = computed(() => travelsWithUsers.value.length > 0)
     const getTravelById = computed(() => (id: number) =>
         travels.value.find(travel => travel.id === id)
     )
@@ -41,7 +47,7 @@ export const useTravelsStore = defineStore('travels', () => {
     const getPublishedTravels = async (page: number) => {
         isLoading.value = true
         try {
-            publishedTravels.value = await fetchPublishedTravels(page)
+            publishedTravels.value = await queryPublishedTravels(page)
         } catch (err) {
             error.value = 'Ошибка загрузки published путешествий'
             console.error(err)
@@ -52,7 +58,7 @@ export const useTravelsStore = defineStore('travels', () => {
     const getTravels = async (userId: number) => {
         isLoading.value = true
         try {
-            travels.value = await fetchTravels(userId)
+            travels.value = await queryTravels(userId)
         } catch (err) {
             error.value = 'Ошибка загрузки путешествий'
             console.error(err)
@@ -62,8 +68,10 @@ export const useTravelsStore = defineStore('travels', () => {
     }
     const getTravelsWithUsers = async (userIds: number[]) => {
         // isLoading.value = true
+        if (userIds.length == 1 && userIds[0] == usersStore.currentUser.id) userIds = []
+
         try {
-            travelsWithUsers.value = await fetchTravelsWithUsers(userIds)
+            travelsWithUsers.value = await queryTravelsWithUsers(userIds)
         } catch (err) {
             error.value = 'Ошибка загрузки путешествий с другими пользователями'
             console.error(err)
@@ -75,7 +83,7 @@ export const useTravelsStore = defineStore('travels', () => {
     const getSharedTravels = async (userId: number) => {
         isLoading.value = true
         try {
-            sharedTravels.value = await fetchSharedTravels(userId)
+            sharedTravels.value = await querySharedTravels(userId)
         } catch (err) {
             error.value = 'Ошибка загрузки общих путешествий'
             console.error(err)
@@ -86,7 +94,19 @@ export const useTravelsStore = defineStore('travels', () => {
     const getSharedUsers = async () => {
         // isLoading.value = true
         try {
-            sharedUsers.value = await fetchSharedUsers(currentTravel.value.id)
+            sharedUsers.value = await querySharedUsers(currentTravel.value.id)
+        } catch (err) {
+            error.value = 'Ошибка загрузки общих пользователей'
+            console.error(err)
+        } finally {
+            // isLoading.value = false
+        }
+    }
+    const getFriendUsers = async () => {
+        // isLoading.value = true
+        try {
+            usersFriend.value = await queryFriendUsers(usersStore.currentUser.id)
+            console.log(usersFriend.value)
         } catch (err) {
             error.value = 'Ошибка загрузки общих пользователей'
             console.error(err)
@@ -188,7 +208,7 @@ export const useTravelsStore = defineStore('travels', () => {
 
         try {
             // isLoading.value = true
-            const response = await fetchAttachUser(currentTravel.value.id, userId)
+            const response = await queryAttachUser(currentTravel.value.id, userId)
             await getSharedUsers()
             console.log('what: ', response.data)
             return response.data
@@ -203,7 +223,7 @@ export const useTravelsStore = defineStore('travels', () => {
     const detachUser = async (userId: number) => {
         try {
             // isLoading.value = true
-            const response = await fetchDetachUser(currentTravel.value.id, userId)
+            const response = await queryDetachUser(currentTravel.value.id, userId)
             await getSharedUsers()
             console.log('what: ', response.data)
             return response.data
@@ -246,7 +266,7 @@ export const useTravelsStore = defineStore('travels', () => {
             abortController = new AbortController()
 
             try {
-                await fetchUpdateTravelsOrder(updates, abortController.signal)
+                await queryUpdateTravelsOrder(updates, abortController.signal)
                 console.log('Order updated successfully:', updates)
             } catch (error) {
                 console.error('Failed to update order:', error)
@@ -301,11 +321,14 @@ export const useTravelsStore = defineStore('travels', () => {
         isLoading,
         error,
         sharedUsers,
+        usersFriend,
 
         // Getters
         hasPublishedTravels,
         hasTravels,
         hasSharedTravels,
+        hasUsersFriend,
+        hasFriendsTravels,
         getTravelById,
 
         // Actions
@@ -320,6 +343,7 @@ export const useTravelsStore = defineStore('travels', () => {
         attachUser,
         detachUser,
         getSharedUsers,
+        getFriendUsers,
         uploadTravelCover,
         updateTravelsOrder,
     }

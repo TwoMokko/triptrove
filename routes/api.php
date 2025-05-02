@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PhotoController;
 use Illuminate\Support\Facades\Route;
 
+// TODO: разобраться с методами (что для чего и когда) и переписать по правилам laravel
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
@@ -15,9 +16,10 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 Route::post('/verify', [VerificationController::class, 'verify']);
 Route::post('/resend', [VerificationController::class, 'resend']);
 
-Route::middleware('auth:sanctum')->get('/usersByToken', [UserController::class, 'getUserByToken']);
+Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'getUserByToken']);
 
 Route::get('/users', [UserController::class, 'index']); // Получить всех пользователей
+Route::get('/usersFriend', [TravelController::class, 'getFriendsUsers']); // Получить пользователей с которыми есть совместные путешествия
 Route::post('/users', [UserController::class, 'store']); // Создать нового пользователя
 Route::get('/users/{id}', [TravelController::class, 'show']); // Получить пользователя по ID
 Route::put('/users/{id}', [TravelController::class, 'update']); // Обновить пользователя
@@ -34,7 +36,7 @@ Route::put('/travels/{id}', [TravelController::class, 'update']); // Обнов�
 Route::delete('/travels/{id}', [TravelController::class, 'destroy']); // Удалить путешествие
 
 
-// TODO: разобраться с методами (что для чего и когда) и выше тоже
+
 Route::get('/usersSearch', [UserController::class, 'getUsersFromSearchString']); // Получить всех пользователей по строке поиска
 Route::get('/getSharedUsers', [TravelController::class, 'getUsersForTravel']);
 Route::get('/getSharedTravels', [TravelController::class, 'getTravelsForUser']);

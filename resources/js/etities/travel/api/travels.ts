@@ -1,7 +1,7 @@
 import { travelData } from "@/app/types/types"
 import api from "../../../app/api/api"
 
-export const fetchPublishedTravels = async (page?: number) => {
+export const queryPublishedTravels = async (page?: number) => {
     try {
         const response = await api.get('/travels/published', {
             query: { page: page ?? 1 },
@@ -13,7 +13,7 @@ export const fetchPublishedTravels = async (page?: number) => {
         throw error
     }
 }
-export const fetchTravels = async (userId: number): travelData[] => {
+export const queryTravels = async (userId: number): travelData[] => {
     try {
         const response = await api.get('/travelsFromUser', {
             params: {
@@ -26,7 +26,7 @@ export const fetchTravels = async (userId: number): travelData[] => {
         throw error
     }
 }
-export const fetchTravelsWithUsers = async (userIds: number[]): travelData[] => {
+export const queryTravelsWithUsers = async (userIds: number[]): travelData[] => {
     try {
         const response = await api.post('/travels/getTravelsWithUsers', {
             user_ids: userIds
@@ -95,7 +95,7 @@ export const deleteTravel = async (travelId: number, userId: number) => {
     }
 }
 
-export const fetchSharedTravels = async (userId: number) => {
+export const querySharedTravels = async (userId: number) => {
     try {
         const response = await api.get(`/getSharedTravels`, {
             params: {
@@ -109,7 +109,7 @@ export const fetchSharedTravels = async (userId: number) => {
     }
 }
 
-export const fetchSharedUsers = async (travelId: number) => {
+export const querySharedUsers = async (travelId: number) => {
     try {
         const response = await api.get(`/getSharedUsers`, {
             params: {
@@ -123,7 +123,21 @@ export const fetchSharedUsers = async (travelId: number) => {
     }
 }
 
-export const fetchAttachUser = async (travelId: number, userId: number) => {
+export const queryFriendUsers = async (userId: number) => {
+    try {
+        const response = await api.get(`/usersFriend`, {
+            params: {
+                user_id: userId,
+            },
+        })
+        return response.data
+    } catch (error) {
+        console.error('Error fetching shared users:', error)
+        throw error
+    }
+}
+
+export const queryAttachUser = async (travelId: number, userId: number) => {
     try {
         const response = await api.post( `/attachUser`, {
             user_id: userId,
@@ -137,7 +151,7 @@ export const fetchAttachUser = async (travelId: number, userId: number) => {
     }
 }
 
-export const fetchDetachUser = async (travelId: number, userId: number) => {
+export const queryDetachUser = async (travelId: number, userId: number) => {
     try {
         const response = await api.delete( `/detachUser`, {
             params: {
@@ -167,7 +181,7 @@ export const uploadPhoto = async (travelId, formData) => {
     }
 }
 
-export const fetchUpdateTravelsOrder = async (items, signal) => {
+export const queryUpdateTravelsOrder = async (items, signal) => {
     try {
         const response = await api.patch('/travels/update-order', { items: items }, { signal: signal })
         return response.data
