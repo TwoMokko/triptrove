@@ -57,6 +57,7 @@ const isCollapsed = ref<boolean>(false)
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 10;
 
     &.collapsed {
         bottom: 2rem;

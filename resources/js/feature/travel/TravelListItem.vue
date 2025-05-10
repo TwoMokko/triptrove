@@ -80,10 +80,18 @@ const handleSave = async () => {
                         class="w-6 h-6 text-secondary hover:text-dark"
                     />
                 </button>
-                <button @click="handleDelete" class="cursor-pointer" title="удалить">
+                <button
+                    @click="item.user_id === currentUser.id ? handleDelete : null"
+                    :class="[
+                        item.user_id === currentUser.id
+                            ? 'cursor-pointer hover:text-dark'
+                            : 'opacity-30 cursor-not-allowed'
+                    ]"
+                    :title="item.user_id === currentUser.id ? 'удалить' : 'нет прав для удаления'"
+                >
                     <Icon
                         :iconPath="mdiDelete"
-                        class="w-6 h-6 text-secondary hover:text-dark"
+                        class="w-6 h-6 text-secondary"
                     />
                 </button>
             </div>

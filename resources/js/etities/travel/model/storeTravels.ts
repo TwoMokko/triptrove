@@ -20,7 +20,7 @@ export const useTravelsStore = defineStore('travels', () => {
     // State
     const publishedTravels = ref([])
     const travels = ref<travelData[]>([])
-    const travelsWithUsers = ref<travelData[]>([])
+    const travelsWithUsers = ref<travelData[]>(null)
     const sharedTravels = ref<{ id: number, name: string, login: string, travels: travelData[] }[]>([])
 
     const currentTravel = ref<travelData | null>(null)
@@ -159,17 +159,23 @@ export const useTravelsStore = defineStore('travels', () => {
                 travels.value[index] = { ...travels.value[index], ...updatedTravel.data }
             }
 
-            sharedTravels.value = sharedTravels.value.map(usersTravel => {
-                return {
-                    ...usersTravel,
-                    travels: usersTravel.travels.map(travel => {
-                        if (travel.id === travelId) {
-                            return { ...travel, ...updatedTravel.data }
-                        }
-                        return travel
-                    })
-                }
-            })
+            // sharedTravels.value = sharedTravels.value.map(usersTravel => {
+            //     return {
+            //         ...usersTravel,
+            //         travels: usersTravel.travels.map(travel => {
+            //             if (travel.id === travelId) {
+            //                 return { ...travel, ...updatedTravel.data }
+            //             }
+            //             return travel
+            //         })
+            //     }
+            // })
+
+
+            const indexFr = travelsWithUsers.value.findIndex(travel => travel.id === travelId)
+            if (indexFr !== -1) {
+                travelsWithUsers.value[indexFr] = { ...travelsWithUsers.value[indexFr], ...updatedTravel.data }
+            }
             return updatedTravel
         } catch (err) {
             // error.value = 'Ошибка обновления путешествия'

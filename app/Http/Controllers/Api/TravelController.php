@@ -75,6 +75,7 @@ class TravelController extends Controller
      */
     public function store(Request $request)
     {
+        // Валидация
         $data = $request->validate([
             'published' => 'sometimes|boolean',
             'place' => 'required|max:255',
@@ -85,58 +86,39 @@ class TravelController extends Controller
             'advice' => 'required',
             'entertainment' => 'required',
             'general_impression' => 'required',
-            'user_id' => 'required',
+            'user_id' => 'required|exists:users,id', // Добавил проверку существования пользователя
         ]);
 
-//        $request->validate([
-//            'published' => 'sometimes|boolean',
-//            'place' => 'required|max:255',
-//            'date' => 'required',
-//            'mode_of_transport' => 'required',
-//            'good_impression' => 'required',
-//            'bad_impression' => 'required',
-//            'general_impression' => 'required',
-//            'user_id' => 'required',
-//        ]);
+        // Создание записи
+        $data['order'] = Travel::where('user_id', $data['user_id'])->max('order') + 1 ?? 1;
 
-        // Получаем user_id из запроса
-        $userId = $request->input('user_id');
-
-        // Находим максимальное значение поля `order` для записей с определённым user_id
-        $maxOrder = Travel::where('user_id', $userId)->max('order');
-
-        // Если записей нет, устанавливаем order = 1, иначе увеличиваем на 1
-        $order = $maxOrder ? $maxOrder + 1 : 1;
-
-        // Добавляем вычисленное значение `order` в данные запроса
-//        $data = $request->all();
-        $data['order'] = $order;
-
-        // Создаем запись
+        // Создаем путешествие
         $travel = Travel::create($data);
 
-        if ($request->has('users')) {
-            $newUserIds = collect($request->users)->pluck('id')->toArray();
-            $currentUserIds = $travel->users->pluck('id')->toArray();
+        // Получаем ID текущего пользователя (создателя)
+        $creatorId = $data['user_id'];
 
-            // Пользователи для добавления
-            $usersToAttach = array_diff($newUserIds, $currentUserIds);
-            // Пользователи для удаления
-            $usersToDetach = array_diff($currentUserIds, $newUserIds);
+        // Обработка пользователей
+        $usersToAttach = [$creatorId]; // Всегда добавляем создателя
 
-            if (!empty($usersToAttach)) {
-                $travel->users()->attach($usersToAttach);
-            }
-
-            if (!empty($usersToDetach)) {
-                $travel->users()->detach($usersToDetach);
-            }
+        if ($request->has('users') && is_array($request->users)) {
+            $usersToAttach = array_merge(
+                $usersToAttach,
+                collect($request->users)
+                    ->pluck('id')
+                    ->reject(function ($id) use ($creatorId) {
+                        // Исключаем создателя, если он случайно в списке
+                        return $id == $creatorId;
+                    })
+                    ->toArray()
+            );
         }
 
-        // Загружаем обновленные данные
-        $travel->load('users:id,name,login');
+        // Одной операцией добавляем всех пользователей
+        $travel->users()->sync($usersToAttach);
 
-        $travel->users()->attach($request->user()->id);
+        // Загружаем отношения для ответа
+        $travel->load('users:id,name,login');
 
         return response()->json($travel, 201);
     }
@@ -526,7 +508,8 @@ class TravelController extends Controller
             return response()->json([]);
         }
 
-        $travels = Travel::whereExists(function ($query) use ($userIds) {
+        $travels = Travel::with(['users:id,name,login']) // Загружаем пользователей
+        ->whereExists(function ($query) use ($userIds) {
             $query->select(DB::raw(1))
                 ->from('travel_user')
                 ->whereColumn('travel_user.travel_id', 'travels.id')
@@ -540,7 +523,13 @@ class TravelController extends Controller
                     ->whereColumn('travel_user.travel_id', 'travels.id')
                     ->whereNotIn('travel_user.user_id', $userIds);
             })
-            ->get();
+            ->get()
+            ->map(function ($travel) {
+                return array_merge(
+                    $travel->toArray(),
+                    ['users' => $travel->users] // Добавляем пользователей в ответ
+                );
+            });
 
         return response()->json($travels);
     }

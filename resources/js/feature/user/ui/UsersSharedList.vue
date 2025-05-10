@@ -6,7 +6,7 @@ import InputCustom from "@/shared/ui/InputCustom.vue"
 import api from "@/app/api/api"
 import { storeToRefs } from "pinia"
 import { useUsersStore } from "@/etities/user"
-import {useTravelsStore} from "@/etities/travel";
+import { useTravelsStore } from "@/etities/travel"
 
 interface user {
     id: number;
