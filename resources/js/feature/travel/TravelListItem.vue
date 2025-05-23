@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { mdiPencil, mdiDelete, mdiLock, mdiLockOpenVariant } from '@mdi/js'
 import Icon from "@/shared/ui/Icon.vue"
-import Modal from '@/shared/ui/Modal.vue'
 import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
 import type { travelData } from "@/app/types/types"
 import { useTravelsStore } from "@/etities/travel"
 import { useUsersStore } from "@/etities/user"
 import { storeToRefs } from "pinia"
 import { computed } from "vue"
+import { useModal } from '@/shared/lib/useModal'
 
 const props = defineProps<{
     item: travelData
@@ -15,15 +15,22 @@ const props = defineProps<{
 
 const travelsStore = useTravelsStore()
 const { currentUser } = storeToRefs(useUsersStore())
+const { openModal, closeModal } = useModal()
 
 const isDragging = computed(() => false)
 
 const handleMouseDown = (e: MouseEvent) => {
     e.stopPropagation()
 }
+
 const handleEdit = (e: Event) => {
     e.stopPropagation()
     travelsStore.setCurrentTravel({ ...props.item })
+    openModal(`edit-travel-${props.item.id}`, TravelForm, {
+        modelValue: travelsStore.currentTravel,
+        onHandler: handleSave,
+        btnText: 'Сохранить'
+    })
 }
 
 const handleDelete = async () => {
@@ -38,16 +45,20 @@ const handleDelete = async () => {
 }
 
 const handleSave = async () => {
+    console.log('aaa: ', travelsStore.currentTravel)
+
     if (travelsStore.currentTravel) {
-
-        console.log('save: ', travelsStore.currentTravel)
-
-        await travelsStore.editTravel(
-            travelsStore.currentTravel.id,
-            travelsStore.currentTravel,
-            currentUser.value.id
-        )
-        travelsStore.setCurrentTravel(null)
+        try {
+            await travelsStore.editTravel(
+                travelsStore.currentTravel.id,
+                travelsStore.currentTravel,
+                currentUser.value.id
+            )
+            travelsStore.setCurrentTravel(null)
+            closeModal(`edit-travel-${props.item.id}`)
+        } catch (error) {
+            console.error('Ошибка при сохранении:', error)
+        }
     }
 }
 </script>
@@ -81,7 +92,7 @@ const handleSave = async () => {
                     />
                 </button>
                 <button
-                    @click="item.user_id === currentUser.id ? handleDelete : null"
+                    @click="item.user_id === currentUser.id && handleDelete()"
                     :class="[
                         item.user_id === currentUser.id
                             ? 'cursor-pointer hover:text-dark'
@@ -96,17 +107,6 @@ const handleSave = async () => {
                 </button>
             </div>
         </div>
-
-        <Modal
-            :isOpen="travelsStore.currentTravel?.id === item.id"
-            @close="travelsStore.setCurrentTravel(null)"
-        >
-            <TravelForm
-                v-model="travelsStore.currentTravel"
-                @handler="handleSave"
-                :btn-text="'Сохранить'"
-            />
-        </Modal>
     </div>
 </template>
 

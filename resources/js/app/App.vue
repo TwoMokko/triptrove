@@ -5,6 +5,7 @@ import { layouts } from '@/shared/ui/layout'
 import { useAuthStore } from "@/etities/auth"
 import { useUsersStore } from "@/etities/user"
 import Loader from "@/shared/ui/Loader.vue"
+import ModalContainer from '@/widgets/modalContainer/ModalContainer.vue'
 
 const route = useRoute()
 const layout = computed(() => layouts[route.meta.layout] || layouts.default)
@@ -50,6 +51,7 @@ onMounted(async () => {
 <template>
     <component :is="layout">
         <Loader v-if="isAppLoading" />
-        <router-view v-else />
+        <RouterView v-else />
+        <ModalContainer />
     </component>
 </template>

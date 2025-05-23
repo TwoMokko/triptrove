@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UploadPhotoRequest;
-use App\Services\PhotoUploadService;
+use App\Services\PhotrjuloUploadService;
 
 class PhotoController extends Controller
 {

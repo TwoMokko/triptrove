@@ -1,48 +1,38 @@
 <script setup lang="ts">
-import {defineProps, defineEmits, ref} from 'vue';
 import { mdiWindowClose, mdiMinus } from '@mdi/js'
-import Icon from "@/shared/ui/Icon.vue";
-
-// Принимаем пропс `isOpen` для управления видимостью модального окна
-// const props = defineProps({
-//     isOpen: {
-//         type: Boolean,
-//         required: true,
-//     },
-// })
+import Icon from "@/shared/ui/Icon.vue"
 
 defineProps<{
-    isOpen: boolean,
+    modalId: string
+    isOpen: boolean
+    isCollapsed: boolean
 }>()
 
-// Определяем событие для закрытия модального окна
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'toggle-collapse'])
 
 const closeModal = () => {
     emit('close')
 }
 
-const beforeCloseModal = () => {
-    isCollapsed.value = false
-    closeModal()
+const toggleCollapse = () => {
+    emit('toggle-collapse')
 }
-
-const isCollapsed = ref<boolean>(false)
 </script>
 
 <template>
-    <div v-if="isOpen" class="modal-overlay" :class="{ collapsed: isCollapsed }" @click="() => console.log('можно вызвать closeModal, чтобы закрывать, нажимая вне окна, но тогда не получится при сворачивании пользоваться')">
+    <div v-if="isOpen" class="modal-overlay" :class="{ collapsed: isCollapsed }" @click.self="closeModal">
         <div class="modal-wrap" @click.stop>
             <div class="flex gap-4 justify-end">
-<!--                Доработать, чтобы свернутые окна выстраивались в линию, еще чтобы при редактировании значения не исчезали из карточки путешествия, еще добавить заголовок (чтобы отличать свернутые окна друг от друга)-->
-<!--                <Icon-->
-<!--                    :iconPath="mdiMinus"-->
-<!--                    class="w-6 h-6 text-secondary hover:text-dark cursor-pointer"-->
-<!--                    @click="() => isCollapsed = !isCollapsed" />-->
+                <Icon
+                    :iconPath="mdiMinus"
+                    class="w-6 h-6 text-secondary hover:text-dark cursor-pointer"
+                    @click="toggleCollapse"
+                />
                 <Icon
                     :iconPath="mdiWindowClose"
                     class="w-6 h-6 text-secondary hover:text-dark cursor-pointer"
-                    @click="beforeCloseModal" />
+                    @click="closeModal"
+                />
             </div>
             <div class="mt-4 modal-content">
                 <slot></slot>

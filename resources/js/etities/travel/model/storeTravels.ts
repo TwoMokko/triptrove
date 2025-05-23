@@ -20,7 +20,7 @@ export const useTravelsStore = defineStore('travels', () => {
     // State
     const publishedTravels = ref([])
     const travels = ref<travelData[]>([])
-    const travelsWithUsers = ref<travelData[]>(null)
+    const travelsWithUsers = ref<travelData[]>([])
     const sharedTravels = ref<{ id: number, name: string, login: string, travels: travelData[] }[]>([])
 
     const currentTravel = ref<travelData | null>(null)
@@ -28,8 +28,8 @@ export const useTravelsStore = defineStore('travels', () => {
     const error = ref<string | null>(null)
 
     // const usersShared = ref<{ travelId: number, users: userData[] }[]>()
-    const sharedUsers = ref()
-    const usersFriend = ref([])
+    const sharedUsers = ref<any[]>([])
+    const usersFriend = ref<any[]>([])
 
     const usersStore = useUsersStore()
 
@@ -151,38 +151,30 @@ export const useTravelsStore = defineStore('travels', () => {
 
         console.log('edit: ', travelData)
 
-        // isLoading.value = true
         try {
             const updatedTravel = await updateTravel(travelId, travelData, userId)
-            const index = travels.value.findIndex(travel => travel.id === travelId)
+
+            // Обновляем основной список
+            const index = travels.value.findIndex(t => t.id === travelId)
             if (index !== -1) {
                 travels.value[index] = { ...travels.value[index], ...updatedTravel.data }
             }
 
-            // sharedTravels.value = sharedTravels.value.map(usersTravel => {
-            //     return {
-            //         ...usersTravel,
-            //         travels: usersTravel.travels.map(travel => {
-            //             if (travel.id === travelId) {
-            //                 return { ...travel, ...updatedTravel.data }
-            //             }
-            //             return travel
-            //         })
-            //     }
-            // })
-
-
-            const indexFr = travelsWithUsers.value.findIndex(travel => travel.id === travelId)
-            if (indexFr !== -1) {
-                travelsWithUsers.value[indexFr] = { ...travelsWithUsers.value[indexFr], ...updatedTravel.data }
+            // Обновляем travelsWithUsers (с проверкой)
+            if (travelsWithUsers.value?.length) {
+                const indexFr = travelsWithUsers.value.findIndex(t => t.id === travelId)
+                if (indexFr !== -1) {
+                    travelsWithUsers.value[indexFr] = {
+                        ...travelsWithUsers.value[indexFr],
+                        ...updatedTravel.data
+                    }
+                }
             }
+
             return updatedTravel
         } catch (err) {
-            // error.value = 'Ошибка обновления путешествия'
-            console.error(err)
+            console.error('Ошибка обновления:', err)
             throw err
-        } finally {
-            // isLoading.value = false
         }
     }
 
