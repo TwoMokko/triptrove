@@ -1,9 +1,10 @@
 import { useModalStore } from "../../app/store/modal"
+import { Component } from "vue"
 
 export const useModal = () => {
     const modalStore = useModalStore()
 
-    const openModal = (id: string, component: any, props: Record<string, any> = {}) => {
+    const openModal = (id: string, component: Component, props: Record<string, any> = {}) => {
         modalStore.openModal(id, component, props)
     }
 

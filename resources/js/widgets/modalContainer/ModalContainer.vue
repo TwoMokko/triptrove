@@ -24,7 +24,11 @@ const handleToggleCollapse = (modalId: string) => {
             @close="() => handleClose(modal.id)"
             @toggle-collapse="() => handleToggleCollapse(modal.id)"
         >
-            <component :is="modal.component" v-bind="modal.props" />
+            <component
+                :is="modal.component"
+                v-bind="modal.props"
+                @handler="modal.props.onHandler"
+            />
         </Modal>
     </template>
 </template>

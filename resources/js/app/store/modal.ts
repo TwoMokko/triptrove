@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { Component, ref } from 'vue'
 
 interface Modal {
     id: string
-    component: any
+    component: Component
     props?: Record<string, any>
     isCollapsed?: boolean
 }
@@ -11,7 +11,7 @@ interface Modal {
 export const useModalStore = defineStore('modal', () => {
     const modals = ref<Modal[]>([])
 
-    const openModal = (id: string, component: any, props?: Record<string, any>) => {
+    const openModal = (id: string, component: Component, props?: Record<string, any>) => {
         if (!modals.value.some(m => m.id === id)) {
             modals.value.push({ id, component, props, isCollapsed: false })
         }

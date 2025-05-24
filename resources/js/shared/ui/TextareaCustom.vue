@@ -1,5 +1,8 @@
 <script setup lang="ts">
-const text = defineModel<string>('text', { required: true })
+const text = defineModel<string>('text', {
+    required: true,
+    default: ''
+})
 
 defineProps<{
     placeholder?: string

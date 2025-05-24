@@ -6,7 +6,7 @@ import type { travelData } from "@/app/types/types"
 import { useTravelsStore } from "@/etities/travel"
 import { useUsersStore } from "@/etities/user"
 import { storeToRefs } from "pinia"
-import { computed } from "vue"
+import { computed, markRaw } from "vue"
 import { useModal } from '@/shared/lib/useModal'
 
 const props = defineProps<{
@@ -26,7 +26,7 @@ const handleMouseDown = (e: MouseEvent) => {
 const handleEdit = (e: Event) => {
     e.stopPropagation()
     travelsStore.setCurrentTravel({ ...props.item })
-    openModal(`edit-travel-${props.item.id}`, TravelForm, {
+    openModal(`edit-travel-${props.item.id}`, markRaw(TravelForm), {
         modelValue: travelsStore.currentTravel,
         onHandler: handleSave,
         btnText: 'Сохранить'
@@ -44,8 +44,10 @@ const handleDelete = async () => {
     }
 }
 
-const handleSave = async () => {
+const handleSave = async (travel: travelData) => {
     console.log('aaa: ', travelsStore.currentTravel)
+
+    travelsStore.currentTravel = travel
 
     if (travelsStore.currentTravel) {
         try {

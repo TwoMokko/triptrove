@@ -25,12 +25,6 @@ const emit = defineEmits(['update:modelValue', 'handler'])
 // Создаем локальную копию объекта для редактирования
 const localTravel = ref<travelData>({ ...props.modelValue })
 
-// Обновляем родительский объект при изменении локального
-const updateModel = () => {
-    console.log('values: ', localTravel.value)
-    emit('update:modelValue', localTravel.value)
-}
-
 // Следим за изменениями пропса `modelValue` (на случай, если он изменится извне)
 watch(
     () => props.modelValue,
@@ -46,9 +40,17 @@ const handleUsersUpdate = (updatedUsers) => {
         users: updatedUsers
     }
     console.log({localTravel})
-    updateModel()
 }
 
+const updateModel = () => {
+    console.log('values: ', localTravel.value)
+    emit('update:modelValue', localTravel.value)
+}
+
+const handleSubmit = () => {
+    console.log('values sub: ', localTravel.value)
+    emit('handler', localTravel.value) // Вызываем обработчик сохранения
+}
 </script>
 
 <template>
@@ -79,6 +81,6 @@ const handleUsersUpdate = (updatedUsers) => {
         />
     </form>
     <div class="text-end mt-4">
-        <ButtonCustom :text="btnText" @click="$emit('handler')" class="w-full" />
+        <ButtonCustom :text="btnText" @click="handleSubmit" class="w-full" />
     </div>
 </template>
