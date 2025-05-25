@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import { travelData } from "@/app/types/types"
 import InputCustom from "@/shared/ui/InputCustom.vue"
 import TextareaCustom from "@/shared/ui/TextareaCustom.vue"
@@ -15,17 +15,15 @@ const props = defineProps({
     },
     btnText: {
         type: String,
-        required: false
+        required: false,
+        default: 'Сохранить'
     }
 })
 
-// Определяем событие для обновления объекта
 const emit = defineEmits(['update:modelValue', 'handler'])
 
-// Создаем локальную копию объекта для редактирования
 const localTravel = ref<travelData>({ ...props.modelValue })
 
-// Следим за изменениями пропса `modelValue` (на случай, если он изменится извне)
 watch(
     () => props.modelValue,
     (newValue) => {
@@ -39,17 +37,10 @@ const handleUsersUpdate = (updatedUsers) => {
         ...localTravel.value,
         users: updatedUsers
     }
-    console.log({localTravel})
-}
-
-const updateModel = () => {
-    console.log('values: ', localTravel.value)
-    emit('update:modelValue', localTravel.value)
 }
 
 const handleSubmit = () => {
-    console.log('values sub: ', localTravel.value)
-    emit('handler', localTravel.value) // Вызываем обработчик сохранения
+    emit('handler', localTravel.value)
 }
 </script>
 
@@ -65,14 +56,14 @@ const handleSubmit = () => {
             </label>
             <div>Приватное или публичное</div>
         </div>
-        <InputCustom v-model:value="localTravel.place" :placeholder="'место'" :type="'text'" @input="updateModel" />
-        <InputCustom v-model:value="localTravel.when" :placeholder="'время когда'" :type="'text'" @input="updateModel" />
-        <InputCustom v-model:value="localTravel.amount" :placeholder="'сумма'" :type="'text'" @input="updateModel" />
-        <InputCustom v-model:value="localTravel.mode_of_transport" :placeholder="'на чем добирались'" :type="'text'" @input="updateModel" />
-        <TextareaCustom v-model:text="localTravel.accommodation" :placeholder="'где жили'" @change="updateModel" />
-        <TextareaCustom v-model:text="localTravel.advice" :placeholder="'совет'" @change="updateModel" />
-        <TextareaCustom v-model:text="localTravel.entertainment" :placeholder="'экскурсии и развлечения'" @change="updateModel" />
-        <TextareaCustom v-model:text="localTravel.general_impression" :placeholder="'общие впечатления'" @change="updateModel" />
+        <InputCustom v-model:value="localTravel.place" :placeholder="'место'" :type="'text'" />
+        <InputCustom v-model:value="localTravel.when" :placeholder="'время когда'" :type="'text'" />
+        <InputCustom v-model:value="localTravel.amount" :placeholder="'сумма'" :type="'text'" />
+        <InputCustom v-model:value="localTravel.mode_of_transport" :placeholder="'на чем добирались'" :type="'text'" />
+        <TextareaCustom v-model:text="localTravel.accommodation" :placeholder="'где жили'" />
+        <TextareaCustom v-model:text="localTravel.advice" :placeholder="'совет'" />
+        <TextareaCustom v-model:text="localTravel.entertainment" :placeholder="'экскурсии и развлечения'" />
+        <TextareaCustom v-model:text="localTravel.general_impression" :placeholder="'общие впечатления'" />
 
 
         <UsersSharedList

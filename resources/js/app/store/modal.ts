@@ -25,8 +25,23 @@ export const useModalStore = defineStore('modal', () => {
         const modal = modals.value.find(m => m.id === id)
         if (modal) {
             modal.isCollapsed = !modal.isCollapsed
+
+            // Сохраняем данные при сворачивании
+            if (modal.isCollapsed && modal.component.props?.modelValue) {
+                modal.tempData = {...modal.component.props.modelValue}
+            }
         }
     }
 
-    return { modals, openModal, closeModal, toggleCollapse }
+    const updateModalProps = (id: string, newProps: Record<string, any>) => {
+        const modal = modals.value.find(m => m.id === id)
+        // if (modal) {
+        //     modal.props = { ...modal.props, ...newProps }
+        // }
+        if (modal) {
+            modal.props.modelValue = { ...newProps }
+        }
+    }
+
+    return { modals, openModal, closeModal, toggleCollapse, updateModalProps }
 })

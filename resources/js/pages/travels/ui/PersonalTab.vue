@@ -19,9 +19,6 @@ watch(newTravel, (value) => {
 }, { deep: true })
 
 const createTravel = (travel: travelData): void => {
-    console.log({travel})
-    console.log(newTravel.value)
-
     newTravel.value = travel
     travelsStore.addTravel({ ...newTravel.value, user_id: usersStore.currentUser.id })
     newTravel.value = { users: [] }
@@ -32,7 +29,10 @@ const openCreateTravelModal = () => {
     openModal('create-travel', markRaw(TravelForm), {
         modelValue: newTravel.value,
         onHandler: createTravel,
-        btnText: 'Добавить путешествие'
+        btnText: 'Добавить путешествие',
+        isCollapsible: true,
+        previewText: travelsStore.currentTravel.place,
+        title: '',
     })
 }
 </script>

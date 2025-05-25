@@ -8,6 +8,7 @@ import { useUsersStore } from "@/etities/user"
 import { storeToRefs } from "pinia"
 import { computed, markRaw } from "vue"
 import { useModal } from '@/shared/lib/useModal'
+import {useConfirm} from "@/shared/lib/useConfirm";
 
 const props = defineProps<{
     item: travelData
@@ -16,6 +17,7 @@ const props = defineProps<{
 const travelsStore = useTravelsStore()
 const { currentUser } = storeToRefs(useUsersStore())
 const { openModal, closeModal } = useModal()
+const { confirm } = useConfirm()
 
 const isDragging = computed(() => false)
 
@@ -29,17 +31,24 @@ const handleEdit = (e: Event) => {
     openModal(`edit-travel-${props.item.id}`, markRaw(TravelForm), {
         modelValue: travelsStore.currentTravel,
         onHandler: handleSave,
-        btnText: 'Сохранить'
+        btnText: 'Сохранить',
+        isCollapsible: true,
+        previewText: travelsStore.currentTravel.place,
+        title: '',
     })
 }
 
 const handleDelete = async () => {
-    if (confirm('Вы уверены, что хотите удалить это путешествие?')) {
+    const isConfirmed = await confirm({
+        title: 'Вы уверены, что хотите удалить это путешествие?',
+        // message: 'Вы уверены, что хотите удалить это путешествие?',
+    })
+
+    if (isConfirmed) {
         try {
             await travelsStore.removeTravel(props.item.id, currentUser.value.id)
-        }
-        catch (error) {
-            alert(error.response.data.message)
+        } catch (error) {
+            alert(error.response?.data?.message || 'Ошибка при удалении')
         }
     }
 }

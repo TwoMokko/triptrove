@@ -24,6 +24,5 @@ const resizeTextarea = (event: Event): void => {
         v-model="text"
         :placeholder="placeholder"
         @input="resizeTextarea"
-        @change="$emit('change')"
     />
 </template>

@@ -1,24 +1,22 @@
 <script setup lang="ts">
-    defineProps({
-        title: { type: String, default: 'Подтвердите двействие' },
-        message: { type: String, required: true },
-    })
+import ButtonCustom from "@/shared/ui/ButtonCustom.vue";
 
-    const emit = defineEmits(['confirm, close'])
+defineProps({
+    message: {
+        type: String,
+        required: true
+    },
+})
 
-    const handleConfirm = () => {
-        emit('confirm')
-        emit('close')
-    }
+const emit = defineEmits(['confirm', 'close'])
 </script>
 
 <template>
-    <div class="">
-        <h3>{{ title }}</h3>
-        <p>{{ message }}</p>
-        <div>
-            <button @click="$emit('close')">Отмена</button>
-            <button @click="$emit('handleConfirm')">Подтвердить</button>
+    <div>
+<!--        <p>{{ message }}</p>-->
+        <div class="flex justify-end gap-2 pt-4">
+            <button @click="emit('close')">Отмена</button>
+            <ButtonCustom @handler="emit('confirm')" text="Подтвердить" />
         </div>
     </div>
 </template>

@@ -3,10 +3,20 @@ import { mdiWindowClose, mdiMinus } from '@mdi/js'
 import Icon from "@/shared/ui/Icon.vue"
 
 defineProps<{
-    modalId: string
-    isOpen: boolean
-    isCollapsed: boolean
+    modalId: string,
+    isOpen: boolean,
+    isCollapsed: boolean,
+    title?: {
+        type: String,
+        default: ''
+    },
+    previewText: String,
+    isCollapsible?: {
+        type: Boolean,
+        default: false
+    }
 }>()
+
 
 const emit = defineEmits(['close', 'toggle-collapse'])
 
@@ -22,21 +32,33 @@ const toggleCollapse = () => {
 <template>
     <div v-if="isOpen" class="modal-overlay" :class="{ collapsed: isCollapsed }" @click.self="closeModal">
         <div class="modal-wrap" @click.stop>
-            <div class="flex gap-4 justify-end">
-                <Icon
-                    :iconPath="mdiMinus"
-                    class="w-6 h-6 text-secondary hover:text-dark cursor-pointer"
-                    @click="toggleCollapse"
-                />
-                <Icon
-                    :iconPath="mdiWindowClose"
-                    class="w-6 h-6 text-secondary hover:text-dark cursor-pointer"
-                    @click="closeModal"
-                />
+            <div class="flex justify-between">
+                <h3>
+                   {{ title }}
+                </h3>
+                <div class="flex gap-4 justify-end">
+                    <Icon
+                        v-if="isCollapsible"
+                        :iconPath="mdiMinus"
+                        class="w-6 h-6 text-secondary hover:text-dark cursor-pointer"
+                        @click="toggleCollapse"
+                    />
+                    <Icon
+                        :iconPath="mdiWindowClose"
+                        class="w-6 h-6 text-secondary hover:text-dark cursor-pointer"
+                        @click="closeModal"
+                    />
+                </div>
             </div>
             <div class="mt-4 modal-content">
                 <slot></slot>
             </div>
+
+
+        </div>
+
+        <div v-if="isCollapsed" class="flex gap-2">
+            {{ previewText }}
         </div>
     </div>
 </template>
