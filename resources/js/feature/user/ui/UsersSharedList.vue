@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue"
+import {computed, ref, watch} from "vue"
 import Icon from "@/shared/ui/Icon.vue"
 import { mdiDelete } from '@mdi/js'
 import InputCustom from "@/shared/ui/InputCustom.vue"
@@ -25,6 +25,10 @@ const { currentTravel } = storeToRefs(useTravelsStore())
 const localUsers = ref<user[]>([...props.modelValue])
 const searchString = ref<string>('')
 const usersSearch = ref<user[]>([])
+
+const filteredUsers = computed(() =>
+    localUsers.value.filter(user => user.id !== currentUser.value.id)
+)
 
 // Обновляем родительский компонент
 const updateModel = () => {
@@ -72,8 +76,8 @@ const getUsersForSearch = async (): Promise<void> => {
 <template>
     <div>
         <div class="pb-4">Другие пользователи, которые участвовали и могут редактировать</div>
-        <div v-if="localUsers.length" class="flex gap-2 flex-wrap pb-4">
-            <div v-for="user in localUsers" :key="user.id" class="flex gap-2 py-3 px-8 rounded-3xl border border-secondary w-fit">
+        <div v-if="filteredUsers.length" class="flex gap-2 flex-wrap pb-4">
+            <div v-for="user in filteredUsers" :key="user.id" class="flex gap-2 py-3 px-8 rounded-3xl border border-secondary w-fit">
                 <div>{{ user.name }}</div>
                 <div @click="delUserShared(user.id)" class="cursor-pointer">
                     <Icon :iconPath="mdiDelete" class="w-6 h-6 text-secondary hover:text-dark" />
