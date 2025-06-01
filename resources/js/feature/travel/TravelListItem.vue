@@ -8,7 +8,7 @@ import { useUsersStore } from "@/etities/user"
 import { storeToRefs } from "pinia"
 import { computed, markRaw } from "vue"
 import { useModal } from '@/shared/lib/useModal'
-import {useConfirm} from "@/shared/lib/useConfirm";
+import { useConfirm } from "@/shared/lib/useConfirm"
 
 const props = defineProps<{
     item: travelData
