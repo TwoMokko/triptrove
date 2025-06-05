@@ -134,4 +134,35 @@ class UserController extends Controller
             ], 400);
         }
     }
+
+    public function updateName(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $user = $request->user();
+
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255|min:2',
+            ]);
+
+            $user->name = $validatedData['name'];
+            $user->save();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Имя успешно обновлено',
+                'user' => $user->only(['id', 'name', 'email']), // Возвращаем только нужные поля
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при обновлении имени: ' . $e->getMessage()
+            ], 400);
+        }
+    }
 }

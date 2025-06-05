@@ -33,15 +33,15 @@ const originalValues = ref<Record<string, string>>({
 const currentUser = computed(() => usersStore.currentUser)
 const isLoading: ComputedRef<boolean> = computed(() =>  usersStore.currentUser === null)
 
-watch(currentUser, (newVal: typeof currentUser.value) => {
-    if (newVal) {
-        originalValues.value = {
-            name: newVal.name,
-            email: newVal.email,
-            login: newVal.login
-        }
-    }
-}, { immediate: true })
+// watch(currentUser, (newVal: typeof currentUser.value) => {
+//     if (newVal) {
+//         originalValues.value = {
+//             name: newVal.name,
+//             email: newVal.email,
+//             login: newVal.login
+//         }
+//     }
+// }, { immediate: true })
 
 const handleClickOutside = (event: MouseEvent) => {
     const isOutsideAllInputs = Object.values(inputRefs.value).every(
@@ -63,16 +63,13 @@ const handleClickOutside = (event: MouseEvent) => {
     }
 }
 
-const onSave = (field: keyof EditMode) => {
+const onSave = async (field: keyof EditMode) => {
     try {
-        // Здесь логика сохранения в API
-        // Например:
-        // await usersStore.updateUser({
-        //   [field]: currentUser.value[field]
-        // })
+        // сделать для всех полей (возможно одним и проверять на бекенде)
+       if (field == 'name') await usersStore.updateName(currentUser.value[field])
 
         console.log(`Сохранено поле ${field}:`, currentUser.value[field])
-        originalValues.value[field] = currentUser.value[field]
+        // originalValues.value[field] = currentUser.value[field]
     } catch (error) {
         console.error('Ошибка при сохранении:', error)
         // Откат значения, если сохранение не удалось

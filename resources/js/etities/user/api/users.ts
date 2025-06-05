@@ -1,7 +1,7 @@
 import { userData } from "../../../app/types/types"
 import api from "../../../app/api/api"
 
-export const fetchUserByToken = async (token: string): userData => {
+export const queryUserByToken = async (token: string): userData => {
     try {
         const response = await api.get('/user', {
             headers: {
@@ -16,9 +16,27 @@ export const fetchUserByToken = async (token: string): userData => {
     }
 }
 
-export const fetchUsers = (searchQuery: string): userData[] => {
+export const queryUsers = (searchQuery: string): userData[] => {
     console.log({searchQuery})
     return []
+}
+
+export const queryUpdateName = async (newName: string, token) => {
+    try {
+        const response = await api.post(
+            '/profile/name',
+            { name: newName },
+            {
+                headers: {
+                    'Content-Type': 'application/json',  // Указываем JSON
+                    'Authorization': `Bearer ${token}`
+                },
+            }
+        )
+        return response.data
+    } catch (err) {
+        throw err
+    }
 }
 
 export const uploadPhoto = async (formData, token) => {

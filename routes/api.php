@@ -50,6 +50,8 @@ Route::post('/travels/{travel}/cover', [TravelController::class, 'updateCover'])
 // Для аватара пользователя
 Route::post('/profile/avatar', [UserController::class, 'updateAvatar'])
     ->middleware('auth:sanctum');
+Route::post('/profile/name', [UserController::class, 'updateName'])
+    ->middleware('auth:sanctum');
 
 //// Для добавления фото к путешествию
 //Route::post('/travels/{travel}/photos', [TravelController::class, 'uploadPhoto'])
