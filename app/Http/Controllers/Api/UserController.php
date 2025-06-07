@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UploadPhotoRequest;
 use App\Models\User;
 use App\Services\PhotoUploadService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -62,7 +63,7 @@ class UserController extends Controller
         //
     }
 
-    public function getUserByToken(): \Illuminate\Http\JsonResponse
+    public function me(): \Illuminate\Http\JsonResponse
     {
         // Получаем аутентифицированного пользователя
         $user = Auth::user();
@@ -80,7 +81,7 @@ class UserController extends Controller
         ], 404);
     }
 
-    public function getUsersFromSearchString(Request $request): \Illuminate\Http\JsonResponse
+    public function search(Request $request): \Illuminate\Http\JsonResponse
     {
         $user_id = $request->query('user_id');
         $creator_user_id = $request->query('creator_user_id');
@@ -164,5 +165,27 @@ class UserController extends Controller
                 'message' => 'Ошибка при обновлении имени: ' . $e->getMessage()
             ], 400);
         }
+    }
+
+    function friends(Request $request): JsonResponse
+    {
+        $request->validate([
+            'user_id' => 'required|integer|exists:users,id'
+        ]);
+
+        // Получаем всех создателей, у которых есть путешествия с участием нашего пользователя
+        $creators = User::whereHas('createdTravels.users', function($query) use ($request) {
+            $query->where('users.id', $request->user_id);
+        })
+            ->with(['createdTravels' => function($query) use ($request) {
+                $query->with(['users:id,name,login'])
+                    ->whereHas('users', function($q) use ($request) {
+                        $q->where('users.id', $request->user_id);
+                    })
+                    ->orderBy('order');
+            }])
+            ->get(['id', 'name', 'login']);
+
+        return response()->json($creators);
     }
 }

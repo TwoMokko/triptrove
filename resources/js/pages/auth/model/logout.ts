@@ -14,7 +14,7 @@ export const useLogout = () => {
     const doLogout = async () => {
         isLoadingLogout.value = true
         try {
-            await api.post('/logout', {}, {
+            await api.post('/auth/logout', {}, {
                 headers: {
                     Authorization: `Bearer ${authStore.token}`,
                 },

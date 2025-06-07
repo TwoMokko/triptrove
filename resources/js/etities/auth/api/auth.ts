@@ -2,7 +2,7 @@ import api from "../../../app/api/api"
 
 export const fetchVerifyCode = async (code: string, login: string) => {
     try {
-        const response = await api.post('/verify', { code, login })
+        const response = await api.post('/email/verify', { code, login })
         console.log('verify: ', response)
         return response
 
@@ -15,7 +15,7 @@ export const fetchVerifyCode = async (code: string, login: string) => {
 
 export const fetchResendCode = async (login: string) => {
     try {
-        const response = await api.post('/resend', { login })
+        const response = await api.post('/email/resend', { login })
         console.log('resend code: ', response.data)
         return response.data
 

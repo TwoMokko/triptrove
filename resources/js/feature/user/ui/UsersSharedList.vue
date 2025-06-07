@@ -58,8 +58,9 @@ const getUsersForSearch = async (): Promise<void> => {
         return
     }
 
+    // TODO: ВЫНЕСТИ ОТСЮДА В STORE
     try {
-        const response = await api.get(`/usersSearch/`, {
+        const response = await api.get(`/users/search/`, {
             params: {
                 user_search: searchString.value,
                 user_id: currentUser.value.id,

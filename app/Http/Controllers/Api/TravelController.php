@@ -23,7 +23,7 @@ class TravelController extends Controller
         return response()->json($travels);
     }
 
-    public function getTravelsByUserID(Request $request): JsonResponse
+    public function mine(Request $request): JsonResponse
     {
         $userId = $request->query('user_id');
 
@@ -48,27 +48,7 @@ class TravelController extends Controller
         return response()->json($response);
     }
 
-    function getFriendsUsers(Request $request): JsonResponse
-    {
-        $request->validate([
-            'user_id' => 'required|integer|exists:users,id'
-        ]);
 
-        // Получаем всех создателей, у которых есть путешествия с участием нашего пользователя
-        $creators = User::whereHas('createdTravels.users', function($query) use ($request) {
-            $query->where('users.id', $request->user_id);
-        })
-            ->with(['createdTravels' => function($query) use ($request) {
-                $query->with(['users:id,name,login'])
-                    ->whereHas('users', function($q) use ($request) {
-                        $q->where('users.id', $request->user_id);
-                    })
-                    ->orderBy('order');
-            }])
-            ->get(['id', 'name', 'login']);
-
-        return response()->json($creators);
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -283,7 +263,7 @@ class TravelController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function getAllPublishedTravels(Request $request): JsonResponse
+    public function published(Request $request): JsonResponse
     {
         // Получаем опубликованные путешествия с пагинацией
         $travels = Travel::with('creator:id,name,login')
@@ -347,7 +327,7 @@ class TravelController extends Controller
         return response()->json($response);
     }
 
-    public function getTravelsForUser(Request $request): JsonResponse
+    public function participants(Request $request): JsonResponse
     {
         $request->validate([
             'user_id' => 'required|integer|exists:users,id'
@@ -497,7 +477,7 @@ class TravelController extends Controller
     }
 
 
-    public function getTravelsWithUsers(Request $request): JsonResponse
+    public function withUsers(Request $request): JsonResponse
     {
         $userIds = $request->validate([
             'user_ids' => 'array',
@@ -534,6 +514,16 @@ class TravelController extends Controller
         return response()->json($travels);
     }
 
+    public function shared()
+    {
+
+    }
+
+    public function tagged()
+    {
+
+    }
+
 //    public function getUsersForTravel(Request $request): JsonResponse
 //    {
 //        $request->validate([
@@ -548,7 +538,7 @@ class TravelController extends Controller
 //        return response()->json($users);
 //    }
 //
-//    public function attachUserToTravel(Request $request): JsonResponse
+//    public function attachParticipant(Request $request): JsonResponse
 //    {
 //        $request->validate([
 //            'user_id' => 'required|integer|exists:users,id',
@@ -575,7 +565,7 @@ class TravelController extends Controller
 //    }
 //
 //
-//    public function detachUser(Request $request): JsonResponse
+//    public function detachParticipant(Request $request): JsonResponse
 //    {
 //        $request->validate([
 //            'user_id' => 'required|integer|exists:users,id',

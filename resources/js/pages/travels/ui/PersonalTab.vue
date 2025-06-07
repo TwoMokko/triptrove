@@ -26,6 +26,7 @@ const createTravel = (travel: travelData): void => {
 }
 
 const openCreateTravelModal = () => {
+    // TODO: починить ( Cannot read properties of null (reading 'place') )
     openModal('create-travel', markRaw(TravelForm), {
         modelValue: newTravel.value,
         onHandler: createTravel,

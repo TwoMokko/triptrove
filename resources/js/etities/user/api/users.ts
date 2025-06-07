@@ -3,7 +3,7 @@ import api from "../../../app/api/api"
 
 export const queryUserByToken = async (token: string): userData => {
     try {
-        const response = await api.get('/user', {
+        const response = await api.get('/users/me', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -24,7 +24,7 @@ export const queryUsers = (searchQuery: string): userData[] => {
 export const queryUpdateName = async (newName: string, token) => {
     try {
         const response = await api.post(
-            '/profile/name',
+            '/users/me/name',
             { name: newName },
             {
                 headers: {
@@ -41,7 +41,7 @@ export const queryUpdateName = async (newName: string, token) => {
 
 export const uploadPhoto = async (formData, token) => {
     try {
-        const response = await api.post('/profile/avatar', formData, {
+        const response = await api.post('/users/me/avatar', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${token}`

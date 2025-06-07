@@ -31,7 +31,7 @@ const login = async () => {
     message.value = ''
 
     try {
-        const response = await api.post('/login', form.value)
+        const response = await api.post('/auth/login', form.value)
         authStore.setAuthData({
             token: response.data.token,
         })

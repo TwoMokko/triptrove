@@ -44,7 +44,7 @@ const auth = async () => {
     errorMessage.value = ''
 
     try {
-        const response = await api.post('/register', form.value)
+        const response = await api.post('/auth/register', form.value)
         console.log('User created:', response.data)
         currentVerifyLogin.value = response.data.user.login
 

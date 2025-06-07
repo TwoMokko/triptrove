@@ -15,7 +15,7 @@ export const queryPublishedTravels = async (page?: number) => {
 }
 export const queryTravels = async (userId: number): travelData[] => {
     try {
-        const response = await api.get('/travelsFromUser', {
+        const response = await api.get('/travels/mine', {
             params: {
                 user_id: userId,
             },
@@ -28,7 +28,8 @@ export const queryTravels = async (userId: number): travelData[] => {
 }
 export const queryTravelsWithUsers = async (userIds: number[]): travelData[] => {
     try {
-        const response = await api.post('/travels/getTravelsWithUsers', {
+        // возможно переписать на get
+        const response = await api.post('/travels/with-users', {
             user_ids: userIds
         })
         return response.data
@@ -97,7 +98,7 @@ export const deleteTravel = async (travelId: number, userId: number) => {
 
 export const querySharedTravels = async (userId: number) => {
     try {
-        const response = await api.get(`/getSharedTravels`, {
+        const response = await api.get(`/travels/participants`, {
             params: {
                 user_id: userId,
             },
@@ -125,7 +126,7 @@ export const querySharedUsers = async (travelId: number) => {
 
 export const queryFriendUsers = async (userId: number) => {
     try {
-        const response = await api.get(`/usersFriend`, {
+        const response = await api.get(`/users/friends`, {
             params: {
                 user_id: userId,
             },
@@ -139,7 +140,7 @@ export const queryFriendUsers = async (userId: number) => {
 
 export const queryAttachUser = async (travelId: number, userId: number) => {
     try {
-        const response = await api.post( `/attachUser`, {
+        const response = await api.post( `/travels/participants`, {
             user_id: userId,
             travel_id: travelId
         })
@@ -153,7 +154,7 @@ export const queryAttachUser = async (travelId: number, userId: number) => {
 
 export const queryDetachUser = async (travelId: number, userId: number) => {
     try {
-        const response = await api.delete( `/detachUser`, {
+        const response = await api.delete( `/travels/participants`, {
             params: {
                 travel_id: travelId,
                 user_id: userId,
@@ -183,7 +184,7 @@ export const uploadPhoto = async (travelId, formData) => {
 
 export const queryUpdateTravelsOrder = async (items, signal) => {
     try {
-        const response = await api.patch('/travels/update-order', { items: items }, { signal: signal })
+        const response = await api.patch('/travels/order', { items: items }, { signal: signal })
         return response.data
     }
     catch (err) {
