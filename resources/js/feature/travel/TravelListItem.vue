@@ -32,7 +32,7 @@ const handleEdit = (e: Event) => {
         modelValue: travelsStore.currentTravel,
         onHandler: handleSave,
         btnText: 'Сохранить',
-        isCollapsible: true,
+        isCollapsible: false,
         previewText: travelsStore.currentTravel.place,
         title: '',
     })
@@ -106,14 +106,14 @@ const handleSave = async (travel: travelData) => {
                     @click="item.user_id === currentUser.id && handleDelete()"
                     :class="[
                         item.user_id === currentUser.id
-                            ? 'cursor-pointer hover:text-dark'
+                            ? 'cursor-pointer group'
                             : 'opacity-30 cursor-not-allowed'
                     ]"
                     :title="item.user_id === currentUser.id ? 'удалить' : 'нет прав для удаления'"
                 >
                     <Icon
                         :iconPath="mdiDelete"
-                        class="w-6 h-6 text-secondary"
+                        class="w-6 h-6 text-secondary group-hover:text-dark"
                     />
                 </button>
             </div>

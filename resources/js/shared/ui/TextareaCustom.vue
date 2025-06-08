@@ -20,7 +20,7 @@ const resizeTextarea = (event: Event): void => {
 
 <template>
     <textarea
-        class="focus-visible:outline-none resize-none py-4 px-8 rounded-3xl border border-secondary bg-transparent min-h-20"
+        class="focus-visible:outline-none resize-none py-4 px-8 rounded-3xl border border-secondary bg-transparent min-h-20 w-full"
         v-model="text"
         :placeholder="placeholder"
         @input="resizeTextarea"

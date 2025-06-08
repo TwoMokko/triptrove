@@ -26,13 +26,12 @@ const createTravel = (travel: travelData): void => {
 }
 
 const openCreateTravelModal = () => {
-    // TODO: починить ( Cannot read properties of null (reading 'place') )
     openModal('create-travel', markRaw(TravelForm), {
         modelValue: newTravel.value,
         onHandler: createTravel,
         btnText: 'Добавить путешествие',
-        isCollapsible: true,
-        previewText: travelsStore.currentTravel.place,
+        isCollapsible: false,
+        previewText: travelsStore.currentTravel?.place ?? 'Новое путешествие',
         title: '',
     })
 }
