@@ -34,7 +34,7 @@ interface AttachResponse {
 }
 
 
-interface userShort {
+export interface userShort {
     id: number,
     name: string,
     login: string,

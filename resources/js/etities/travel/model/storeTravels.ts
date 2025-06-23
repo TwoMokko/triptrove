@@ -9,10 +9,10 @@ import {
     querySharedTravels,
     querySharedUsers,
     queryTravels, queryTravelsWithUsers, queryUpdateTravelsOrder,
-    updateTravel, updateTravelsOrder,
+    updateTravel,
     uploadPhoto,
 } from '../api/travels'
-import { travelData, OrderUpdatePayload } from "../../../app/types/types"
+import { travelData, userShort } from "../../../app/types/types"
 import { debounce } from "../../../shared/lib/debounce"
 import { useUsersStore } from "../../user"
 
@@ -29,7 +29,7 @@ export const useTravelsStore = defineStore('travels', () => {
 
     // const usersShared = ref<{ travelId: number, users: userData[] }[]>()
     const sharedUsers = ref<any[]>([])
-    const usersFriend = ref<any[]>([])
+    const usersFriend = ref<userShort[]>([])
 
     const usersStore = useUsersStore()
 

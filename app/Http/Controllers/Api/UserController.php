@@ -167,25 +167,75 @@ class UserController extends Controller
         }
     }
 
+
     function friends(Request $request): JsonResponse
     {
         $request->validate([
             'user_id' => 'required|integer|exists:users,id'
         ]);
 
-        // Получаем всех создателей, у которых есть путешествия с участием нашего пользователя
-        $creators = User::whereHas('createdTravels.users', function($query) use ($request) {
-            $query->where('users.id', $request->user_id);
-        })
-            ->with(['createdTravels' => function($query) use ($request) {
-                $query->with(['users:id,name,login'])
-                    ->whereHas('users', function($q) use ($request) {
+        // Получаем всех пользователей, с которыми есть общие путешествия
+        // (как участников, так и создателей)
+        $friends = User::where(function($query) use ($request) {
+            // Участники общих путешествий
+            $query->whereHas('sharedTravels', function($q) use ($request) {
+                $q->whereHas('users', function($q) use ($request) {
+                    $q->where('users.id', $request->user_id);
+                });
+            })
+                // Или создатели путешествий, где есть наш пользователь
+                ->orWhereHas('createdTravels', function($q) use ($request) {
+                    $q->whereHas('users', function($q) use ($request) {
                         $q->where('users.id', $request->user_id);
-                    })
-                    ->orderBy('order');
+                    });
+                });
+        })
+            ->with(['sharedTravels' => function($query) use ($request) {
+                $query->whereHas('users', function($q) use ($request) {
+                    $q->where('users.id', $request->user_id);
+                })
+                    ->with(['users' => function($query) use ($request) {
+                        $query->where('users.id', '!=', $request->user_id)
+                            ->select('users.id', 'users.name', 'users.login', 'users.avatar');
+                    }]);
             }])
+            ->where('id', '!=', $request->user_id)
             ->get(['id', 'name', 'login']);
 
-        return response()->json($creators);
+        $uniqueGroups = collect();
+
+        foreach ($friends as $friend) {
+            foreach ($friend->sharedTravels as $travel) {
+                $group = $travel->users->sortBy('id')->values();
+
+                if ($group->isNotEmpty()) {
+                    $groupKey = $group->pluck('id')->implode('-');
+                    $uniqueGroups->put($groupKey, $group->toArray());
+                }
+            }
+        }
+
+        return response()->json($uniqueGroups->values()->toArray());
     }
+//    function friends(Request $request): JsonResponse
+//    {
+//        $request->validate([
+//            'user_id' => 'required|integer|exists:users,id'
+//        ]);
+//
+//        // Получаем всех создателей, у которых есть путешествия с участием нашего пользователя
+//        $creators = User::whereHas('createdTravels.users', function($query) use ($request) {
+//            $query->where('users.id', $request->user_id);
+//        })
+//            ->with(['createdTravels' => function($query) use ($request) {
+//                $query->with(['users:id,name,login'])
+//                    ->whereHas('users', function($q) use ($request) {
+//                        $q->where('users.id', $request->user_id);
+//                    })
+//                    ->orderBy('order');
+//            }])
+//            ->get(['id', 'name', 'login']);
+//
+//        return response()->json($creators);
+//    }
 }
