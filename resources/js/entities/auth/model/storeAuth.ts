@@ -23,7 +23,7 @@ export const useAuthStore = defineStore('auth', () => {
     watch(token, async (newToken: string) => {
         if (newToken) {
             localStorage.setItem('auth_token', newToken)
-            await userStore.getUserByToken(newToken)
+            // await userStore.getUserByToken(newToken)
         } else {
             localStorage.removeItem('auth_token')
             // user.value = null // Очищаем пользователя при logout
@@ -47,7 +47,7 @@ export const useAuthStore = defineStore('auth', () => {
     const clearAuthData = () => {
         token.value = ''
         currentVerifyLogin.value = ''
-        isAuthCheckInProgress.value = false
+        // isAuthCheckInProgress.value = false
     }
 
     const verifyCode = async (code: string): Promise<AuthResponse> => {

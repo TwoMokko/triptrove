@@ -4,7 +4,7 @@ import { computed, onMounted, ref } from "vue"
 import { layouts } from '@/shared/ui/layout'
 import Loader from "@/shared/ui/Loader.vue"
 import ModalContainer from '@/widgets/modalContainer/ModalContainer.vue'
-import api from "@/app/api/api";
+import api from "@/app/api/api"
 
 const route = useRoute()
 const layout = computed(() => layouts[route.meta.layout] || layouts.default)
