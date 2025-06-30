@@ -4,8 +4,8 @@ import TravelList from "@/feature/travel/TravelList.vue"
 import { markRaw, ref, watch } from "vue"
 import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
 import { travelData } from "@/app/types/types"
-import { useTravelsStore } from "@/etities/travel"
-import { useUsersStore } from "@/etities/user"
+import { useTravelsStore } from "@/entities/travel"
+import { useUsersStore } from "@/entities/user"
 import { useModal } from "@/shared/lib/useModal"
 
 const { openModal, closeModal, updateModalProps } = useModal()

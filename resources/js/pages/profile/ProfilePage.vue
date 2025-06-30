@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, ComputedRef, onMounted, onUnmounted, ref, watch} from 'vue'
 import Loader from "@/shared/ui/Loader.vue"
-import { useUsersStore } from "@/etities/user"
+import { useUsersStore } from "@/entities/user"
 import FileUploader from "@/shared/ui/FileUploader.vue"
 import Icon from "@/shared/ui/Icon.vue"
 import { mdiPencil } from '@mdi/js'

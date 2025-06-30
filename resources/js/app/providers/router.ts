@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from "../../etities/auth"
+import { useAuthStore } from "../../entities/auth"
 
 import HomePage from '../../pages/home/HomePage.vue'
 import ProfilePage from '../../pages/profile/ProfilePage.vue'
@@ -81,15 +81,19 @@ router.beforeEach((to, from, next) => {
     const authStore = useAuthStore()
     const isAuthenticated = authStore.isAuth
 
-    // Защита страниц только для гостей
-    if (to.meta.guestOnly && isAuthenticated) {
-        next({ name: 'profile' }) // Перенаправляем в личный кабинет
-        return // Важно: прекращаем дальнейшую обработку
+    // Не блокируем навигацию для auth-страниц даже если есть 401
+    if (to.name === 'login' || to.name === 'register' || to.name === 'verify') {
+        next()
+        return
     }
 
-    // Защита авторизованных страниц
+    // Остальная логика остается прежней
+    if (to.meta.guestOnly && isAuthenticated) {
+        next({ name: 'profile' })
+        return
+    }
+
     if (to.meta.requiresAuth && !isAuthenticated) {
-        // Сохраняем исходный маршрут для редиректа после входа
         next({
             name: 'login',
             query: { redirect: to.fullPath }
@@ -97,15 +101,5 @@ router.beforeEach((to, from, next) => {
         return
     }
 
-    // Проверка ролей (если нужно)
-    // if (to.meta.role) {
-    //     const userRole = authStore.user?.role // Получаем роль из хранилища
-    //     if (userRole !== to.meta.role) {
-    //         next({ name: 'forbidden' })
-    //         return
-    //     }
-    // }
-
-    // Продолжаем навигацию
     next()
 })

@@ -3,8 +3,8 @@ import { mdiPencil, mdiDelete, mdiLock, mdiLockOpenVariant } from '@mdi/js'
 import Icon from "@/shared/ui/Icon.vue"
 import TravelForm from "@/widgets/travel/ui/TravelForm.vue"
 import type { travelData } from "@/app/types/types"
-import { useTravelsStore } from "@/etities/travel"
-import { useUsersStore } from "@/etities/user"
+import { useTravelsStore } from "@/entities/travel"
+import { useUsersStore } from "@/entities/user"
 import { storeToRefs } from "pinia"
 import { computed, markRaw } from "vue"
 import { useModal } from '@/shared/lib/useModal'

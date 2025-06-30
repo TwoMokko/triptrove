@@ -5,8 +5,8 @@ import { mdiDelete } from '@mdi/js'
 import InputCustom from "@/shared/ui/InputCustom.vue"
 import api from "@/app/api/api"
 import { storeToRefs } from "pinia"
-import { useUsersStore } from "@/etities/user"
-import { useTravelsStore } from "@/etities/travel"
+import { useUsersStore } from "@/entities/user"
+import { useTravelsStore } from "@/entities/travel"
 
 interface user {
     id: number;

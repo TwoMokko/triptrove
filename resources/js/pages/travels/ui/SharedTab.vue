@@ -5,8 +5,8 @@ import Loader from "@/shared/ui/Loader.vue"
 import TravelList from "@/feature/travel/TravelList.vue"
 import Icon from "@/shared/ui/Icon.vue"
 import { mdiMenuDown } from "@mdi/js"
-import { useUsersStore } from "@/etities/user"
-import { useTravelsStore } from "@/etities/travel"
+import { useUsersStore } from "@/entities/user"
+import { useTravelsStore } from "@/entities/travel"
 import { userShort } from "@/app/types/types"
 
 const usersStore = useUsersStore()

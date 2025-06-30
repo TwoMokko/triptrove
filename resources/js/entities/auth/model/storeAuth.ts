@@ -1,17 +1,19 @@
 import { watch, ref, computed } from "vue"
-import {defineStore, storeToRefs} from "pinia"
+import { defineStore, storeToRefs } from "pinia"
 import {
     fetchVerifyCode,
     fetchResendCode
 } from '../api/auth'
 import type { AuthResponse } from '../../../app/types/auth'
 import { useUsersStore } from "../../user"
+// import api from "../../../app/api/api"
 
 export const useAuthStore = defineStore('auth', () => {
     // State
     const token = ref<string>(localStorage.getItem('auth_token') || '')
     const currentVerifyLogin = ref<string>(localStorage.getItem('auth_login') || '')
     const userStore = useUsersStore()
+    // const isAuthCheckInProgress = ref(false)
     // const user = ref<User | null>(null)
 
     // Computed
@@ -45,6 +47,7 @@ export const useAuthStore = defineStore('auth', () => {
     const clearAuthData = () => {
         token.value = ''
         currentVerifyLogin.value = ''
+        isAuthCheckInProgress.value = false
     }
 
     const verifyCode = async (code: string): Promise<AuthResponse> => {
@@ -68,14 +71,31 @@ export const useAuthStore = defineStore('auth', () => {
         await fetchResendCode(currentVerifyLogin.value)
     }
 
+    // const checkAuth = async (): Promise<boolean> => {
+    //     if (isAuthCheckInProgress.value) return isAuth.value
+    //     isAuthCheckInProgress.value = true
+    //
+    //     try {
+    //         await api.get('/auth/check')
+    //         return isAuth.value
+    //     } catch (error) {
+    //         clearAuthData()
+    //         return false
+    //     } finally {
+    //         isAuthCheckInProgress.value = false
+    //     }
+    // }
+
     return {
         token,
         isAuth,
         currentVerifyLogin,
+        // isAuthCheckInProgress,
         // user,
         verifyCode,
         resendCode,
         setAuthData,
-        clearAuthData
+        clearAuthData,
+        // checkAuth
     }
 })

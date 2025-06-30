@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useAuthStore } from "@/etities/auth/index.js"
+import { useAuthStore } from "@/entities/auth/index.js"
 import { router } from "@/app/providers/router.js"
 import InputCustom from "@/shared/ui/InputCustom.vue"
 import ButtonCustom from "@/shared/ui/ButtonCustom.vue"

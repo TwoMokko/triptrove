@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue"
-import { useTravelsStore } from "@/etities/travel"
+import { useTravelsStore } from "@/entities/travel"
 import Loader from "@/shared/ui/Loader.vue"
 import TravelListItemPublished from "@/feature/travel/TravelListItemPublished.vue"
-import { useUsersStore } from "@/etities/user"
+import { useUsersStore } from "@/entities/user"
 
 const usersStore = useUsersStore()
 const travelsStore = useTravelsStore()

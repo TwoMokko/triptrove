@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useUsersStore } from "@/etities/user"
-import { useTravelsStore } from "@/etities/travel"
+import { useUsersStore } from "@/entities/user"
+import { useTravelsStore } from "@/entities/travel"
 import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from "vue-router"
 import Loader from "@/shared/ui/Loader.vue"

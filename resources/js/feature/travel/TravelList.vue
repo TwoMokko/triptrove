@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue"
-import { useTravelsStore } from "@/etities/travel"
-import { useUsersStore } from "@/etities/user"
+import { useTravelsStore } from "@/entities/travel"
+import { useUsersStore } from "@/entities/user"
 import { travelData } from "@/app/types/types"
 import TravelListItem from './TravelListItem.vue'
 

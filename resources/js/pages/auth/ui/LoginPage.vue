@@ -2,10 +2,11 @@
 import { ref } from "vue"
 import api from "@/app/api/api"
 import { useRouter } from "vue-router"
-import { useAuthStore } from "@/etities/auth"
+import { useAuthStore } from "@/entities/auth"
 import InputCustom from "@/shared/ui/InputCustom.vue"
 import ButtonCustom from "@/shared/ui/ButtonCustom.vue"
 import Loader from "@/shared/ui/Loader.vue"
+import {useUsersStore} from "@/entities/user";
 
 
 interface FormDataType {
@@ -20,6 +21,7 @@ const form = ref<FormDataType>({
 
 const router = useRouter()
 const authStore = useAuthStore()
+const userStore = useUsersStore()
 
 const isLoading = ref(false)
 const textBtn = ref('Login')
@@ -35,6 +37,8 @@ const login = async () => {
         authStore.setAuthData({
             token: response.data.token,
         })
+
+        userStore.setCurrentUser(response.data.user)
         await router.push('/')
     } catch (error) {
         message.value = error.response?.data?.message || 'Login failed'
@@ -42,6 +46,7 @@ const login = async () => {
         authStore.setAuthData({
             login: form.value.login
         })
+        userStore.resetCurrentUser()
     } finally {
         isLoading.value = false
         textBtn.value = 'Login'

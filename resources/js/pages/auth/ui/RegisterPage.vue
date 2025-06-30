@@ -5,7 +5,7 @@ import api from "@/app/api/api"
 import InputCustom from "@/shared/ui/InputCustom.vue";
 import ButtonCustom from "@/shared/ui/ButtonCustom.vue";
 import Loader from "@/shared/ui/Loader.vue";
-import {useAuthStore} from "@/etities/auth";
+import {useAuthStore} from "@/entities/auth";
 import {storeToRefs} from "pinia";
 
 interface formDataType {

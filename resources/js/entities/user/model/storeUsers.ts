@@ -14,9 +14,9 @@ export const useUsersStore = defineStore('users', () => {
         users.value = await queryUsers(searchQuery)
     }
 
-    const getUserByToken = async (token: string) => {
-        currentUser.value = await queryUserByToken(token)
-    }
+    // const getUserByToken = async (token: string) => {
+    //     currentUser.value = await queryUserByToken(token)
+    // }
 
     const resetCurrentUser = () => {
         currentUser.value = null
@@ -45,11 +45,16 @@ export const useUsersStore = defineStore('users', () => {
         }
     }
 
+    const setCurrentUser = (user: userData) => {
+        currentUser.value = user
+    }
+
     return {
         users,
         currentUser,
         // getUsers,
-        getUserByToken,
+        // getUserByToken,
+        setCurrentUser,
         resetCurrentUser,
         updateAvatar,
         updateName,

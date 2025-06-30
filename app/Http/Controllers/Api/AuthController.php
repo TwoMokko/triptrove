@@ -83,16 +83,29 @@ class AuthController extends Controller
             ], 403);
         }
 
+        $user->tokens()->delete();
+
         $token = $user->createToken('auth_token', ['*'], now()->addDays(7))->plainTextToken;
 
-        return response()->json(['token' => $token]);
+        return response()->json([
+            'token' => $token,
+            'user' => new UserResource($user) // Добавьте данные пользователя
+        ])->withoutCookie('laravel_session');
     }
 
     public function logout(Request $request): \Illuminate\Http\JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+//        $request->user()->currentAccessToken()->delete();
+        $request->user()->tokens()->delete();
 
-        return response()->json(['message' => 'Logged out successfully']);
+        return response()->json(['message' => 'Logged out successfully'])
+            ->withoutCookie('laravel_session')
+            ->withoutCookie('XSRF-TOKEN');
+    }
+
+    public function checkAuth()
+    {
+
     }
 
 
