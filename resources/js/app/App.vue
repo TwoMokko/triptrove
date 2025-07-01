@@ -15,13 +15,22 @@ const layout = computed(() => layouts[route.meta.layout] || layouts.default)
 const isAppLoading = ref(false)
 
 onMounted(async () => {
-    try {
-        await api.get('/auth/check')
-    } catch (error) {
-        localStorage.removeItem('auth_token')
-    }
+    // const token = localStorage.getItem('auth_token')
+    // if (!token) return // Если токена нет, пропускаем проверку
+    //
+    // try {
+    //     await api.get('/auth/check', {
+    //         headers: {
+    //             Authorization: `Bearer ${token}` // Явно передаём токен
+    //         }
+    //     })
+    // } catch (error) {
+    //     // Удаляем токен ТОЛЬКО при 401 ошибке
+    //     if (error.response?.status === 401) {
+    //         localStorage.removeItem('auth_token')
+    //     }
+    // }
 })
-
 </script>
 
 <template>

@@ -103,3 +103,71 @@ router.beforeEach((to, from, next) => {
 
     next()
 })
+
+// router.beforeEach((to, from, next) => {
+//     const authStore = useAuthStore()
+//     const isAuthenticated = authStore.isAuth
+//
+//     // Защита страниц только для гостей
+//     if (to.meta.guestOnly && isAuthenticated) {
+//         next({ name: 'profile' }) // Перенаправляем в личный кабинет
+//         return // Важно: прекращаем дальнейшую обработку
+//     }
+//
+//     // Защита авторизованных страниц
+//     if (to.meta.requiresAuth && !isAuthenticated) {
+//         // Сохраняем исходный маршрут для редиректа после входа
+//         next({
+//             name: 'login',
+//             query: { redirect: to.fullPath }
+//         })
+//         return
+//     }
+//
+//     // Проверка ролей (если нужно)
+//     // if (to.meta.role) {
+//     //     const userRole = authStore.user?.role // Получаем роль из хранилища
+//     //     if (userRole !== to.meta.role) {
+//     //         next({ name: 'forbidden' })
+//     //         return
+//     //     }
+//     // }
+//
+//     // Продолжаем навигацию
+//     next()
+// })
+
+
+//
+// router.beforeEach((to, from, next) => {
+//     const authStore = useAuthStore()
+//     const isAuthenticated = authStore.isAuth
+//
+//     // Защита страниц только для гостей
+//     if (to.meta.guestOnly && isAuthenticated) {
+//         next({ name: 'profile' }) // Перенаправляем в личный кабинет
+//         return // Важно: прекращаем дальнейшую обработку
+//     }
+//
+//     // Защита авторизованных страниц
+//     if (to.meta.requiresAuth && !isAuthenticated) {
+//         // Сохраняем исходный маршрут для редиректа после входа
+//         next({
+//             name: 'login',
+//             query: { redirect: to.fullPath }
+//         })
+//         return
+//     }
+//
+//     // Проверка ролей (если нужно)
+//     // if (to.meta.role) {
+//     //     const userRole = authStore.user?.role // Получаем роль из хранилища
+//     //     if (userRole !== to.meta.role) {
+//     //         next({ name: 'forbidden' })
+//     //         return
+//     //     }
+//     // }
+//
+//     // Продолжаем навигацию
+//     next()
+// })
