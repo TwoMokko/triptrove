@@ -5,31 +5,33 @@ import { layouts } from '@/shared/ui/layout'
 import Loader from "@/shared/ui/Loader.vue"
 import ModalContainer from '@/widgets/modalContainer/ModalContainer.vue'
 import api from "@/app/api/api"
+import { useUsersStore } from "@/entities/user"
 
 const route = useRoute()
 const layout = computed(() => layouts[route.meta.layout] || layouts.default)
 
 // const authStore = useAuthStore()
-// const usersStore = useUsersStore()
+const usersStore = useUsersStore()
 
-const isAppLoading = ref(false)
+const isAppLoading = ref(true)
 
 onMounted(async () => {
-    // const token = localStorage.getItem('auth_token')
-    // if (!token) return // Если токена нет, пропускаем проверку
-    //
-    // try {
-    //     await api.get('/auth/check', {
-    //         headers: {
-    //             Authorization: `Bearer ${token}` // Явно передаём токен
-    //         }
-    //     })
-    // } catch (error) {
-    //     // Удаляем токен ТОЛЬКО при 401 ошибке
-    //     if (error.response?.status === 401) {
-    //         localStorage.removeItem('auth_token')
-    //     }
-    // }
+    const token = localStorage.getItem('auth_token')
+    if (!token) return // Если токена нет, пропускаем проверку
+
+    try {
+        await api.get('/auth/check')
+        await api.get('users/me').then(resp =>
+            usersStore.setCurrentUser(resp.data.user))
+
+    } catch (error) {
+        // Удаляем токен ТОЛЬКО при 401 ошибке
+        // if (error.response?.status === 401) {
+        //     localStorage.removeItem('auth_token')
+        // }
+    } finally {
+        isAppLoading.value = false
+    }
 })
 </script>
 
