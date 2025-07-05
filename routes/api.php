@@ -109,7 +109,7 @@ Route::prefix('travels')->group(function () {
 //        Route::post('{travel}/photos', [TravelController::class, 'updateCover']);
     });
 
-    Route::get('{travel}', [TravelController::class, 'show']);
+    Route::get('{id}', [TravelController::class, 'show']);
     Route::post('{travel}', [TravelController::class, 'store']);
     Route::put('{travel}', [TravelController::class, 'update']);
     Route::delete('{travel}', [TravelController::class, 'destroy']);

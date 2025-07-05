@@ -8,6 +8,10 @@ import RegisterPage from "../../pages/auth/ui/RegisterPage.vue"
 import TravelsPage from "../../pages/travels/TravelsPage.vue"
 import VerifyPage from "../../pages/auth/ui/VerifyPage.vue"
 import NotFoundPage from "../../pages/notFound/notFoundPage.vue"
+import ArchivePage from "../../pages/travels/ArchivePage.vue"
+import TemplatesPage from "../../pages/travels/TemplatesPage.vue"
+import TravelViewPage from "../../pages/travels/TravelViewPage.vue"
+import TravelEditPage from "../../pages/travels/TravelEditPage.vue"
 
 const routes = [
     {
@@ -22,8 +26,12 @@ const routes = [
         meta: {
             requiresAuth: true,
             /* role: 'admin'*/
-        }
+        },
     },
+    { path: '/travels/archive', name: 'travelArchive', component: ArchivePage },
+    { path: '/travels/templates', name: 'travelTemplates', component: TemplatesPage },
+    { path: '/travels/:id', name: 'travelView', component: TravelViewPage },
+    { path: '/travels/:id/edit', name: 'travelEdit', component: TravelEditPage },
     {
         name: 'profile',
         path: '/profile',

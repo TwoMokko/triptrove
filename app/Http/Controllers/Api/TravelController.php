@@ -129,10 +129,15 @@ class TravelController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Travel $travel)
+    public function show(Travel $id)
     {
-        //
+        return response()->json($id);
     }
+//    public function show($id)
+//    {
+//        $travel = Travel::findOrFail($id);
+//        return response()->json($travel);
+//    }
 
     /**
      * Update the specified resource in storage.

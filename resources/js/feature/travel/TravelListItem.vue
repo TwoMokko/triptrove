@@ -9,6 +9,7 @@ import { storeToRefs } from "pinia"
 import { computed, markRaw } from "vue"
 import { useModal } from '@/shared/lib/useModal'
 import { useConfirm } from "@/shared/lib/useConfirm"
+import { useRouter } from 'vue-router'
 
 const props = defineProps<{
     item: travelData
@@ -18,6 +19,7 @@ const travelsStore = useTravelsStore()
 const { currentUser } = storeToRefs(useUsersStore())
 const { openModal, closeModal } = useModal()
 const { confirm } = useConfirm()
+const router = useRouter()
 
 const isDragging = computed(() => false)
 
@@ -39,6 +41,7 @@ const handleEdit = (e: Event) => {
 }
 
 const handleDelete = async () => {
+    e.stopPropagation()
     const isConfirmed = await confirm({
         title: 'Вы уверены, что хотите удалить это путешествие?',
         // message: 'Вы уверены, что хотите удалить это путешествие?',
@@ -87,7 +90,15 @@ const handleSave = async (travel: travelData) => {
                     class="w-6 h-6 text-secondary hover:text-dark"
                 />
             </div>
-            <div>{{ item.place }}</div>
+
+            <div>
+                <router-link
+                    :to="{ name: 'travelView', params: { id: item.id } }"
+                     class="hover:text-primary cursor-pointer"
+                >
+                    {{ item.place }}
+                </router-link>
+            </div>
             <div>{{ item.when }}</div>
             <div>{{ item.amount }}</div>
             <div>{{ item.mode_of_transport }}</div>
@@ -96,14 +107,14 @@ const handleSave = async (travel: travelData) => {
             <div>{{ item.entertainment }}</div>
             <div>{{ item.general_impression }}</div>
             <div class="flex gap-2 justify-end">
-                <button @click="handleEdit" class="cursor-pointer" title="редактировать">
+                <button @click.stop="handleEdit" class="cursor-pointer" title="редактировать">
                     <Icon
                         :iconPath="mdiPencil"
                         class="w-6 h-6 text-secondary hover:text-dark"
                     />
                 </button>
                 <button
-                    @click="item.user_id === currentUser.id && handleDelete()"
+                    @click.stop="item.user_id === currentUser.id && handleDelete()"
                     :class="[
                         item.user_id === currentUser.id
                             ? 'cursor-pointer group'

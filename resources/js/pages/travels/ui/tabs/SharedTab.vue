@@ -92,7 +92,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 <template>
     <div v-if="travelsStore.hasUsersFriend">
         <div class="flex gap-4 mb-4 items-center">
-            <h3 class="text-xl">Фильтр по пользователям:</h3>
+            <h3 class="text-xl">Группы:</h3>
             <div class="relative" ref="selectContainerRef">
                 <div
                     @click="isOpenSelect = !isOpenSelect"

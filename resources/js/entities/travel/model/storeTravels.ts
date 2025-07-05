@@ -7,7 +7,7 @@ import {
     queryDetachUser, queryFriendUsers,
     queryPublishedTravels,
     querySharedTravels,
-    querySharedUsers,
+    querySharedUsers, queryTravel,
     queryTravels, queryTravelsWithUsers, queryUpdateTravelsOrder,
     updateTravel,
     uploadPhoto,
@@ -23,6 +23,7 @@ export const useTravelsStore = defineStore('travels', () => {
     const travelsWithUsers = ref<travelData[]>([])
     const sharedTravels = ref<{ id: number, name: string, login: string, travels: travelData[] }[]>([])
 
+    const currentViewTravel = ref<travelData | null>(null)
     const currentTravel = ref<travelData | null>(null)
     const isLoading = ref(false)
     const error = ref<string | null>(null)
@@ -53,6 +54,17 @@ export const useTravelsStore = defineStore('travels', () => {
             console.error(err)
         } finally {
             isLoading.value = false
+        }
+    }
+    const getTravel = async (travelId: number) => {
+        // isLoading.value = true
+        try {
+            currentViewTravel.value = await queryTravel(travelId)
+        } catch (err) {
+            error.value = 'Ошибка загрузки путешествия'
+            console.error(err)
+        } finally {
+            // isLoading.value = false
         }
     }
     const getTravels = async (userId: number) => {
@@ -315,6 +327,7 @@ export const useTravelsStore = defineStore('travels', () => {
         travels,
         travelsWithUsers,
         sharedTravels,
+        currentViewTravel,
         currentTravel,
         isLoading,
         error,
@@ -331,6 +344,7 @@ export const useTravelsStore = defineStore('travels', () => {
 
         // Actions
         getPublishedTravels,
+        getTravel,
         getTravels,
         getTravelsWithUsers,
         getSharedTravels,

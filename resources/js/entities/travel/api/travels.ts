@@ -13,6 +13,15 @@ export const queryPublishedTravels = async (page?: number) => {
         throw error
     }
 }
+export const queryTravel = async (travelId: number): travelData => {
+    try {
+        const response = await api.get(`/travels/${travelId}`)
+        return response.data
+    } catch (error) {
+        console.error('Error fetching travels:', error)
+        throw error
+    }
+}
 export const queryTravels = async (userId: number): travelData[] => {
     try {
         const response = await api.get('/travels/mine', {

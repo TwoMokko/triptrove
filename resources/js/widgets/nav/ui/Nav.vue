@@ -11,6 +11,8 @@ const { isLoadingLogout, doLogout } = useLogout()
 watch(isAuth, () => {
     isAuthenticated.value = !!localStorage.getItem("auth_token")
 })
+
+// TODO мемоизировать? тут ли?
 </script>
 
 <template>

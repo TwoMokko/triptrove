@@ -5,10 +5,10 @@ import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from "vue-router"
 import Loader from "@/shared/ui/Loader.vue"
 import TravelTabs from "@/widgets/travelTabs/ui/TravelTabs.vue"
-import PersonalTab from "@/pages/travels/ui/PersonalTab.vue"
-import SharedTab from "@/pages/travels/ui/SharedTab.vue"
-import WishlistTab from "@/pages/travels/ui/WishlistTab.vue"
-import PlannedTab from "@/pages/travels/ui/PlannedTab.vue"
+import PersonalTab from "@/pages/travels/ui/tabs/PersonalTab.vue"
+import SharedTab from "@/pages/travels/ui/tabs/SharedTab.vue"
+import WishlistTab from "@/pages/travels/ui/tabs/WishlistTab.vue"
+import PlannedTab from "@/pages/travels/ui/tabs/PlannedTab.vue"
 
 const usersStore = useUsersStore()
 const travelsStore = useTravelsStore()
@@ -53,7 +53,7 @@ onMounted(async () => {
 
 <template>
     <Loader v-if="travelsStore.isLoading"/>
-    <div v-else class="px-[10%] py-10">
+    <section v-else class="px-[10%] py-10">
         <TravelTabs v-model:activeTab="activeTab" :tabs="tabs">
             <template #personal>
                 <PersonalTab />
@@ -68,6 +68,6 @@ onMounted(async () => {
                 <PlannedTab />
             </template>
         </TravelTabs>
-    </div>
+    </section>
 </template>
 

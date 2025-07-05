@@ -38,7 +38,7 @@ onMounted(async () => {
 <template>
     <component :is="layout">
         <Loader v-if="isAppLoading" />
-        <RouterView v-else />
+        <RouterView v-else :key="$route.fullPath" />
         <ModalContainer />
     </component>
 </template>
