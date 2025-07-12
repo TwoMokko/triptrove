@@ -28,10 +28,10 @@ const routes = [
             /* role: 'admin'*/
         },
     },
-    { path: '/travels/archive', name: 'travelArchive', component: ArchivePage },
-    { path: '/travels/templates', name: 'travelTemplates', component: TemplatesPage },
+    { path: '/travels/archive', name: 'travelArchive', component: ArchivePage, meta: { requiresAuth: true } },
+    { path: '/travels/templates', name: 'travelTemplates', component: TemplatesPage, meta: { requiresAuth: true } },
     { path: '/travels/:id', name: 'travelView', component: TravelViewPage },
-    { path: '/travels/:id/edit', name: 'travelEdit', component: TravelEditPage },
+    { path: '/travels/:id/edit', name: 'travelEdit', component: TravelEditPage, meta: { requiresAuth: true } },
     {
         name: 'profile',
         path: '/profile',

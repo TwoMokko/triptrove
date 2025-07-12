@@ -28,6 +28,15 @@ const activeTab = ref<TabId>('personal')
 const route = useRoute()
 const router = useRouter()
 
+const loadTravelData = async () => {
+    if (!usersStore.currentUser) return
+
+    await travelsStore.getTravels(usersStore.currentUser.id)
+    await travelsStore.getFriendUsers(usersStore.currentUser.id)
+    await travelsStore.getSharedTravels(usersStore.currentUser.id)
+
+}
+
 if (route.query.tab && tabs.some(t => t.id === route.query.tab)) {
     activeTab.value = route.query.tab as TabId
 }
@@ -37,18 +46,22 @@ watch(activeTab, (tab) => {
 })
 
 watch(activeTab, (newTab) => {
-    if (newTab === 'shared' && !travelsStore.usersFriend.length) {
+    if (newTab === 'shared' && usersStore.currentUser && !travelsStore.usersFriend.length) {
         travelsStore.getFriendUsers(usersStore.currentUser.id)
     }
 })
 
-onMounted(async () => {
-    if (usersStore.currentUser) {
-        await travelsStore.getTravels(usersStore.currentUser.id)
-        await travelsStore.getFriendUsers(usersStore.currentUser.id)
-        await travelsStore.getSharedTravels(usersStore.currentUser.id)
-    }
-})
+watch(
+    () => usersStore.currentUser,
+    (newUser) => {
+        if (newUser) {
+            loadTravelData()
+        }
+    },
+    { immediate: true } // вызов при создании watcher
+)
+
+onMounted(loadTravelData)
 </script>
 
 <template>

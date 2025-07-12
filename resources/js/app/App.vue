@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router"
-import { computed, onMounted, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import {computed, onMounted, ref, watch} from "vue"
 import { layouts } from '@/shared/ui/layout'
 import Loader from "@/shared/ui/Loader.vue"
 import ModalContainer from '@/widgets/modalContainer/ModalContainer.vue'
@@ -8,37 +8,52 @@ import api from "@/app/api/api"
 import { useUsersStore } from "@/entities/user"
 
 const route = useRoute()
+const router = useRouter()
 const layout = computed(() => layouts[route.meta.layout] || layouts.default)
 
-// const authStore = useAuthStore()
 const usersStore = useUsersStore()
-
 const isAppLoading = ref(true)
 
-onMounted(async () => {
+const checkAuthAndLoadData = async () => {
+    if (!route.meta.requiresAuth) {
+        isAppLoading.value = false
+        return
+    }
+
     const token = localStorage.getItem('auth_token')
-    if (!token) return // Если токена нет, пропускаем проверку
+    if (!token) {
+        isAppLoading.value = false
+        return
+    }
 
     try {
         await api.get('/auth/check')
-        await api.get('users/me').then(resp =>
-            usersStore.setCurrentUser(resp.data.user))
-
+        const userResponse = await api.get('users/me')
+        usersStore.setCurrentUser(userResponse.data.user)
     } catch (error) {
-        // Удаляем токен ТОЛЬКО при 401 ошибке
-        // if (error.response?.status === 401) {
-        //     localStorage.removeItem('auth_token')
-        // }
+        localStorage.removeItem('auth_token')
+        await router.push('/login')
     } finally {
         isAppLoading.value = false
     }
-})
+}
+
+onMounted(checkAuthAndLoadData)
+
+watch(
+    () => route.path,
+    () => {
+        if (route.meta.requiresAuth) {
+            checkAuthAndLoadData()
+        }
+    }
+)
 </script>
 
 <template>
     <component :is="layout">
         <Loader v-if="isAppLoading" />
-        <RouterView v-else :key="$route.fullPath" />
+        <RouterView v-else :key="route.fullPath" />
         <ModalContainer />
     </component>
 </template>
