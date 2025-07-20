@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { ref, watch } from "vue"
+import { computed, ref } from "vue"
 import { storeToRefs } from "pinia"
 import { useAuthStore } from "@/entities/auth"
 import { useLogout } from "@/pages/auth/model/logout"
+import { useUsersStore } from "@/entities/user"
 
-const { isAuth } = storeToRefs(useAuthStore())
-const isAuthenticated = ref(!!localStorage.getItem('auth_token'))
+// const { isAuth } = storeToRefs(useAuthStore())
+// const isAuthenticated = ref(!!localStorage.getItem('auth_token'))
 const { isLoadingLogout, doLogout } = useLogout()
+const usersStore = useUsersStore()
 
-watch(isAuth, () => {
-    isAuthenticated.value = !!localStorage.getItem("auth_token")
-})
+// watch(isAuth, () => {
+//     isAuthenticated.value = !!localStorage.getItem("auth_token")
+// })
+const isAuthenticated = computed(() => !!usersStore.currentUser)
 
-// TODO мемоизировать? тут ли?
 </script>
 
 <template>

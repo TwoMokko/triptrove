@@ -9,6 +9,7 @@ const travelId = Number(route.params.id)
 const travelsStore = useTravelsStore()
 
 onMounted(async () => {
+    // может не срабатывать при обновлении
     await travelsStore.getTravel(travelId)
 })
 </script>

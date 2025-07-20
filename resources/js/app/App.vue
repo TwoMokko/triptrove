@@ -48,6 +48,37 @@ watch(
         }
     }
 )
+
+
+
+
+// const checkAuth = async () => {
+//     if (!route.meta.requiresAuth) return
+//
+//     const token = localStorage.getItem('auth_token')
+//     if (!token) {
+//         await router.push('/login')
+//         return;
+//     }
+//
+//     try {
+//         await api.get('/auth/check')
+//     } catch {
+//         localStorage.removeItem('auth_token')
+//         await router.push('/login')
+//     }
+// }
+//
+// onMounted(checkAuth)
+//
+// watch(
+//     () => route.path,
+//     () => {
+//         if (route.meta.requiresAuth) {
+//             checkAuth()
+//         }
+//     }
+// )
 </script>
 
 <template>
