@@ -44,5 +44,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           source: "./"
-          target: "/var/www/u1970687/data/www/trip-trove.ru"
+          target: "/var/www/u1970687/data/www/trip-trove.ru/"
           strip_components: 1
