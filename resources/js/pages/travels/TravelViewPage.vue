@@ -18,7 +18,7 @@ onMounted(async () => {
     <Loader v-if="!travelsStore.currentViewTravel"/>
     <section v-else class="px-[10%] py-10">
         <h1>Место: {{ travelsStore.currentViewTravel.place }}</h1>
-        <p>test</p>
+        <p>тест</p>
     </section>
 </template>
 
