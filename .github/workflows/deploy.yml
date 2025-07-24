@@ -21,7 +21,6 @@ jobs:
           port: 22
           source: "./"
           target: "/var/www/u1970687/data/www/trip-trove.ru/"
-          strip_components: 1
           strip_components: 0 
           overwrite: true
           debug: true
