@@ -10,6 +10,9 @@ jobs:
 
     steps:
       
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Полная история коммитов
 
       - name: Upload files to hosting via SSH
         uses: appleboy/scp-action@v1
