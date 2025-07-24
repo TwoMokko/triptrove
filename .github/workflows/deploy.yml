@@ -24,3 +24,7 @@ jobs:
           strip_components: 0 
           overwrite: true
           debug: true
+      - run: |
+          echo "Содержимое архива перед отправкой:"
+          tar -ztvf /tmp/OIewSWKcuc.tar.gz
+
