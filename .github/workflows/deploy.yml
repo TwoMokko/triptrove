@@ -41,6 +41,7 @@ jobs:
           host: ${{ secrets.HOSTING_IP }}
           username: ${{ secrets.HOSTING_USER }}
           password: ${{ secrets.HOSTING_PASSWORD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           source: "./"
           target: "/var/www/trip-trove.ru/"
