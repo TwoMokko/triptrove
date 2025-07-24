@@ -9,31 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # - name: Checkout code
-      #   uses: actions/checkout@v4
-
-      # - name: Setup PHP
-      #   uses: shivammathur/setup-php@v2
-      #   with:
-      #     php-version: '8.2'
-      #     extensions: mbstring, ctype, fileinfo, openssl, PDO, mysql, pdo_mysql, tokenizer, xml
-      #     coverage: none
-
-      # - name: Install Composer dependencies
-      #   run: composer install --no-dev --prefer-dist --optimize-autoloader
-
-      # - name: Setup Node.js
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: '18'
-
-      # - name: Install npm dependencies
-      #   run: npm ci && npm run build
-
-      # - name: Prepare .env
-      #   run: |
-      #     cp .env.example .env
-      #     php artisan key:generate
+      
 
       - name: Upload files to hosting via SSH
         uses: appleboy/scp-action@v1
@@ -44,5 +20,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           source: "./"
-          target: "/data/www/trip-trove.ru/"
+          target: "/var/www/u1970687/data/www/trip-trove.ru/"
           strip_components: 1
+          debug: true
