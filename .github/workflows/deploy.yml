@@ -19,7 +19,7 @@ jobs:
           password: ${{ secrets.HOSTING_PASSWORD }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          source: "./"
+          source: "public/build/*"
           target: "/var/www/u1970687/data/www/trip-trove.ru/"
           strip_components: 0 
           overwrite: true
