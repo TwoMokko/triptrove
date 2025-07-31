@@ -15,7 +15,7 @@ import { useAuthStore } from '../../entities/auth';
 import { useLogout } from '../../pages/auth/model/logout';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8000/api',
+    baseURL: 'https://localhost/api',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
