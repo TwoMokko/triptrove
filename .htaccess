@@ -1,2 +1,8 @@
 RewriteEngine On
-RewriteRule ^(.*)$ public/$1
+
+# Не перенаправлять запросы к реальным файлам и папкам
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Перенаправлять все остальное в public/
+RewriteRule ^(.*)$ public/$1 [L]
