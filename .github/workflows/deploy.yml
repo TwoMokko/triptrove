@@ -21,8 +21,8 @@ jobs:
         #     extensions: mbstring, ctype, fileinfo, openssl, PDO, mysql, pdo_mysql, tokenizer, xml
         #     coverage: none
 
-      - name: Install dependencies with composer.phar
-        run: php composer.phar install --no-dev --prefer-dist --optimize-autoloader
+      - name: Install dependencies with composer
+        run: php /var/www/u1970687/data/composer.phar install --no-dev --prefer-dist --optimize-autoloader
 
         # - name: Setup Node.js
         #   uses: actions/setup-node@v3
