@@ -15,7 +15,7 @@ import { useAuthStore } from '../../entities/auth';
 import { useLogout } from '../../pages/auth/model/logout';
 
 const api = axios.create({
-    baseURL: 'https://localhost/api',
+    baseURL: 'https://trip-trove.ru/api',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
