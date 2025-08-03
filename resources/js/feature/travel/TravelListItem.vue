@@ -40,7 +40,13 @@ const handleEdit = (e: Event) => {
     })
 }
 
-const handleDelete = async () => {
+const handleDelete = async (e: Event) => {
+    console.log(props.item.user_id)
+    console.log(currentUser.value.id)
+    if (props.item.user_id !== currentUser.value.id) return
+
+    console.log('here')
+
     e.stopPropagation()
     const isConfirmed = await confirm({
         title: 'Вы уверены, что хотите удалить это путешествие?',
@@ -114,7 +120,7 @@ const handleSave = async (travel: travelData) => {
                     />
                 </button>
                 <button
-                    @click.stop="item.user_id === currentUser.id && handleDelete()"
+                    @click.stop="handleDelete"
                     :class="[
                         item.user_id === currentUser.id
                             ? 'cursor-pointer group'
