@@ -40,7 +40,7 @@ const openCreateTravelModal = () => {
 <template>
     <div v-if="!travelsStore.hasTravels" class="mb-4">
         <div>Нет созданных путешествий</div>
-        <div class="text-end">
+        <div class="text-end md:w-[300px] md:ml-auto">
             <ButtonCustom
                 text="Новое путешествие"
                 @handler="openCreateTravelModal"
@@ -52,7 +52,7 @@ const openCreateTravelModal = () => {
         <div class="mb-4">
             <TravelList :travels="travelsStore.travels" list-type="personal" />
         </div>
-        <div class="text-end">
+        <div class="text-end md:w-[300px] md:ml-auto">
             <ButtonCustom
                 text="Новое путешествие"
                 @handler="openCreateTravelModal"

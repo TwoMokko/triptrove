@@ -87,8 +87,8 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 
 <template>
     <Loader v-if="isLoading" />
-    <div v-else class="px-[10%] py-10">
-        <div class="flex gap-6 items-center">
+    <div v-else class="px-[4%] md:px-[10%] py-10">
+        <div class="flex flex-col md:flex-row gap-6 items-center">
             <FileUploader
                 target="user"
                 folder="avatars"
@@ -96,7 +96,7 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
                 :src="currentUser.avatar ? `storage/app/public/${currentUser.avatar}` : '/storage/app/public/users/avatars/default-user.svg'"
                 :class-name="'w-40 h-40 rounded-full'"
             />
-            <div class="w-96">
+            <div class="md:w-96">
                 <h1 class="text-2xl mb-4 flex gap-2 items-center group">
                     <span>Имя:</span>
 

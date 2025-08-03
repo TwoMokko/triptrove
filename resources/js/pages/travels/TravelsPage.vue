@@ -16,7 +16,7 @@ const route = useRoute()
 const router = useRouter()
 
 const tabs = [
-    { id: 'personal', label: 'Мои путешествия' },
+    { id: 'personal', label: 'Мои' },
     { id: 'shared', label: 'Совместные' },
     { id: 'wishlist', label: 'Хочу посетить' },
     { id: 'planned', label: 'Планы' }
@@ -90,7 +90,7 @@ watch(
 
 <template>
     <Loader v-if="travelsStore.isLoading"/>
-    <section v-else class="px-[10%] py-10">
+    <section v-else class="px-[4%] md:px-[10%] py-10">
         <TravelTabs v-model:activeTab="activeTab" :tabs="tabs">
             <template #personal>
                 <PersonalTab />

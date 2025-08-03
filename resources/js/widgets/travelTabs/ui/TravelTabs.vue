@@ -14,7 +14,7 @@ const switchTab = (tabId: string) => {
 </script>
 
 <template>
-    <div class="flex mb-6">
+    <div class="grid grid-cols-2 md:flex mb-6">
         <button
             v-for="tab in tabs"
             :key="tab.id"

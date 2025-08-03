@@ -29,5 +29,6 @@ defineProps<{
     text-decoration: none;
     display: inline-block;
     min-width: 300px;
+    width: 100%;
 }
 </style>

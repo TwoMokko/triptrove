@@ -60,7 +60,7 @@ const handleSubmit = () => {
             </label>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid md:grid-cols-2 gap-4">
             <div>
                 <h3 class="text-secondary text-sm">место</h3>
                 <InputCustom v-model:value="localTravel.place" :placeholder="'место'" :type="'text'" />

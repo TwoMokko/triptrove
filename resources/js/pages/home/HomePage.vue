@@ -27,7 +27,7 @@ onMounted(async () => {
 
 <template>
     <Loader v-if="travelsStore.isLoading"/>
-    <div v-else class="px-[10%] py-10">
+    <div v-else class="px-[4%] md:px-[10%] py-10">
         <div class="test rounded-3xl mb-4 py-20 text-white">
             <h1 class="text-2xl">ALL PUBLIC TRAVELS</h1>
         </div>

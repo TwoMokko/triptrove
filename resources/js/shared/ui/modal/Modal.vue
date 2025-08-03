@@ -115,4 +115,11 @@ const toggleCollapse = () => {
     max-height: 80%;
     max-width: 60%;
 }
+
+@media (max-width: 768px) {
+    .modal-overlay:not(.collapsed) .modal-wrap {
+        padding: 20px;
+        max-width: 90%;
+    }
+}
 </style>

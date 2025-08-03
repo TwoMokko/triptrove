@@ -46,7 +46,7 @@
 
 <template>
     <section>
-        <article class="w-1/2">
+        <article class="md:w-1/2">
             <label
                 v-for="wishItem in wishlist"
                 :key="wishItem.id"
@@ -71,7 +71,7 @@
             </label>
         </article>
 
-        <div class="flex gap-2 w-1/2">
+        <div class="flex flex-col md:flex-row gap-2 md:w-1/2">
             <InputCustom v-model:value="newWish" :placeholder="'новое место'" :type="'text'" />
             <ButtonCustom @click="addWish" :text="'Добавить'" />
         </div>

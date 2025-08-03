@@ -4,7 +4,7 @@ import Logo from "@/shared/ui/Logo.vue"
 
 <template>
 <main class="flex h-full">
-    <div class="flex-[50%] px-[10%] py-10">
+    <div class="flex-[50%] px-[4%] md:px-[10%] py-10">
         <div>
             <router-link :to="{ name: 'home' }">
                 <Logo />

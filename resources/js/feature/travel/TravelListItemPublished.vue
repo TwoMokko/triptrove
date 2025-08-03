@@ -9,7 +9,7 @@ const props = defineProps<{
 
 <template>
     <div class="card">
-        <div class="grid gap-2 grid-cols-8">
+        <div class="grid gap-2 md:grid-cols-8">
             <div>{{ item.place }}</div>
             <div>{{ item.when }}</div>
             <div>{{ item.amount }}</div>
@@ -24,6 +24,6 @@ const props = defineProps<{
 
 <style scoped>
 .card {
-    @apply py-10 px-14 bg-[#ffffff15] rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.06)] mb-2.5;
+    @apply py-2 md:py-10 px-3 md:px-14 bg-[#ffffff15] rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.06)] mb-2.5;
 }
 </style>
