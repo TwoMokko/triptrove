@@ -10,7 +10,12 @@ const props = defineProps<{
 <template>
     <div class="card">
         <div class="grid gap-2 md:grid-cols-8">
-            <div>{{ item.place }}</div>
+            <router-link
+                :to="{ name: 'travelView', params: { id: item.id } }"
+                class="hover:text-primary cursor-pointer"
+            >
+                {{ item.place }}
+            </router-link>
             <div>{{ item.when }}</div>
             <div>{{ item.amount }}</div>
             <div>{{ item.mode_of_transport }}</div>
