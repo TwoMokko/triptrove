@@ -15,7 +15,7 @@ import { useAuthStore } from '../../entities/auth';
 import { useLogout } from '../../pages/auth/model/logout';
 
 const api = axios.create({
-    baseURL: 'https://trip-trove.ru/api',
+    baseURL: import.meta.env.VITE_API_URL,
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

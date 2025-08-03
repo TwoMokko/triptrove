@@ -93,7 +93,7 @@ Route::prefix('travels')->group(function () {
     Route::post('with-users', [TravelController::class, 'withUsers'])->name('withUsers');
 
     Route::middleware('auth:sanctum')->group(function () {
-//        Route::post('/', [TravelController::class, 'store']);
+        Route::post('/', [TravelController::class, 'store']);
 //        Route::post('order', [TravelController::class, 'updateOrder']);
 //        Route::get('mine', [TravelController::class, 'mine']);
 
@@ -110,7 +110,7 @@ Route::prefix('travels')->group(function () {
     });
 
     Route::get('{id}', [TravelController::class, 'show']);
-    Route::post('{travel}', [TravelController::class, 'store']);
+//    Route::post('{travel}', [TravelController::class, 'store']);
     Route::put('{travel}', [TravelController::class, 'update']);
     Route::delete('{travel}', [TravelController::class, 'destroy']);
 

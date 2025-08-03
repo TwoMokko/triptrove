@@ -93,7 +93,7 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
                 target="user"
                 folder="avatars"
                 db-field="avatar"
-                :src="currentUser.avatar ? `storage/${currentUser.avatar}` : '/storage/users/avatars/default-user.svg'"
+                :src="currentUser.avatar ? `storage/app/public/${currentUser.avatar}` : '/storage/app/public/users/avatars/default-user.svg'"
                 :class-name="'w-40 h-40 rounded-full'"
             />
             <div class="w-96">
