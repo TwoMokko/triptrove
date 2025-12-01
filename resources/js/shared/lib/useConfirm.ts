@@ -1,6 +1,6 @@
 import { useModal } from './useModal'
-import ConfirmModal from '../../shared/ui/modal/ConfirmModal.vue'
 import { markRaw } from 'vue'
+import ConfirmModal from "../ui/modal/ui/ConfirmModal.vue";
 
 export const useConfirm = () => {
     const { openModal, closeModal } = useModal()

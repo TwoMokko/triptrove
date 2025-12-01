@@ -1,45 +1,25 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from "../../entities/auth"
+import { createRouter, createWebHistory, RouteLocationNormalized } from 'vue-router'
+import { useAuthStore } from "../../processes/auth/model/store"
+import { useUsersStore } from "../../entities/user/model/store";
+import HomePage from "../../pages/home/HomePage.vue";
+import LoginPage from "../../pages/auth/LoginPage.vue";
+import TravelsPage from "../../pages/travel/ui/TravelsPage.vue";
+import NotFoundPage from "../../pages/notFoundPage.vue";
+import RegisterPage from "../../pages/auth/RegisterPage.vue";
+import VerifyPage from "../../pages/auth/VerifyPage.vue";
+import ProfilePage from "../../pages/profile/ProfilePage.vue";
+import TravelEditPage from "../../pages/travel/ui/TravelEditPage.vue";
+import TravelViewPage from "../../pages/travel/ui/TravelViewPage.vue";
+import TemplatesPage from "../../pages/travel/ui/TemplatesPage.vue";
+import ArchivePage from "../../pages/travel/ui/ArchivePage.vue";
 
-import HomePage from '../../pages/home/HomePage.vue'
-import ProfilePage from '../../pages/profile/ProfilePage.vue'
-import LoginPage from "../../pages/auth/ui/LoginPage.vue"
-import RegisterPage from "../../pages/auth/ui/RegisterPage.vue"
-import TravelsPage from "../../pages/travels/TravelsPage.vue"
-import VerifyPage from "../../pages/auth/ui/VerifyPage.vue"
-import NotFoundPage from "../../pages/notFound/notFoundPage.vue"
-import ArchivePage from "../../pages/travels/ArchivePage.vue"
-import TemplatesPage from "../../pages/travels/TemplatesPage.vue"
-import TravelViewPage from "../../pages/travels/TravelViewPage.vue"
-import TravelEditPage from "../../pages/travels/TravelEditPage.vue"
+
 
 const routes = [
     {
         name: 'home',
         path: '/',
         component: HomePage,
-    },
-    {
-        name: 'travels',
-        path: '/travels',
-        component: TravelsPage,
-        meta: {
-            requiresAuth: true,
-            /* role: 'admin'*/
-        },
-    },
-    { path: '/travels/archive', name: 'travelArchive', component: ArchivePage, meta: { requiresAuth: true } },
-    { path: '/travels/templates', name: 'travelTemplates', component: TemplatesPage, meta: { requiresAuth: true } },
-    { path: '/travels/:id', name: 'travelView', component: TravelViewPage },
-    { path: '/travels/:id/edit', name: 'travelEdit', component: TravelEditPage, meta: { requiresAuth: true } },
-    {
-        name: 'profile',
-        path: '/profile',
-        component: ProfilePage,
-        meta: {
-            requiresAuth: true,
-            /* role: 'admin'*/
-        }
     },
     {
         name: 'login',
@@ -49,8 +29,7 @@ const routes = [
             layout: 'auth',
             guestOnly: true
         }
-    },
-    {
+    },{
         name: 'register',
         path: '/register',
         component: RegisterPage,
@@ -68,11 +47,27 @@ const routes = [
             guestOnly: true
         }
     },
-    // {
-    //     name: 'forbidden',
-    //     path: '/forbidden',
-    //     component: Компонент "Доступ запрещен"
-    // },
+    {
+        name: 'travels',
+        path: '/travels',
+        component: TravelsPage,
+        meta: {
+            requiresAuth: true,
+        }
+    },
+    { path: '/travels/archive', name: 'travelArchive', component: ArchivePage, meta: { requiresAuth: true } },
+    { path: '/travels/templates', name: 'travelTemplates', component: TemplatesPage, meta: { requiresAuth: true } },
+    { path: '/travels/:id', name: 'travelView', component: TravelViewPage },
+    { path: '/travels/:id/edit', name: 'travelEdit', component: TravelEditPage, meta: { requiresAuth: true } },
+    {
+        name: 'profile',
+        path: '/profile',
+        component: ProfilePage,
+        meta: {
+            requiresAuth: true,
+            /* role: 'admin'*/
+        }
+    },
     {
         path: '/:pathMatch(.*)*',
         name: 'not-found',
@@ -85,97 +80,42 @@ export const router = createRouter({
     routes
 })
 
-router.beforeEach((to, from, next) => {
-    const authStore = useAuthStore()
-    const isAuthenticated = authStore.isAuth
+router.beforeEach(async (to: RouteLocationNormalized) => {
+    const authStore = useAuthStore();
+    const usersStore = useUsersStore();
+    const isAuthenticated = authStore.isAuthenticated;
 
-    // Не блокируем навигацию для auth-страниц даже если есть 401
-    if (to.name === 'login' || to.name === 'register' || to.name === 'verify') {
-        next()
-        return
+    // Если токен есть, но пользователь не загружен
+    if (isAuthenticated && !usersStore.currentUser) {
+        try {
+            await usersStore.fetchCurrentUser();
+        } catch (error) {
+            authStore.clearAuthData();
+            usersStore.resetCurrentUser();
+
+            if (to.meta.requiresAuth) {
+                return { name: 'login', query: { redirect: to.fullPath } };
+            }
+        }
     }
 
-    // Остальная логика остается прежней
-    if (to.meta.guestOnly && isAuthenticated) {
-        next({ name: 'profile' })
-        return
-    }
-
+    // Страницы только для авторизованных
     if (to.meta.requiresAuth && !isAuthenticated) {
-        next({
+        return {
             name: 'login',
             query: { redirect: to.fullPath }
-        })
-        return
+        };
     }
 
-    next()
-})
+    // Страницы только для гостей (логин/регистрация)
+    if (to.meta.guestOnly && isAuthenticated) {
+        return { name: 'home' };
+    }
 
-// router.beforeEach((to, from, next) => {
-//     const authStore = useAuthStore()
-//     const isAuthenticated = authStore.isAuth
-//
-//     // Защита страниц только для гостей
-//     if (to.meta.guestOnly && isAuthenticated) {
-//         next({ name: 'profile' }) // Перенаправляем в личный кабинет
-//         return // Важно: прекращаем дальнейшую обработку
-//     }
-//
-//     // Защита авторизованных страниц
-//     if (to.meta.requiresAuth && !isAuthenticated) {
-//         // Сохраняем исходный маршрут для редиректа после входа
-//         next({
-//             name: 'login',
-//             query: { redirect: to.fullPath }
-//         })
-//         return
-//     }
-//
-//     // Проверка ролей (если нужно)
-//     // if (to.meta.role) {
-//     //     const userRole = authStore.user?.role // Получаем роль из хранилища
-//     //     if (userRole !== to.meta.role) {
-//     //         next({ name: 'forbidden' })
-//     //         return
-//     //     }
-//     // }
-//
-//     // Продолжаем навигацию
-//     next()
-// })
+    // Доп. проверка ролей (если нужно)
+    // if (to.meta.role && authStore.user?.role !== to.meta.role) {
+    //   return { name: 'forbidden' };
+    // }
+});
 
 
-//
-// router.beforeEach((to, from, next) => {
-//     const authStore = useAuthStore()
-//     const isAuthenticated = authStore.isAuth
-//
-//     // Защита страниц только для гостей
-//     if (to.meta.guestOnly && isAuthenticated) {
-//         next({ name: 'profile' }) // Перенаправляем в личный кабинет
-//         return // Важно: прекращаем дальнейшую обработку
-//     }
-//
-//     // Защита авторизованных страниц
-//     if (to.meta.requiresAuth && !isAuthenticated) {
-//         // Сохраняем исходный маршрут для редиректа после входа
-//         next({
-//             name: 'login',
-//             query: { redirect: to.fullPath }
-//         })
-//         return
-//     }
-//
-//     // Проверка ролей (если нужно)
-//     // if (to.meta.role) {
-//     //     const userRole = authStore.user?.role // Получаем роль из хранилища
-//     //     if (userRole !== to.meta.role) {
-//     //         next({ name: 'forbidden' })
-//     //         return
-//     //     }
-//     // }
-//
-//     // Продолжаем навигацию
-//     next()
-// })

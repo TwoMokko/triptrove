@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useUsersStore } from "@/entities/user"
-import { useTravelsStore } from "@/entities/travel"
 import { ref } from "vue"
+import { useUsersStore } from "@/entities/user/model/store"
+import { useTravelsStore } from "@/features/travels/model/store"
 
 const props = defineProps<{
     target: 'user' | 'travel';          // Для какой сущности загрузка
@@ -30,7 +30,7 @@ const handleUpload = async (e) => {
 
     if (props.target === 'user') {
         try {
-            await userStore.updateAvatar(file)
+            await userStore.fetchUpdateAvatar(file)
             previewUrl.value = URL.createObjectURL(file)
             // previewUrl.value = userStore.currentUser.avatar
         }
@@ -39,7 +39,7 @@ const handleUpload = async (e) => {
         }
     } else {
         if (!props.entityId) throw new Error('Travel ID is required')
-        await travelStore.uploadTravelCover(file, props.entityId)
+        await travelStore.fetchUpdateTravelCover(file, props.entityId)
     }
 }
 </script>

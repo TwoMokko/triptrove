@@ -1,19 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from "vue"
-import { storeToRefs } from "pinia"
-import { useAuthStore } from "@/entities/auth"
-import { useLogout } from "@/pages/auth/model/logout"
-import { useUsersStore } from "@/entities/user"
+import { computed } from "vue"
+import { useLogout } from "@/processes/auth/lib/use-logout";
+import { useAuthStore } from "@/processes/auth/model/store";
 
-// const { isAuth } = storeToRefs(useAuthStore())
-// const isAuthenticated = ref(!!localStorage.getItem('auth_token'))
-const { isLoadingLogout, doLogout } = useLogout()
-const usersStore = useUsersStore()
-
-// watch(isAuth, () => {
-//     isAuthenticated.value = !!localStorage.getItem("auth_token")
-// })
-const isAuthenticated = computed(() => !!usersStore.currentUser)
+const { isLoadingLogout, doLogout } = useLogout();
+const authStore = useAuthStore();
+const isAuthenticated = computed(() => authStore.isAuthenticated);
 
 </script>
 

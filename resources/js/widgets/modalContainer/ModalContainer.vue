@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { useModalStore } from '@/app/store/modal'
-import Modal from '@/shared/ui/modal/Modal.vue'
+import { useModalStore } from "@/shared/ui/modal"
+import Modal from "@/shared/ui/modal/ui/Modal.vue"
 
 const modalStore = useModalStore()
 const { modals } = storeToRefs(modalStore)
@@ -12,6 +12,13 @@ const handleClose = (modalId: string) => {
 
 const handleToggleCollapse = (modalId: string) => {
     modalStore.toggleCollapse(modalId)
+}
+
+const getComponentProps = (props: any) => {
+  if (!props) return {}
+
+  const { title, previewText, isCollapsible, ...componentProps } = props
+  return componentProps
 }
 
 </script>
@@ -31,7 +38,7 @@ const handleToggleCollapse = (modalId: string) => {
             >
                 <component
                     :is="modal.component"
-                    v-bind="modal.props"
+                    v-bind="getComponentProps(modal.props)"
                     @handler="modal.props.onHandler"
                 />
             </Modal>

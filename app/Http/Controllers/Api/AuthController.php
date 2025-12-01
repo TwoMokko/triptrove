@@ -27,16 +27,21 @@ class AuthController extends Controller
             'login' => $request->login,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'email_verified_at' => null, // Явно указываем, что email не подтвержден
         ]);
 
+        // Генерируем и отправляем код верификации
         $this->generateAndSendCode($user);
 
-        return response()->json([
-            'message' => 'Verification code sent',
-            'user' => new UserResource($user)
-        ], 201);
+        // Создаем временный токен для верификации
+        $tempToken = $user->createToken('verification-token', ['verify-email'])->plainTextToken;
 
-//        return response()->json(['message' => 'User registered successfully'], 201);
+        return response()->json([
+            'message' => 'Verification code sent to your email',
+            'temp_token' => $tempToken,
+            'user_id' => $user->id,
+            'login' => $user->login
+        ], 201);
     }
 
     private function generateAndSendCode(User $user): void
@@ -44,6 +49,7 @@ class AuthController extends Controller
         $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         $hashedCode = Hash::make($code);
 
+        // Используем отношение для создания/обновления
         $user->emailVerification()->updateOrCreate(
             [],
             [
@@ -53,7 +59,6 @@ class AuthController extends Controller
             ]
         );
 
-        // Отправка email с кодом через ваш сервис
         Mail::to($user->email)->send(new VerificationCodeMail($code));
     }
 

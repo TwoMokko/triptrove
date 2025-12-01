@@ -1,5 +1,5 @@
-import { useModalStore } from "../../app/store/modal"
 import { Component } from "vue"
+import { useModalStore } from "../ui/modal";
 
 export const useModal = () => {
     const modalStore = useModalStore()

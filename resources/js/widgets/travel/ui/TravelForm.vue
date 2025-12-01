@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue"
-import { travelData } from "@/app/types/types"
+import { ref, watch } from "vue"
+import { Travel } from "@/shared/types/api"
 import InputCustom from "@/shared/ui/InputCustom.vue"
 import TextareaCustom from "@/shared/ui/TextareaCustom.vue"
 import ButtonCustom from "@/shared/ui/ButtonCustom.vue"
-import UsersSharedList from "@/feature/user/ui/UsersSharedList.vue"
+import UsersSharedList from "@/widgets/user/ui/UsersSharedList.vue"
 import Icon from "@/shared/ui/Icon.vue"
 import { mdiLock, mdiLockOpenVariant } from '@mdi/js'
 
@@ -24,7 +24,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'handler'])
 
-const localTravel = ref<travelData>({ ...props.modelValue })
+const localTravel = ref<Travel>({ ...props.modelValue })
 
 watch(
     () => props.modelValue,

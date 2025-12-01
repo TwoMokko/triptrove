@@ -50,6 +50,7 @@ body {
     /*--primary-color             : #7ea46d;*/
     --secondary-color           : #b6b8d2;
     --secondary-light-color     : #e3d8d5;
+    --error-color               : #b7574c;
 
     --font-logo                 : "Caesar Dressing", serif;
 }

@@ -1,96 +1,47 @@
-// import axios from 'axios';
-//
-// const api = axios.create({
-//     baseURL: 'http://localhost:8000/api', // Укажите URL вашего Laravel API
-//     // baseURL: 'http://127.0.0.1:8000/api', // Укажите URL вашего Laravel API
-//     headers: {
-//         'Content-Type': 'application/json',
-//     },
-// });
-//
-// export default api;
-
 import axios from 'axios';
-import { useAuthStore } from '../../entities/auth';
-import { useLogout } from '../../pages/auth/model/logout';
+import { useAuthStore } from "../../processes/auth/model/store";
 
-const api = axios.create({
+interface ApiResponse<T = any> {
+    data: T;
+}
+const api: ApiResponse = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
+    withCredentials: true, // Для Sanctum кук
     headers: {
+        Accept: 'application/json',
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
     },
-    // withCredentials: true, // Нужно только если используете куки Sanctum
 });
 
-// Интерцептор для автоматической подстановки токена
-api.interceptors.request.use(config => {
-    const token = localStorage.getItem('auth_token'); // Берём токен напрямую из localStorage
+// Интерцептор для добавления токена
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    const tempToken = localStorage.getItem('temp_token');
+
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+    } else if (tempToken) {
+        config.headers.Authorization = `Bearer ${tempToken}`;
     }
+
+    // if (token) config.headers.Authorization = `Bearer ${token}`;
+
+    if (config.data instanceof FormData) {
+        delete config.headers['Content-Type'];
+    }
+
     return config;
 });
 
 // Интерцептор для обработки 401 ошибки
 api.interceptors.response.use(
-    response => response,
-    async error => {
+    (response) => response,
+    (error) => {
         if (error.response?.status === 401) {
-            const logout = useLogout();
-            await logout.doLogout(); // Корректный выход с очисткой данных
-            window.location.href = '/login'; // Жёсткий редирект
+            localStorage.removeItem('token'); // Всё!
         }
         return Promise.reject(error);
     }
 );
 
-export default api;
-
-// import axios from 'axios';
-// import { useAuthStore } from "../../entities/auth";
-// import {useLogout} from "../../pages/auth/model/logout";
-//
-// const api = axios.create({
-//     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
-//     headers: {
-//         'Content-Type': 'application/json',
-//         'Accept': 'application/json',
-//     },
-//     // withCredentials: true, // Пока отключите!
-// });
-//
-// // Интерцептор для токена
-// api.interceptors.response.use(
-//     response => response,
-//     error => {
-//         const isLogoutRequest = error.config?.__isLogoutRequest;
-//         const isAuthRequest = error.config?.url?.includes('/auth');
-//
-//         // Не обрабатываем 401 для logout и auth-запросов
-//         if (error.response?.status === 401 && !isLogoutRequest && !isAuthRequest) {
-//             const logout = useLogout();
-//             logout.doLogout().then(() => {
-//                 // Используем window.location вместо router, чтобы избежать цикла
-//                 window.location.href = '/login?session_expired=1';
-//             });
-//         }
-//         return Promise.reject(error);
-//     }
-// );
-// // Обработчик ошибок
-// api.interceptors.response.use(
-//     response => response,
-//     error => {
-//         const isLogoutRequest = error.config?.__isLogoutRequest
-//         if (error.response?.status === 401 && !isLogoutRequest) {
-//             const logout = useLogout();
-//             logout.doLogout().then(() => window.location.href = '/login');
-//
-//         }
-//         return Promise.reject(error);
-//     }
-// );
-//
-// export default api;
-
+export { api };

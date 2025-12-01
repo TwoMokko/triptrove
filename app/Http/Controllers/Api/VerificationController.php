@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\EmailVerification;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -14,74 +14,100 @@ use App\Mail\VerificationCodeMail;
 class VerificationController extends Controller
 {
     /**
-     * Подтверждение email (POST /api/verify)
+     * Подтверждение email (POST /api/email/verify)
      */
     public function verify(Request $request)
     {
-//        $request->validate([
-//            'code' => 'required|digits:6',
-//        ]);
-        if (strlen($request->code) != 6) {
-            return response()->json(['error' => 'Код должен быть 6-значным'], 422);
-        }
+        $request->validate([
+            'code' => 'required|digits:6',
+            'login' => 'sometimes|string'
+        ]);
 
-        if (!$request->login) return response()->json(['error' => 'Login не найден'], 404);
-        $user = $request->user() ?? User::where('login', $request->login)->first();
+        $request->validate(['login' => 'sometimes|string']);
 
-        // Проверка наличия записи верификации
-        $verification = EmailVerification::where('user_id', $user->id)->first();
+//        $user = $request->user();
+//
+//        if (!$user && $request->has('login')) {
+//            $user = User::where('login', $request->login)->first();
+//        }
+
+        $user = User::where('login', $request->login)->first();
+
+        $verification = $user->emailVerification;
 
         if (!$verification) {
-            return response()->json(['error' => 'Код не найден'], 404);
+            return response()->json(['error' => 'Код не найден или устарел'], 400);
         }
 
-        // Проверка времени жизни кода
+        // Проверяем срок действия
         if (Carbon::now()->gt($verification->expires_at)) {
-            $verification->delete();
-            return response()->json(['error' => 'Код просрочен, получите новый код'], 400);
+            $user->emailVerification()->delete(); // ← УДАЛЕНИЕ при просрочке
+            return response()->json(['error' => 'Код просрочен'], 400);
         }
 
-        // Проверка попыток
+        // Проверяем попытки
         if ($verification->attempts >= 3) {
-            $verification->delete();
-            return response()->json(['error' => 'Слишком много попыток, получите новый код'], 429);
+            $user->emailVerification()->delete(); // ← УДАЛЕНИЕ при превышении попыток
+            return response()->json(['error' => 'Превышено число попыток'], 429);
         }
 
+        // Проверяем код
         if (!Hash::check($request->code, $verification->code)) {
-            $verification->increment('attempts'); // Увеличиваем только при ошибке
+            $verification->increment('attempts');
+
+            $attemptsLeft = 3 - $verification->attempts;
+            if ($attemptsLeft <= 0) {
+                $user->emailVerification()->delete(); // ← УДАЛЕНИЕ при исчерпании попыток
+            }
+
             return response()->json([
-                'error' => 'Неверный код, осталось попыток: ' . 3 - $verification->attempts,
+                'error' => 'Неверный код',
+                'attempts_left' => $attemptsLeft
             ], 401);
         }
 
-        // Успешная верификация
+        // УСПЕШНАЯ ВЕРИФИКАЦИЯ
         $user->email_verified_at = Carbon::now();
         $user->save();
-        $verification->delete();
+        $user->emailVerification()->delete(); // ← УДАЛЕНИЕ после успешной верификации
 
-        return response()->json(['message' => 'Email verified successfully'], 201);
+        // Создаем полноценный токен
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Email успешно подтверждён',
+            'token' => $token,
+            'user' => new UserResource($user)
+        ]);
     }
 
     /**
-     * Повторная отправка кода (POST /api/resend)
+     * Повторная отправка кода (POST /api/email/resend)
      */
     public function resend(Request $request)
     {
-        if (!$request->login) return response()->json(['error' => 'Login не найден'], 404);
-        $user = $request->user() ?? User::where('login', $request->login)->first();
+        $request->validate(['login' => 'sometimes|string']);
 
-        // Проверка уже подтвержденного email
-        if ($user->email_verified_at) {
-            return response()->json(['error' => 'Email already verified'], 400);
+        $user = $request->user();
+
+        if (!$user && $request->has('login')) {
+            $user = User::where('login', $request->login)->first();
         }
 
-        // Генерация нового кода
+        if (!$user) {
+            return response()->json(['error' => 'Пользователь не найден'], 404);
+        }
+
+        if ($user->email_verified_at) {
+            return response()->json(['error' => 'Email уже подтверждён'], 400);
+        }
+
         $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         $hashedCode = Hash::make($code);
 
-        // Обновление записи верификации
-        EmailVerification::updateOrCreate(
-            ['user_id' => $user->id],
+        // Используем отношение
+        $user->emailVerification()->updateOrCreate(
+            [],
             [
                 'code' => $hashedCode,
                 'expires_at' => Carbon::now()->addHour(),
@@ -89,9 +115,8 @@ class VerificationController extends Controller
             ]
         );
 
-        // Отправка email
         Mail::to($user->email)->send(new VerificationCodeMail($code));
 
-        return response()->json(['message' => 'New code sent']);
+        return response()->json(['message' => 'Новый код отправлен']);
     }
 }

@@ -7,15 +7,25 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PhotoController;
 use Illuminate\Support\Facades\Route;
 
-// Аутентификация
-Route::prefix('auth')->group(function () {
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('login', [AuthController::class, 'login']);
-    Route::middleware('auth:sanctum')->post('logout', [AuthController::class, 'logout']);
-    Route::middleware('auth:sanctum')->get('check', function () {
-        return response()->noContent();
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+Route::prefix('user')->group(function () {
+    Route::get('search', [UserController::class, 'search'])->name('users.search'); // Получить всех пользователей по строке поиска
+    Route::get('friends', [UserController::class, 'friends'])->name('users.friends');
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('', [UserController::class, 'me']);
+        Route::post('avatar', [UserController::class, 'updateAvatar']);
+        Route::put('name', [UserController::class, 'updateName']);
+        Route::put('login', [UserController::class, 'updateLogin']);
+        Route::post('check-login', [UserController::class, 'checkLoginAvailability']);
     });
 });
+
+
+
 
 // Верификация
 Route::prefix('email')->group(function () {
@@ -23,98 +33,42 @@ Route::prefix('email')->group(function () {
     Route::post('resend', [VerificationController::class, 'resend'])->name('verification.resend');
 });
 
-// Пользователи (User)
-Route::prefix('users')->group(function () {
-    Route::get('/', [UserController::class, 'index'])->name('users.index');
-    Route::post('/', [UserController::class, 'store'])->name('users.store');
-    Route::get('search', [UserController::class, 'search'])->name('users.search'); // Получить всех пользователей по строке поиска
-    Route::get('friends', [UserController::class, 'friends'])->name('users.friends');
-
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('me', [UserController::class, 'me'])->name('users.me');
-        Route::post('me/avatar', [UserController::class, 'updateAvatar'])->name('users.updateAvatar');
-        Route::post('me/name', [UserController::class, 'updateName'])->name('users.updateName');
-    });
-
-    Route::get('{user}', [UserController::class, 'show'])->name('users.show');
-    Route::put('{user}', [UserController::class, 'update'])->name('users.update');
-    Route::delete('{user}', [UserController::class, 'destroy'])->name('users.destroy');
-});
 
 
-//// Путешествия (Travel)
-//Route::prefix('travels')->group(function () {
-//    // Публичные маршруты
-//    Route::get('/', [TravelController::class, 'index'])->name('travels.index');
-//    Route::get('published', [TravelController::class, 'published'])->name('travels.published');
-//    Route::get('tagged', [TravelController::class, 'tagged'])->name('travels.tagged');
-//    Route::get('{travel}', [TravelController::class, 'show'])->name('travels.show');
-//    Route::post('with-users', [TravelController::class, 'withUsers'])->name('travels.withUsers');
-//
-//    // Защищенные маршруты (требуют аутентификации)
-//    Route::middleware('auth:sanctum')->group(function () {
-//        // Основные CRUD операции
-//        Route::post('/', [TravelController::class, 'store'])->name('travels.store');
-//        Route::put('{travel}', [TravelController::class, 'update'])->name('travels.update');
-//        Route::delete('{travel}', [TravelController::class, 'destroy'])->name('travels.destroy');
-//
-//        // Сортировка
-//        Route::patch('order', [TravelController::class, 'updateOrder'])->name('travels.order');
-//
-//        // Персональные путешествия
-//        Route::get('mine', [TravelController::class, 'mine'])->name('travels.mine');
-//
-//        // Управление участниками
-//        Route::get('{travel}/participants', [TravelController::class, 'participants'])->name('travels.participants');
-//        Route::post('{travel}/participants', [TravelController::class, 'attachParticipant'])->name('travels.participants.attach');
-//        Route::delete('{travel}/participants/{user}', [TravelController::class, 'detachParticipant'])->name('travels.participants.detach');
-//
-//        // Обложка
-//        Route::post('{travel}/cover', [TravelController::class, 'updateCover'])->name('travels.cover.update');
-//
-//        // Фотографии
-//        Route::post('{travel}/photos', [TravelController::class, 'storePhoto'])->name('travels.photos.store');
-//    });
-//});
 
-
-// TODO: переписать с middleware AUTH (как выше)
-// Путешествия (Travel)
+// Public routes (доступны без авторизации)
 Route::prefix('travels')->group(function () {
-    Route::get('/', [TravelController::class, 'index'])->name('travels.index');
-    Route::get('published', [TravelController::class, 'published'])->name('travels.published');
-//    Route::get('shared', [TravelController::class, 'shared']);
-    Route::get('tagged', [TravelController::class, 'tagged']);
+    // Публичные путешествия - доступны всем
+    Route::get('published', [TravelController::class, 'published']);
 
-    Route::patch('order', [TravelController::class, 'updateOrder']);
-    Route::get('mine', [TravelController::class, 'mine']);
-    Route::get('participants', [TravelController::class, 'participants']);
-    // get переписать
-    Route::post('with-users', [TravelController::class, 'withUsers'])->name('withUsers');
+    // Просмотр конкретного публичного путешествия
+    Route::get('published/{id}', [TravelController::class, 'showPublished']);
 
+
+    // Protected routes (требуют авторизации)
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/', [TravelController::class, 'store']);
-//        Route::post('order', [TravelController::class, 'updateOrder']);
-//        Route::get('mine', [TravelController::class, 'mine']);
+        // Специальные маршруты
+        Route::get('mine', [TravelController::class, 'mine']); // Мои путешествия
+        Route::get('participants', [TravelController::class, 'participants']); // Где я участник
+        Route::patch('order', [TravelController::class, 'updateOrder']); // Сортировка
 
-        // Управление участниками
-//        Route::get('{travel}/participants', [TravelController::class, 'participants']);
-//        Route::post('{travel}/participants', [TravelController::class, 'attachParticipant']);
-//        Route::delete('{travel}/participants/{user}', [TravelController::class, 'detachParticipant']);
+        // Поиск/фильтрация
+        Route::post('with-users', [TravelController::class, 'withUsers']);
 
-        // Обложка
+        // Медиа
         Route::post('{travel}/cover', [TravelController::class, 'updateCover']);
+        Route::post('{travel}/photos', [TravelController::class, 'addPhoto']);
 
-        // Фотографии (тут или в photos)
-//        Route::post('{travel}/photos', [TravelController::class, 'updateCover']);
+        // CRUD операций
+        Route::apiResource('', TravelController::class)
+            ->parameters(['' => 'travel'])
+            ->names([
+                'index' => 'travels.index',
+                'store' => 'travels.store',
+                'show' => 'travels.show',
+                'update' => 'travels.update',
+                'destroy' => 'travels.destroy'
+            ]);
     });
-
-    Route::get('{id}', [TravelController::class, 'show']);
-//    Route::post('{travel}', [TravelController::class, 'store']);
-    Route::put('{travel}', [TravelController::class, 'update']);
-    Route::delete('{travel}', [TravelController::class, 'destroy']);
-
-
 });
-
 
