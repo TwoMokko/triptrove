@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import Loader from "@/shared/ui/Loader.vue";
+
 const props = defineProps<{
     activeTab: string;
-    tabs: Array<{ id: string; label: string }>
+    tabs: Array<{ id: string; label: string }>;
+    isLoading: boolean;
 }>()
 
 const emit = defineEmits<{
@@ -26,7 +29,8 @@ const switchTab = (tabId: string) => {
         </button>
     </div>
 
-    <div>
+    <Loader v-if="isLoading" />
+    <div v-else>
       <slot />
     </div>
 </template>

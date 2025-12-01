@@ -3,7 +3,6 @@ import { useRoute, useRouter } from 'vue-router';
 import { useTravelsStore } from '@/features/travels/model/store';
 import { reactive, ref, watch } from "vue";
 import { useUsersStore } from "@/entities/user/model/store";
-import Loader from "@/shared/ui/Loader.vue";
 import TravelTabs from "@/widgets/travel/ui/TravelTabs.vue";
 import PersonalTab from "@/pages/travel/ui/tabs/PersonalTab.vue";
 import SharedTab from "@/pages/travel/ui/tabs/SharedTab.vue";
@@ -104,15 +103,12 @@ watch(activeTab, (newTab) => {
 </script>
 
 <template>
-  <div class="px-[4%] md:px-[10%] py-10">
-    <Loader v-if="isLoading" />
-    <div v-else >
-      <TravelTabs v-model:active-tab="activeTab" :tabs="tabs">
-        <PersonalTab v-show="activeTab === TravelTab.PERSONAL" />
-        <SharedTab v-show="activeTab === TravelTab.SHARED" />
-        <WishlistTab v-show="activeTab === TravelTab.WISHLIST" />
-        <PlannedTab v-show="activeTab === TravelTab.PLANNED" />
-      </TravelTabs>
+    <div class="px-[4%] md:px-[10%] py-10">
+        <TravelTabs v-model:active-tab="activeTab" :tabs="tabs" :is-loading="isLoading">
+            <PersonalTab v-show="activeTab === TravelTab.PERSONAL" />
+            <SharedTab v-show="activeTab === TravelTab.SHARED" />
+            <WishlistTab v-show="activeTab === TravelTab.WISHLIST" />
+            <PlannedTab v-show="activeTab === TravelTab.PLANNED" />
+        </TravelTabs>
     </div>
-  </div>
 </template>

@@ -31,10 +31,8 @@ import Logo from "@/shared/ui/Logo.vue"
 
 .test-text {
     padding: 40px 60px;
-    //border-radius: 20px;
     background-color: #ffffff40;
     color: white;
     font-size: 3rem;
-    //box-shadow: 0 0 20px rgba(0, 0, 0, 0.06);
 }
 </style>

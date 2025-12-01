@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { travelData } from "@/app/types/types"
+import { Travel } from "@/shared/types/api";
 
 const props = defineProps<{
-    item: travelData
+    item: Travel
 }>()
 
 </script>
