@@ -11,9 +11,9 @@ const isLoading = computed(() => userStore.currentUser === null)
 
 const avatarSrc = computed(() => {
   if (currentUser.value?.avatar) {
-    return `/storage/${currentUser.value.avatar}`
+    return `/storage/app/public/${currentUser.value.avatar}`
   }
-  return '/storage/users/avatars/default-user.svg'
+  return '/resources/images/users/avatars/default-user.svg'
 })
 
 const validateName = (name: string) => {
