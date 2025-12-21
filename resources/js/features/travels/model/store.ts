@@ -100,8 +100,7 @@ export const useTravelsStore = defineStore('travels', () => {
         // isLoading.value = true
         try {
             const newTravel = await api.post('/travels', travelData)
-            myTravels.value.unshift(newTravel.data.data)
-            console.log('unshift:', myTravels.value)
+            myTravels.value.push(newTravel.data.data)
             return newTravel
         } catch (err) {
             // error.value = 'Ошибка создания путешествия'

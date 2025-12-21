@@ -66,7 +66,7 @@ class TravelController extends Controller
             }
 
             $user = User::with(['createdTravels.users:id,name,login', 'createdTravels' => function($query) {
-                $query->orderBy('order', 'DESC');
+                $query->orderBy('order');
             }])->find($userId);
 
             if (!$user) {
