@@ -101,6 +101,7 @@ export const useTravelsStore = defineStore('travels', () => {
         try {
             const newTravel = await api.post('/travels', travelData)
             myTravels.value.unshift(newTravel.data.data)
+            console.log('unshift:', myTravels.value)
             return newTravel
         } catch (err) {
             // error.value = 'Ошибка создания путешествия'
