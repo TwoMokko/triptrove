@@ -57,7 +57,7 @@ class User extends Authenticatable
     // Отношение "один ко многим" (если пользователь создаёт путешествия)
     public function createdTravels(): HasMany
     {
-        return $this->hasMany(Travel::class)->orderBy('order');
+        return $this->hasMany(Travel::class)->orderBy('order', 'DESC');
     }
 
     // Отношение "многие ко многим" (если пользователь участвует в путешествиях)
